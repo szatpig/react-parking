@@ -1,0 +1,41 @@
+.identify-code-container{
+    margin-bottom: 0 !important;
+    position: relative;
+    .code-img{
+        display: none;
+        position: absolute;
+        z-index: 10;
+        bottom:0;
+        left: 0;
+        height: 192px;
+        width: 360px;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        transition: all 1s ease-in-out;
+        &.active{
+            display: block;
+        }
+    }
+    .code-refresh{
+        position: absolute;
+        z-index: 11;
+        top: -140px;
+        right: 10px;
+        color: #fff;
+        cursor: pointer;
+    }
+    button{
+        box-sizing: border-box;
+        border: 1px solid #dddeee;
+        height: 40px;
+        line-height: 40px;
+        width: 100%;
+        padding: 0;
+        background-color: #F7F9FA;
+        color: #333;
+        font-size: 14px;
+        cursor: pointer;
+        margin-top: 0px;
+        margin-bottom: 0;
+    }
+}

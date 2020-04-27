@@ -1,0 +1,26 @@
+.user-manage-container{
+    display: flex;
+    flex-flow: row nowrap;
+
+    .user-wrapper-left{
+        &:before{
+            content: '组织架构';
+            display:block;
+            height: 40px;
+            line-height: 40px;
+            margin: 0 -20px 20px;
+            padding-left: 20px;
+            background: #f8f8f8;
+            border-bottom: 1px solid #dddee1;
+            color: #333;
+        }
+        flex: 0 0 260px;
+        padding: 0 20px 20px;
+        border: 1px solid #dddeee;
+
+    }
+    .user-wrapper-right{
+        margin-left: 35px;
+        flex: auto;
+    }
+}
