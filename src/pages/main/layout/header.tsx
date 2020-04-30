@@ -4,11 +4,15 @@ import { connect } from 'react-redux'
 import { RouteComponentProps, withRouter } from 'react-router'
 import { Link } from 'react-router-dom';
 
-import { Layout, Icon, Breadcrumb, Badge, Popover } from 'antd';
+// import { useHistory } from 'react-router-dom';
 
-import routes from '../router'
-import { headerCollapsed } from "../../../store/actions/header";
-import defaultHeadImg from './../../../images/default.png'
+import { Layout, Breadcrumb, Popover } from 'antd';
+
+import { ReloadOutlined } from '@ant-design/icons';
+
+import { headerCollapsed } from "@/store/actions/header";
+import { userLoginOutAction } from "@/store/actions/user";
+import defaultHeadImg from '@/images/default.png'
 
 
 const { Header } = Layout;
@@ -33,9 +37,6 @@ class HeaderLayout extends Component<Props, State> {
     componentDidUpdate() {
     }
 
-    componentWillUnmount() {
-    }
-
     getBreadcrumbName = (pathname:string,routes:any) =>{
         const routeItem = routes.find((item:any)=> item.path && (item.path === pathname.replace(/\/home/g,'')));
         if(!routeItem) return <Breadcrumb.Item > 404 </Breadcrumb.Item>;
@@ -49,43 +50,46 @@ class HeaderLayout extends Component<Props, State> {
         })
     }
 
+    routerLink = () => {
+        this.props.history.push('/home/account')
+    }
+    loginOut = () => {
+        this.props.userLoginOutAction();
+        this.props.history.push('/login')
+    }
+
     render() {
-        const { username, path ,location:{ pathname } } = this.props;
-        const text = <span>Title</span>;
+        const { name } = this.props.userInfo;
+        console.log(this.props.history)
         const content = (
                 <div>
-                    <p>Content</p>
-                    <p>Content</p>
+                    <p onClick={ this.routerLink }>个人信息</p>
+                    <p onClick={ this.loginOut  }>退出登录</p>
                 </div>
         );
         return (
             <Header  className="header-container">
                 <div className="head-content">
                     <div className="left-wrap">
-                        <Icon
-                            className="trigger"
-                            type={ this.props.collapsed ? 'menu-unfold' : 'menu-fold'}
-                            onClick={ this.props.headerCollapsed }
-                        />
-                        <Breadcrumb>
-                            { this.getBreadcrumbName(pathname,routes) }
-                        </Breadcrumb>
+                         <img src={ require('../../../images/image-logo.png')} alt="停车场logo" />
                     </div>
                     <div className="right-wrap">
+                        {/*<div className="item-wrap">*/}
+                            {/*<ReloadOutlined type="qrcode" />扫码录音*/}
+                        {/*</div>*/}
+                        {/*<div className="item-wrap"><ReloadOutlined type="aliwangwang" />坐席</div>*/}
+                        {/*<div className="item-wrap"><ReloadOutlined type="bulb" />帮助中心</div>*/}
+                        {/*<div className="item-wrap">*/}
+                            {/*<Badge count={ this.state.count } offset={[4,0]}>*/}
+                                {/*<ReloadOutlined type="bell" />消息*/}
+                            {/*</Badge>*/}
+                        {/*</div>*/}
                         <div className="item-wrap">
-                            <Icon type="qrcode" />扫码录音
-                        </div>
-                        <div className="item-wrap"><Icon type="aliwangwang" />坐席</div>
-                        <div className="item-wrap"><Icon type="bulb" />帮助中心</div>
-                        <div className="item-wrap">
-                            <Badge count={ this.state.count } offset={[4,0]}>
-                                <Icon type="bell" />消息
-                            </Badge>
-                        </div>
-                        <div className="item-wrap">
-                            <Popover placement="bottom" title={ text } content={ content } trigger="hover">
-                                <img src={ defaultHeadImg } alt="用户头像"/>
-                                <span className="item-name">{ username }</span>
+                            <Popover placement="bottom" overlayClassName="header-popover-container" content={content} trigger="hover">
+                                <div>
+                                    <img src={ defaultHeadImg } alt="用户头像"/>
+                                    <span className="item-name">{ name }</span>
+                                </div>
                             </Popover>
                         </div>
                     </div>
@@ -99,7 +103,8 @@ class HeaderLayout extends Component<Props, State> {
 interface Props extends RouteComponentProps  {
     collapsed:boolean,
     headerCollapsed:any,
-    username:string,
+    userLoginOutAction:any,
+    userInfo:any,
     path:string
 }
 
@@ -110,11 +115,11 @@ interface State {
 
 const mapStateToProps = (state:any) => ({
     collapsed:state.header.collapsed,
-    username:state.user.realName
+    userInfo:state.user.info
 })
 
 const mapDispatchToProps = {
-    headerCollapsed
+    headerCollapsed,userLoginOutAction
 }
 
 export default withRouter(connect(mapStateToProps,mapDispatchToProps)(HeaderLayout))

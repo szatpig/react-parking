@@ -1,7 +1,7 @@
 // Created by szatpig at 2019/9/5.
 
-import fetch from './../utils/fetch'
-import site from './../utils/config'
+import fetch from '@/utils/fetch'
+import site from '@/utils/config'
 
 export const userLogin= (data:any) => fetch(site.base + '/permission/login' ,{
     type: 'post',
@@ -16,4 +16,9 @@ export const getPublicKey= (params:any) => fetch(site.base + '/permission/getPub
 export const getRoleMenu= (params:any) => fetch(site.base + '/menu/getRoleMenu' ,{
     type: 'get',
     params
+});
+
+export const userLogout= (data:any) => fetch(site.base + '/permission/logout' ,{
+    type: 'get',
+    data
 });

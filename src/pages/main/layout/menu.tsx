@@ -4,11 +4,8 @@ import { connect } from 'react-redux'
 import { RouteComponentProps, withRouter } from 'react-router'
 import { Link } from 'react-router-dom';
 
-import logo from '@/images/logo-menu.png'
-import logo_mini from '@/images/logo-min.png'
-
-
-import { Menu, Icon } from 'antd';
+import { Menu } from 'antd';
+import { CarOutlined,TeamOutlined,ProjectOutlined,FundProjectionScreenOutlined } from '@ant-design/icons';
 const { SubMenu } = Menu;
 
 
@@ -18,7 +15,8 @@ class MenuLayout extends Component<Props, State> {
 
     state:State = {
         openKeys: [],
-        defaultSelected:[]
+        defaultSelected:[],
+        selectedKeys:[]
     };
 
     onOpenChange = (openKeys:any) => {
@@ -34,14 +32,14 @@ class MenuLayout extends Component<Props, State> {
 
     menuSelect = (item:any)=>{
         this.setState({
-            defaultSelected:[item.key.toString()]
+            selectedKeys:[item.key.toString()]
         })
     }
 
     menuFilter = (menuList:[],pathname:string) =>{
         let _arr:any = []
         menuList.forEach((item:any) =>{
-            if(item.children.length){
+            if(item.children && item.children.length){
                 _arr = _arr.concat(item.children)
                 delete item.children
                 _arr.push(item)
@@ -49,15 +47,34 @@ class MenuLayout extends Component<Props, State> {
                 _arr.push(item)
             }
         });
-        const _filterObject = _arr.find((item:any) => pathname.indexOf(item.name) > -1) || _arr[0];
+        // console.log(pathname,_arr)
+        const _filterObject = _arr.find((item:any) => pathname.indexOf(item.path) > -1) || _arr[0];
+        console.log(pathname,_arr,_filterObject)
         if(_filterObject){
-            this.setState({
-                defaultSelected:[_filterObject.id.toString()],
+            this.setState((state)=>({
+                selectedKeys:[_filterObject.id.toString()],
                 openKeys:[(_filterObject.parentId || _filterObject.id).toString()]
-            })
+            }))
         }
     }
 
+    iconShow = (id:number) => {
+        switch (id){
+            case 1:
+                return <FundProjectionScreenOutlined />;
+                break;
+            case 2:
+                return <CarOutlined />;
+                break;
+            case 3:
+                return <ProjectOutlined />;
+                break;
+            case 4:
+                return <TeamOutlined />;
+                break;
+
+        }
+    }
 
     componentDidMount() {
         const { location:{ pathname },menuList } = this.props;
@@ -66,24 +83,22 @@ class MenuLayout extends Component<Props, State> {
 
     render() {
         const { menuList,collapsed } = this.props;
-        const { openKeys,defaultSelected } = this.state;
+        const { openKeys,defaultSelected,selectedKeys } = this.state;
         return (
             <Fragment>
-                <div className="menu-logo-wrapper">
-                    <img src={ collapsed ? logo_mini :logo } alt="意能通logo" />
-                </div>
                 <Menu theme="dark"
                     mode="inline"
                     defaultSelectedKeys={ defaultSelected }
                     openKeys={ openKeys }
+                    selectedKeys={ selectedKeys }
                     onOpenChange={ this.onOpenChange }>
                     {
                         menuList.map((item:any)=>{
-                            if(item.children.length){
+                            if(item.children && item.children.length){
                                 return (
                                     <SubMenu title={
                                         <span>
-                                          <Icon type="user" />
+                                          <TeamOutlined type="user" />
                                           <span>{ item.title }</span>
                                         </span>
                                     } key={ item.id }>
@@ -99,7 +114,7 @@ class MenuLayout extends Component<Props, State> {
                             }else{
                                return (
                                     <Menu.Item key={ item.id } onClick={ this.menuSelect }>
-                                        <Icon type="user" />
+                                        { this.iconShow(item.id) }
                                         <span><Link to={ "/home/"+ item.path }>{ item.title }</Link></span>
                                     </Menu.Item>
                                )
@@ -119,7 +134,8 @@ interface Props extends RouteComponentProps {
 
 interface State {
     openKeys:string[],
-    defaultSelected:string[]
+    defaultSelected:string[],
+    selectedKeys:string[]
 }
 
 const mapStateToProps = (state:any) => ({

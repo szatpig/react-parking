@@ -2,7 +2,13 @@
 
 import { lazy } from 'react'
 
-// const SceneList  = lazy(() => import('./scene/sceneList'));
+const Account  = lazy(() => import('./account/index'));
+
+const Coupon  = lazy(() => import('./coupon'));
+
+const Verification  = lazy(() => import('./verification'));
+
+const White  = lazy(() => import('./white'));
 
 const NoMatch = lazy(() => import('./../error/404'));
 
@@ -17,17 +23,46 @@ interface routes {
 }
 
 export default [
-    // {
-    //     path:'/sceneManager/sceneList',
-    //     component:SceneList,
-    //     meta:{
-    //         collapsed:true,
-    //         title:{
-    //             mainMenu:'话术配置',
-    //             secondMenu:'场景配置'
-    //         }
-    //     }
-    // },
+    {
+        path:'/white',
+        component:White,
+        meta:{
+            collapsed:true,
+            title:{
+                mainMenu:'白名单管理'
+            }
+        }
+    },
+    {
+        path:'/verification',
+        component:Verification,
+        meta:{
+            collapsed:true,
+            title:{
+                mainMenu:'停车券管理'
+            }
+        }
+    },
+    {
+        path:'/coupon',
+        component:Coupon,
+        meta:{
+            collapsed:true,
+            title:{
+                mainMenu:'核销记录'
+            }
+        }
+    },
+    {
+        path:'/account',
+        component:Account,
+        meta:{
+            collapsed:true,
+            title:{
+                mainMenu:'个人账户设置'
+            }
+        }
+    },
     {
         path:'/system/departManage/add/info',
         component:NoMatch,

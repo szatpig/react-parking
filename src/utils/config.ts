@@ -1,6 +1,8 @@
 // Created by szatpig at 2019/8/22.
 let config:ConfigInterface = {};
-const hostname = window.location.host.split('.')[0];
+
+//统一前端面加反斜杠
+const hostname = window.location.host.split('.')[0]
 /*
 @base: 基础接口 api域名
 @registerPath: 单独处理-申请列表-开通正式  调用外呼前台api域名
@@ -8,57 +10,42 @@ const hostname = window.location.host.split('.')[0];
 @moneyBase： 单独处理-收款记录 调用充值模块的api域名
 */
 
-//dev 环境192.168.88.54:7302   qa环境192.168.88.54:7303  uat环境192.168.88.54:7304   本地自动会走dev环境
-const port = window.location.port === '7303' ? 'qa' : (window.location.port === '7304' ? 'uat' : 'dev');
-
-let base = '',
-        registerPath = '',
-        moneyBase = '',
-        voicePath = 'http://192.168.88.71/',
-        listenAudioPath = 'http://192.168.88.71/outbound/' + port + '/audio/upAndCompose/',
-        iaAudioPath = 'http://192.168.88.71/',
-        downTempPath = 'http://192.168.88.71/outbound/' + port + '/download';
+let base='',
+    prefix='/industryUser',
+    api = process.env.NODE_ENV === 'production' ? '':'/api',
+    version='202003091319',
+    upload = '',
+    exeUrl=""
 
 
-switch (hostname) {
-    case 'outbound': //线上的地址
-        base = '/outbound-cms';
-        registerPath = '/outplan/';
-        voicePath = 'https://file.ynt.ai/';
-        listenAudioPath = 'https://file.ynt.ai/outbound/product/audio/upAndCompose/';
-        iaAudioPath = 'https://file.ynt.ai/';
-        downTempPath = 'https://file.ynt.ai/outbound/product/download';
-        break;
-    case 'localhost':
+switch (hostname){
     case '10':
-    case '127': //我们本地的地址
-        base = 'http://192.168.88.54:7304/outbound-cms';
-        // base = 'http://10.1.50.235:8002/outbound-cms';
-        registerPath = 'http://192.168.88.54:7304/outplan/';
+    case '192':
+    case 'localhost':
+        base = 'http://192.168.88.51:8085';
+        // base = 'http://10.1.20.193:8080';
+
+        exeUrl = 'http://192.168.88.54'
+        // exeUrl='http://10.1.20.182'
         break;
-    default: //默认各种测试环境的地址
-        base = '/outbound-cms'; /*更改路径注意点：修改listenAudioPath中的dev也要换掉*/
-        registerPath = '/outplan/';
+    default:
+        base = '';
+        break;
 }
 
 config = {
-    base: 'http://192.168.88.54:7304/outbound-cms',
-    registerPath: registerPath,
-    voicePath: voicePath,
-    moneyBase: moneyBase,
-    listenAudioPath: listenAudioPath,
-    iaAudioPath: iaAudioPath,
-    downTempPath: downTempPath,
+    base: base + prefix,
+    // upload:base + upload,
+    upload:exeUrl,
+    version,
+    exeUrl
 }
 
 interface ConfigInterface {
     base?: string,
-    registerPath?: string,
-    voicePath?: string,
-    moneyBase?: string,
-    listenAudioPath?: string,
-    iaAudioPath?: string,
-    downTempPath?: string,
+    upload?: string,
+    version?: string,
+    exeUrl?: string
 }
 
 export default config;

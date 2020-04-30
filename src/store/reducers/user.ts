@@ -10,7 +10,7 @@ import {
 const initState:State = {
     token:sessionStorage.getItem('USER_TOKEN') || null,
     menuList: sessionStorage.getItem('USER_MENU_LIST') && JSON.parse(sessionStorage.getItem('USER_MENU_LIST') || '') || [],
-    info:sessionStorage.getItem('USER_INFO') || null,
+    info: sessionStorage.getItem('USER_INFO') && JSON.parse(sessionStorage.getItem('USER_INFO') || '') || {},
 };
 
 let userReducer = (state:State = initState,action:any):any => {
@@ -19,7 +19,7 @@ let userReducer = (state:State = initState,action:any):any => {
             return {
                 token:null,
                 menuList:[],
-                info:null
+                info:{}
             };
         case USER_TOKEN:
             return Object.assign({},state,action.payload);

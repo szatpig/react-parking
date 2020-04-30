@@ -3,7 +3,7 @@ import React, {Component, lazy } from 'react'
 import { Redirect } from 'react-router';
 import { connect } from 'react-redux'
 
-import { Layout, Menu, Icon } from 'antd';
+import { Layout, Menu } from 'antd';
 
 const { Header, Sider, Content } = Layout;
 
@@ -21,16 +21,16 @@ class Home extends Component<Props, State>{
         }
         return (
             <Layout className="main-container">
-                <Sider
-                    trigger={ null }
-                    collapsible
-                    collapsed={ this.props.collapsed }
-                    className="menu-container"
-                    width={ 180 }>
-                    <MenuLayout />
-                </Sider>
+                <HeaderLayout { ...this.props.match } />
                 <Layout className="wrapper-container">
-                    <HeaderLayout { ...this.props.match } />
+                    <Sider
+                            trigger={ null }
+                            collapsible
+                            collapsed={ this.props.collapsed }
+                            className="menu-container"
+                            width={ 180 }>
+                        <MenuLayout />
+                    </Sider>
                     <ErrorBoundary>
                         <ContentLayout { ...this.props.match } />
                     </ErrorBoundary>
