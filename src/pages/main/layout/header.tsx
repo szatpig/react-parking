@@ -1,7 +1,7 @@
 // Created by szatpig at 2019/8/20.
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { RouteComponentProps, withRouter } from 'react-router'
+import { RouteComponentProps, withRouter } from 'react-router-dom'
 import { Link } from 'react-router-dom';
 
 // import { useHistory } from 'react-router-dom';
@@ -60,7 +60,6 @@ class HeaderLayout extends Component<Props, State> {
 
     render() {
         const { name } = this.props.userInfo;
-        console.log(this.props.history)
         const content = (
                 <div>
                     <p onClick={ this.routerLink }>个人信息</p>

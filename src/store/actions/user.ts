@@ -3,7 +3,7 @@ import { USER_TOKEN, LOGIN_REQUEST,USER_LOGIN_OUT } from './../actionTypes'
 import { ActionCreator } from './../ActionCreator'
 
 const userLoginRequestAction = (payload:any) => ActionCreator(LOGIN_REQUEST)(payload)
-const userLoginOutAction = (payload:any) => ActionCreator(USER_LOGIN_OUT)(payload)
+const userLoginOutAction = () => ActionCreator(USER_LOGIN_OUT)()
 
 export {
     userLoginRequestAction,

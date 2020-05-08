@@ -4,7 +4,6 @@ import { createBrowserHistory } from 'history';
 import { stringify } from 'qs'
 import store from './../store'
 
-
 import { message } from 'antd';
 
 const history = createBrowserHistory();

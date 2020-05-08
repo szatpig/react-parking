@@ -1,7 +1,7 @@
 // Created by szatpig at 2019/8/20.
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
-import { RouteComponentProps, withRouter } from 'react-router'
+import { RouteComponentProps, withRouter } from 'react-router-dom'
 import { Link } from 'react-router-dom';
 
 import { Menu } from 'antd';

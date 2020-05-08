@@ -1,15 +1,200 @@
 // Created by szatpig at 2020/4/30.
 import React, {useState, useEffect} from 'react';
+import moment from 'moment';
+
+import { Form, Input, Button, Modal, DatePicker, Select, Table } from 'antd';
+
+import { equityVerifyRecordList, equityVerifyRecordStatistics, equityVerifyRecordExport } from '@/api/verification-api'
+
+import Dayjs from 'dayjs';
+
+const { RangePicker } = DatePicker;
+const { Option } = Select;
+
+const columns = [
+    {
+        title: '停车场名称',
+        dataIndex: 'parkingName',
+        width: 120,
+    },
+    {
+        title: '核销类型',
+        dataIndex: 'verifyType',
+    },
+    {
+        title: '券码',
+        dataIndex: 'couponNo'
+    },
+    {
+        title: '车牌号',
+        dataIndex: 'plateNo',
+        key:'plateNo',
+    },
+    {
+        title: '入场时间',
+        dataIndex: 'entranceTime'
+    },
+    {
+        title: '出场时间',
+        dataIndex: 'exportTime'
+    },
+    {
+        title: '停车总额/元',
+        dataIndex: 'equityAmount',
+        key:'equityAmount',
+    },
+    {
+        title: '核销金额/元',
+        dataIndex: 'verifyAmount'
+    },
+    {
+        title: '核销时间',
+        dataIndex: 'verifyTime'
+    }
+];
 
 function Verification() {
-    // const [count, setCount] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const [summaryData,setSummaryData] = useState({
+        verifyRecordCount:0,
+        verifyRecordAmount:0
+    });
+    const [tableData,setTableData] = useState<object[]>([]);
+    const [page,setPage] = useState({
+        current:1,
+        pageSize:30,
+        total:0
+    });
+
+    const [ form ] = Form.useForm();
+    const onFormLayoutChange = ({  }) => {
+        // setFormLayout(layout);
+    };
+
+    const handleExport = (values:object) => {
+        let { parkingName, verifyType, couponNo, plateNo,time } = form.getFieldsValue(),
+                [startTime,endTime] = time || []
+        let _data ={
+            parkingName,
+            verifyType,
+            couponNo,
+            plateNo,
+            startTime:Dayjs(startTime).format('YYYY-MM-DD HH:mm:ss'),
+            endTime:Dayjs(endTime).format('YYYY-MM-DD HH:mm:ss'),
+        }
+        equityVerifyRecordExport(_data).then((data:any)=>{
+
+        })
+    }
+
+    const handleSearch = (values:any) => {
+        let { parkingName, verifyType, couponNo, plateNo,time } = values,
+                [startTime,endTime] = time || []
+        let _data ={
+            parkingName,
+            verifyType,
+            couponNo,
+            plateNo,
+            startTime:Dayjs(startTime).format('YYYY-MM-DD HH:mm:ss'),
+            endTime:Dayjs(endTime).format('YYYY-MM-DD HH:mm:ss'),
+        }
+        list(_data)
+    }
+
+    const list = (args?:object) => {
+        let { current,pageSize } = page
+        let _data={
+            pageNum:current,
+            pageSize,
+            ...args
+        };
+        equityVerifyRecordList(_data).then((data:any) => {
+            setTableData(data.data.list);
+            setPage({
+                ...page,
+                total:data.data.total
+            })
+        })
+    };
+
+    const pagesChange = (current:number,pageSize:any) => {
+        setPage({
+            ...page,
+            current,
+            pageSize
+        });
+        form.submit();
+    };
+
+    const getStatistics = () => {
+        let _data ={}
+        equityVerifyRecordStatistics(_data).then((data:any) => {
+            setSummaryData(data.data)
+        })
+    }
 
     useEffect(() => {
         //do something
-    });
+        list();
+        getStatistics();
+    },[1]);
 
     return (
-            <div className="verification-container">核销</div>
+        <div className="verification-container">
+            <div className="breadcrumb-container left-border line">
+                核销记录
+            </div>
+            <div className="search-container">
+                <div className="input-cells">
+                    <Form
+                            layout="inline"
+                            onValuesChange={ onFormLayoutChange }
+                            form = { form }
+                            onFinish={ handleSearch }>
+                        <Form.Item label="停车场名称" name="parkingName">
+                            <Input placeholder="请输入停车场名称" maxLength={ 18 } />
+                        </Form.Item>
+                        <Form.Item  label="核销类型" name="verifyType">
+                            <Select
+                                    placeholder="请选择"
+                                    allowClear>
+                                <Option value="0">权益金额核销</Option>
+                                <Option value="1">优惠券核销</Option>
+                            </Select>
+                        </Form.Item>
+                        <Form.Item label="券码" name="couponNo">
+                            <Input placeholder="请输入券码" maxLength={ 18 } />
+                        </Form.Item>
+                        <Form.Item label="车牌号" name="plateNo">
+                            <Input placeholder="请输入车牌号" maxLength={ 8 }/>
+                        </Form.Item>
+                        <Form.Item  label="发放时间" name="time">
+                            <RangePicker ranges={{
+                                "今天": [moment(), moment()],
+                                '近一个月': [moment().startOf('month'), moment().endOf('month')],
+                            }} showTime format="YYYY-MM-DD HH:mm:ss" />
+                        </Form.Item>
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit">查询</Button>
+                            <Button type="primary" htmlType="button" style={{ marginLeft:"12px" }} onClick={ handleExport }>导出</Button>
+                        </Form.Item>
+                    </Form>
+                </div>
+            </div>
+            <div className="summary-container flex">
+                <span className="flex column">
+                    <i>核销笔数</i>
+                    <i>{ summaryData.verifyRecordCount }</i>
+                </span>
+                <span className="flex column">
+                    <i>交易交易（折后）/元</i>
+                    <i>{ summaryData.verifyRecordAmount }</i>
+                </span>
+            </div>
+            <div className="table-container">
+                <Table rowKey="id" bordered columns={ columns } dataSource={ tableData } pagination={{ onChange:pagesChange,...page }}/>
+            </div>
+        </div>
     );
 }
 

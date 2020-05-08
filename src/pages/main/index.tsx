@@ -1,6 +1,6 @@
 // Created by szatpig at 2019/8/20.
 import React, {Component, lazy } from 'react'
-import { Redirect } from 'react-router';
+import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux'
 
 import { Layout, Menu } from 'antd';

@@ -24,7 +24,7 @@ let userReducer = (state:State = initState,action:any):any => {
         case USER_TOKEN:
             return Object.assign({},state,action.payload);
         case USER_INFO:
-            return Object.assign({},state,action.payload);
+            return Object.assign({},state,{ info:action.payload });
         case USER_MENU_LIST:
             return Object.assign({},state,{ menuList:action.payload });
         default:

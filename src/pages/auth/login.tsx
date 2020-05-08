@@ -8,7 +8,7 @@ import { FormInstance } from 'antd/lib/form';
 import { EncryptStr } from '@/utils/utils'
 import md5 from "md5"
 
-import { userLoginRequestAction } from '@/store/actions/user'
+import { userLoginRequestAction, userLoginOutAction } from '@/store/actions/user'
 import EnhanceIdentifyCode from '@/components/IdentifyCode'
 
 import { getPublicKey } from '@/api/login-api'
@@ -27,6 +27,7 @@ class Login extends Component<UserFormProps, State> {
 
     componentDidMount() {
         sessionStorage.clear();
+        userLoginOutAction();
         let _data ={
 
         }
@@ -114,7 +115,6 @@ class Login extends Component<UserFormProps, State> {
                     </div>
                 </div>
             </div>
-
         )
     }
 }
@@ -124,6 +124,7 @@ interface UserFormProps{
     password: string;
     userToken:string;
     userLoginRequestAction?: any;
+    userLoginOutAction:()=>void
     history:any,
     error?:number
 }
@@ -139,7 +140,8 @@ const mapStateToProps = (state:any) => ({
 })
 
 const mapDispatchToProps = {
-    userLoginRequestAction
+    userLoginRequestAction,
+    userLoginOutAction
 }
 
 export default connect(mapStateToProps,mapDispatchToProps)(Login)

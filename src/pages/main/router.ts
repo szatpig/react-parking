@@ -5,10 +5,13 @@ import { lazy } from 'react'
 const Account  = lazy(() => import('./account/index'));
 
 const Coupon  = lazy(() => import('./coupon'));
+const CouponEquity  = lazy(() => import('./coupon/equity'));
 
 const Verification  = lazy(() => import('./verification'));
 
 const White  = lazy(() => import('./white'));
+const Equity  = lazy(() => import('./white/equity'));
+const EquityClass  = lazy(() => import('./white/class'));
 
 const NoMatch = lazy(() => import('./../error/404'));
 
@@ -34,12 +37,42 @@ export default [
         }
     },
     {
+        path:'/white/equity/:type',
+        component:Equity,
+        meta:{
+            collapsed:true,
+            title:{
+                mainMenu:'权益金管理'
+            }
+        }
+    },
+    {
+        path:'/white/class',
+        component:EquityClass,
+        meta:{
+            collapsed:true,
+            title:{
+                mainMenu:'权益等级管理'
+            }
+        }
+    },
+    {
         path:'/verification',
         component:Verification,
         meta:{
             collapsed:true,
             title:{
-                mainMenu:'停车券管理'
+                mainMenu:'核销记录'
+            }
+        }
+    },
+    {
+        path:'/coupon/equity/:type',
+        component:CouponEquity,
+        meta:{
+            collapsed:true,
+            title:{
+                mainMenu:'停车券发放'
             }
         }
     },
@@ -49,7 +82,7 @@ export default [
         meta:{
             collapsed:true,
             title:{
-                mainMenu:'核销记录'
+                mainMenu:'停车券管理'
             }
         }
     },
