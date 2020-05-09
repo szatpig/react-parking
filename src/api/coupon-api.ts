@@ -38,12 +38,27 @@ export const equityConfigDelete= (data:any) => fetch(site.base + '/equityConfig/
     data
 });
 
-export const grantEquity= (data:any) => fetch(site.base + '/customerEquity/grantEquity' ,{
+export const confirmRevokeCoupon= (data:any) => fetch(site.base + '/customerCoupon/confirmRevokeCoupon' ,{
     type: 'post',
     data
 });
 
-export const importEquity= (data:any) => fetch(site.base + '/customerEquity/importEquity' ,{
+export const getProvideConfirmData= (data:any) => fetch(site.base + '/customerCoupon/getProvideConfirmData' ,{
+    type: 'post',
+    data
+});
+
+export const provideCouponOne= (data:any) => fetch(site.base + '/customerCoupon/provideCouponOne' ,{
+    type: 'post',
+    data
+});
+
+export const importDataConfirm= (data:any) => fetch(site.base + '/customerCoupon/importDataConfirm' ,{
+    type: 'post',
+    data
+});
+
+export const importCouponBatch= (data:any) => fetch(site.base + '/customerCoupon/importCouponBatch' ,{
     type: 'post',
     data
 });

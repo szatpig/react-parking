@@ -1,16 +1,16 @@
 // Created by szatpig at 2020/5/6.
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useHistory, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux'
 
 import { LeftOutlined, UploadOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { Form, Input, Select, Button, DatePicker, Table, Checkbox, Cascader, Upload, Modal   } from 'antd';
+import { Form, Input, Select, Button, DatePicker, Table, Checkbox, Cascader, Upload, Modal, message } from 'antd';
 
 import Dayjs from 'dayjs';
 
 import site from '@/utils/config'
 import { getParkingDetailByBusinessId } from '@/api/common-api'
-import {equityConfigList, grantValid , grantEquity, parseWhitelist, importEquity} from '@/api/white-api'
+import {equityConfigList, grantConfirmData , grantEquity, parseWhitelist, importEquity} from '@/api/white-api'
 import region from '@/json/region'
 
 const { Option } = Select;
@@ -40,10 +40,12 @@ const columns = [
         title: '停车场名称',
         dataIndex: 'parkingName',
         width: 120,
+        fixed:true,
     },
     {
         title: '地址',
         dataIndex: 'address',
+        ellipsis:true
     },
     {
         title: '所属业主',
@@ -72,10 +74,12 @@ const columns = [
     {
         title: '起始日期',
         dataIndex: 'startDate',
+        width:160
     },
     {
         title: '终止日期',
         dataIndex: 'endDate',
+        width:160
     }
 ];
 
@@ -87,30 +91,39 @@ interface TableProps {
 const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
     const [selectedRow, setSelectedRow] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [tableData,setTableData] = useState<object[]>([])
+    const [tableData,setTableData] = useState<object[]>([]);
+    const [tableSelect, setTableSelect] = useState(false);
 
     const [ form ] = Form.useForm();
     const onFormLayoutChange = ({  }) => {
         // setFormLayout(layout);
     };
 
-    const triggerChange = (value:object[]) => {
+    const triggerChange = (value:any) => {
         if (onChange) {
             onChange(value);
         }
     };
 
     const onSelectChange = (selectedRowKeys:any,selectedRows:any) => {
-        console.log('selectedRowKeys changed: ', selectedRowKeys,selectedRows);
-        setSelectedRow(selectedRows);
+        setSelectedRow(selectedRowKeys);
         triggerChange(selectedRowKeys)
     };
-
     const checkboxChange = (e:any) => {
-        console.log(`checked = ${e.target.checked}`);
+        setTableSelect(e.target.checked);
+        if(e.target.checked){
+            triggerChange(form.getFieldsValue())
+        }else{
+            triggerChange(selectedRow)
+        }
     }
+    const onSelectAll = (row:any) => ({
+        disabled: tableSelect, // Column configuration not to be checked
+    })
+
     const rowSelection = {
         onChange: onSelectChange,
+        getCheckboxProps:onSelectAll
     };
 
     const handleSearch = (values:{ parkingName?:string,region?:any[],address?:string,owner?:string }) => {
@@ -125,14 +138,21 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
             county
         }
         list(_data)
+        if(tableSelect){
+            triggerChange(values)
+        }
     };
 
     const list = (args?:object) => {
         let _data={
             ...args
         };
+        setLoading(true)
         getParkingDetailByBusinessId(_data).then((data:any) => {
             setTableData(data.data.list);
+            setLoading(false)
+        }).catch(err => {
+            setLoading(false)
         })
     };
 
@@ -169,7 +189,14 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
                 </div>
             </div>
             <div className="table-container">
-                <Table rowKey="id" bordered rowSelection={ rowSelection } columns={ columns } dataSource={ tableData } />
+                <Table rowKey="id"
+                       bordered
+                       rowSelection={ rowSelection }
+                       columns={ columns }
+                       loading={ loading }
+                       dataSource={ tableData }
+                       scroll={{ x: 1270,y:250 }}
+                       pagination = {false} />
             </div>
         </>
     )
@@ -180,25 +207,26 @@ function Equity(props:Props) {
     const params:{type:string} = useParams();
     const [ submitForm ] = Form.useForm();
     const [modal, contextHolder] = Modal.useModal();
-
     const [equityList, setEquityList] = useState([]);
+    const [fileList, setFileList] = useState<any[]>([]);
 
     const{ userToken } = props
 
-
-
     const onFinish = (values:any) => {
-        console.log(values);
-        const { plateNo,plateColor,equityConfigId,whitelistUri,expirationTime,parkIdList } =  values;
+        let { plateNo,plateColor,equityConfigId,whitelistUri,expirationTime,parkIdList } =  values,
+                parkIdListSearch = !Array.isArray(parkIdList)? parkIdList:'';
+        parkIdList = Array.isArray(parkIdList)?parkIdList:[]
         if(params.type == 'single'){
             let _data ={
                 plateNo,
                 plateColor,
                 equityConfigId,
                 expirationTime:Dayjs(expirationTime).format('YYYY-MM-DD 23:59:59'),
-                parkIdList
+                parkIdList,
+                parkIdListSearch,
             }
-            grantEquity(_data).then((data:any) => {
+            grantConfirmData(_data).then((data:any) => {
+                const { industryUserName, equityBalance, currentAvailableCount, equityUserCount, grandCount, newCount, totalAmount } = data.data
                 modal.confirm({
                     icon:<ExclamationCircleOutlined />,
                     title: '发放确认',
@@ -209,28 +237,29 @@ function Equity(props:Props) {
                                 <div className="import-cell">
                                     <p>行业信息</p>
                                     <div className="import-content">
-                                        <p><span>行业用户名称：</span>某某某某某某某有限公司</p>
-                                        <p><span>权益余额：</span>40000元</p>
-                                        <p><span>当前有效白名单：</span>100个</p>
-                                        <p><span>白名单上限：</span>110个</p>
+                                        <p><span>行业用户名称：</span>{ industryUserName }</p>
+                                        <p><span>权益余额：</span>{ equityBalance }元</p>
+                                        <p><span>当前有效白名单：</span>{ currentAvailableCount } 个</p>
+                                        <p><span>白名单上限：</span>{ equityUserCount } 个</p>
                                     </div>
                                 </div>
                                 <div className="import-cell">
                                     <p>导入信息</p>
                                     <div className="import-content">
-                                        <p><span>共计：</span>某某某某某某某有限公司</p>
-                                        <p><span>其中新增白名单：</span>0个</p>
-                                        <p><span>权益余额总计：</span>40000元</p>
+                                        <p><span>共计：</span>{ grandCount } 笔</p>
+                                        <p><span>其中新增白名单：</span>{ newCount }个</p>
+                                        <p><span>权益余额总计：</span>{ totalAmount }元</p>
                                     </div>
                                 </div>
                             </div>
                     ),
                     onOk: () => {
-                        handleDialogConfirm({
+                        handleDialogSingleConfirm({
                             equityConfigId,
                             whitelistUri,
                             expirationTime,
-                            parkIdList
+                            parkIdList,
+                            parkIdListSearch
                         })//确认按钮的回调方法，在下面
                     },
                     onCancel() {
@@ -243,9 +272,11 @@ function Equity(props:Props) {
                 whitelistUri,
                 equityConfigId,
                 expirationTime:Dayjs(expirationTime).format('YYYY-MM-DD 23:59:59'),
-                parkIdList
+                parkIdList,
+                parkIdListSearch
             }
             parseWhitelist(_data).then((data:any) => {
+                const { industryUserName, equityBalance, currentAvailableCount, equityUserCount, grandCount, newCount, totalAmount } = data.data
                 modal.confirm({
                     icon:<ExclamationCircleOutlined />,
                     title: '导入确认',
@@ -256,18 +287,18 @@ function Equity(props:Props) {
                                 <div className="import-cell">
                                     <p>行业信息</p>
                                     <div className="import-content">
-                                        <p><span>行业用户名称：</span>某某某某某某某有限公司</p>
-                                        <p><span>权益余额：</span>40000元</p>
-                                        <p><span>当前有效白名单：</span>100个</p>
-                                        <p><span>白名单上限：</span>110个</p>
+                                        <p><span>行业用户名称：</span>{ industryUserName }</p>
+                                        <p><span>权益余额：</span>{ equityBalance }元</p>
+                                        <p><span>当前有效白名单：</span>{ currentAvailableCount }个</p>
+                                        <p><span>白名单上限：</span>{ equityUserCount }个</p>
                                     </div>
                                 </div>
                                 <div className="import-cell">
                                     <p>导入信息</p>
                                     <div className="import-content">
-                                        <p><span>共计：</span>某某某某某某某有限公司</p>
-                                        <p><span>其中新增白名单：</span>0个</p>
-                                        <p><span>权益余额总计：</span>40000元</p>
+                                        <p><span>共计：</span>{ grandCount } 笔</p>
+                                        <p><span>其中新增白名单：</span>{ newCount }个</p>
+                                        <p><span>权益余额总计：</span>{ totalAmount }元</p>
                                     </div>
                                 </div>
                             </div>
@@ -277,7 +308,8 @@ function Equity(props:Props) {
                             equityConfigId,
                             whitelistUri,
                             expirationTime,
-                            parkIdList
+                            parkIdList,
+                            parkIdListSearch
                         })//确认按钮的回调方法，在下面
                     },
                     onCancel() {
@@ -287,6 +319,12 @@ function Equity(props:Props) {
             })
         }
     };
+
+    const handleDialogSingleConfirm = (_data:any) => {
+        grantEquity(_data).then((data:any) => {
+
+        })
+    }
 
     const handleDialogConfirm = (_data:any) => {
         importEquity(_data).then((data:any) => {
@@ -304,21 +342,33 @@ function Equity(props:Props) {
         })
     }
 
-    const handleUpload= ({ file,fileList,event }:any) => {
-        const { response } = file;
-        if(response){
-            if(response.status == 1000){
-
-            }
-        }
-        console.log(response);
+    const onFileChange= ({ file,fileList,event }:any) => {
+        // setFileList(fileList);
+        // console.log(file);
     };
 
     const handleRemove= ({ file,fileList,event }:any) => {
-        console.log(file);
+        setFileList([]);
+    };
+
+    const handleBeforeUpload =(file:any,_fileList:any)=>{
+        const isLt2M = file.size / 1024 / 1024 < 2;
+        if (!isLt2M) {
+            message.error( '超过2M限制，不允许上传');
+            return Promise.reject(false);
+        }
+        const fileType = '.xls, .xlsx, .csv';
+        if(fileType.indexOf(file.name.split(/\./)[1]) === -1){
+            message.error( '仅支持上传.xls, .xlsx, .csv格式');
+            return Promise.reject(false);
+        }
+        setFileList([file]);
+        return true ;
     };
 
     const normFile = ({ file,fileList,event }:any) => {
+        if(file.status !== 'uploading') return false;
+        if(file.status === 'removed') return ;
         const { response } = file;
         if(response){
             if(response.status == 1000){
@@ -373,19 +423,25 @@ function Equity(props:Props) {
                  </Form.Item>
                  {
                      params.type == 'batch' &&
-                     <Form.Item name="whitelistUri" label="车牌号" getValueFromEvent={ normFile } className="upload-container" wrapperCol={{ span:18 }} rules={[{ required: true }]}>
+                     <Form.Item name="whitelistUri"
+                            label="车牌号"
+                            getValueFromEvent={ normFile }
+                            className="upload-container"
+                            wrapperCol={{ span:18 }}
+                            rules={[{ required: true }]}>
                          <Upload name="file"
+                                 accept=".xls, .xlsx, .csv"
                                  className="upload-wrapper"
                                  action={ site.upload + "/upload/etc-coupon"}
                                  data={{ type:"etc-equity" }}
                                  headers = {{ token:userToken }}
+                                 fileList={ fileList }
+                                 beforeUpload = { handleBeforeUpload }
                                  onRemove = { handleRemove }
-                                 onChange={ handleUpload }>
+                                 onChange={ onFileChange }>
                              <Button>选择文件</Button> <span className="upload-template">请按照<i>模板</i>上传</span>
                              <p className="upload-txt">支持.xls, .xlsx, .csv格式长传，单次上传上限1000行，请勿删除模板表头</p>
                          </Upload>
-
-
                      </Form.Item>
                  }
                  <Form.Item name="expirationTime" label="截止时间" rules={[{ required: true }]}>

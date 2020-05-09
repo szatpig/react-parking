@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 
 import {Form, Input, Button, Modal, DatePicker, Select, Table, Tag, message} from 'antd';
-import { whiteList,equityConfigList, confirmRevokeEquity, revokeEquitySubmit } from '@/api/white-api'
+import { whiteList, equityConfigList, grantValid, confirmRevokeEquity, revokeEquitySubmit } from '@/api/white-api'
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
@@ -36,37 +36,50 @@ const columns = [
     {
         title: '券码',
         dataIndex: 'couponNo',
-        width: 120,
+        ellipsis:true,
+        width: 160,
+        fixed:true
     },
     {
         title: '车牌号',
         dataIndex: 'plateNo',
+        width: 100
     },
     {
         title: '车牌颜色',
         dataIndex: 'plateColor',
+        width: 120,
         render:(cell:number) => (
              <span>{ colorList[cell] }</span>
         )
     },
     {
         title: '权益等级',
+        width: 120,
         dataIndex: 'equityLevel',
     },
     {
         title: '权益金额/元',
         dataIndex: 'equityAmount',
+        ellipsis:true,
+        width:120,
     },
     {
         title: '权益停车场',
         dataIndex: 'parkingNames',
+        ellipsis:true,
+        width:120,
     },
     {
         title: '发放时间',
+        ellipsis:true,
+        width:160,
         dataIndex: 'equityGrantTime',
     },
     {
         title: '截止时间',
+        ellipsis:true,
+        width:160,
         dataIndex: 'expirationTime',
     },
     {
@@ -79,6 +92,8 @@ const columns = [
     },
     {
         title: '最后使用时间',
+        ellipsis:true,
+        width:160,
         dataIndex: 'lastUsageTime',
     },
     {
@@ -92,12 +107,13 @@ const columns = [
 
 function White() {
     const [loading, setLoading] = useState(false);
+    const [buttonDisabled, setButtonDisabled] = useState(true);
     const [equityList, setEquityList] = useState([]);
     const [selectedRow, setSelectedRow] = useState([]);
     const [tableData,setTableData] = useState<object[]>([])
     const [page,setPage] = useState({
         current:1,
-        pageSize:30,
+        pageSize:20,
         total:0
     });
     const [show, setShow] = useState(false);
@@ -182,12 +198,16 @@ function White() {
             pageSize,
             ...args
         };
+        setLoading(true)
         whiteList(_data).then((data:any) => {
             setTableData(data.data.customerEquityList.list);
             setPage({
                 ...page,
                 total:data.data.customerEquityList.total
             })
+            setLoading(false)
+        }).catch(err => {
+            setLoading(false)
         })
     };
 
@@ -201,11 +221,20 @@ function White() {
         })
     }
 
+    const getGrantValid = () => {
+        let _data ={}
+        grantValid(_data).then((data:any) => {
+            setButtonDisabled(data.data);
+        }).catch(err => {
+            setButtonDisabled(false);
+        })
+    }
+
     useEffect(() => {
-        //do something
         list();
         getEquityList();
-    },[1]);
+        getGrantValid();
+    },[]);
 
     return (
         <div className="white-container">
@@ -213,7 +242,7 @@ function White() {
                 白名单管理
                 <span>
                     <Button type="link" href={'/home/white/class'}>权益等级管理</Button>
-                    <Button type="primary" href={'/home/white/equity/single'}>发放权益金</Button>
+                    <Button disabled={ !!!buttonDisabled } type="primary" href={'/home/white/equity/single'}>发放权益金</Button>
                     <Button type="primary" href={'/home/white/equity/batch'}>批量导入权益</Button>
                 </span>
             </div>
@@ -267,7 +296,7 @@ function White() {
             <div className="search-container export">
                 <div className="input-cells">
                     当前有效白名单：{ selectedRow.length }&nbsp;&nbsp;个
-                    <Button type="primary" onClick={ handleBatch } disabled={ selectedRow.length == 0 } loading={ loading }>
+                    <Button type="primary" onClick={ handleBatch } disabled={ selectedRow.length === 0 }>
                         撤销权益金
                     </Button>
                 </div>
@@ -278,7 +307,10 @@ function White() {
                         bordered
                         rowSelection={ rowSelection }
                         columns={ columns }
-                        dataSource={ tableData } pagination={{ onChange:pagesChange,...page }} />
+                        loading={ loading }
+                        dataSource={ tableData }
+                        scroll={{ x: 1500 }}
+                        pagination={{ onChange:pagesChange,...page }} />
             </div>
             <Modal
                 title="撤销原因"

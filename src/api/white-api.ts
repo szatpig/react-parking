@@ -38,11 +38,16 @@ export const equityConfigDelete= (data:any) => fetch(site.base + '/equityConfig/
     data
 });
 
+//判断列表页余额是不是够发
 export const grantValid= (data:any) => fetch(site.base + '/customerEquity/grantValid' ,{
     type: 'post',
     data
 });
 
+export const grantConfirmData= (data:any) => fetch(site.base + '/customerEquity/grantConfirmData' ,{
+    type: 'post',
+    data
+});
 
 export const grantEquity= (data:any) => fetch(site.base + '/customerEquity/grantEquity' ,{
     type: 'post',

@@ -4,15 +4,29 @@ import { useParams, useHistory, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux'
 
 import { LeftOutlined, UploadOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import {Form, Input, Select, Button, DatePicker, Table, Checkbox, Cascader, Upload, InputNumber, Modal} from 'antd';
+import {
+    Form,
+    Input,
+    Select,
+    Button,
+    DatePicker,
+    Table,
+    Checkbox,
+    Cascader,
+    Upload,
+    InputNumber,
+    Modal,
+    message
+} from 'antd';
+
+import Dayjs from 'dayjs';
 
 import site from '@/utils/config'
 import { getParkingDetailByBusinessId } from '@/api/common-api'
-import { equityConfigList, grantEquity, importEquity } from '@/api/coupon-api'
+import { getProvideConfirmData, provideCouponOne, importDataConfirm, importCouponBatch } from '@/api/coupon-api'
 import region from '@/json/region'
-import {parseWhitelist} from "@/api/white-api";
-const { Option } = Select;
 
+const { Option } = Select;
 const options = region;
 const colorList:any = ['蓝色','黄色','黑色','白色','渐变绿色','黄绿双拼色','蓝白渐变色']
 const layout = {
@@ -82,30 +96,39 @@ interface TableProps {
 const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
     const [selectedRow, setSelectedRow] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [tableData,setTableData] = useState<object[]>([])
+    const [tableData,setTableData] = useState<object[]>([]);
+    const [tableSelect, setTableSelect] = useState(false);
 
     const [ form ] = Form.useForm();
     const onFormLayoutChange = ({  }) => {
         // setFormLayout(layout);
     };
 
-    const triggerChange = (value:object[]) => {
+    const triggerChange = (value:any) => {
         if (onChange) {
-            onChange({  ...value });
+            onChange(value);
         }
     };
 
     const onSelectChange = (selectedRowKeys:any,selectedRows:any) => {
-        console.log('selectedRowKeys changed: ', selectedRowKeys,selectedRows);
-        setSelectedRow(selectedRows);
-        triggerChange(selectedRows)
+        setSelectedRow(selectedRowKeys);
+        triggerChange(selectedRowKeys)
     };
 
     const checkboxChange = (e:any) => {
-        console.log(`checked = ${e.target.checked}`);
+        setTableSelect(e.target.checked);
+        if(e.target.checked){
+            triggerChange(form.getFieldsValue())
+        }else{
+            triggerChange(selectedRow)
+        }
     }
+    const onSelectAll = (row:any) => ({
+        disabled: tableSelect, // Column configuration not to be checked
+    });
     const rowSelection = {
         onChange: onSelectChange,
+        getCheckboxProps:onSelectAll
     };
 
     const handleSearch = (values:{ parkingName?:string,region?:any[],address?:string,owner?:string }) => {
@@ -120,13 +143,20 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
                     county
                 }
         list(_data)
+        if(tableSelect){
+            triggerChange(values)
+        }
     };
     const list = (args?:object) => {
         let _data={
             ...args
         };
+        setLoading(true)
         getParkingDetailByBusinessId(_data).then((data:any) => {
             setTableData(data.data.list);
+            setLoading(false)
+        }).catch(err => {
+            setLoading(false)
         })
     };
 
@@ -163,36 +193,40 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
                 </div>
             </div>
             <div className="table-container">
-                <Table bordered rowSelection={ rowSelection } columns={ columns } dataSource={ tableData } />
+                <Table  rowKey="id"
+                        bordered
+                        rowSelection={ rowSelection }
+                        columns={ columns }
+                        loading={ loading }
+                        dataSource={ tableData }
+                        scroll={{ x: 1270,y:250 }}
+                        pagination = {false} />
             </div>
         </>
     )
 }
 
-function Equity() {
+function Equity(props:Props) {
     const history = useHistory();
     const params:{type:string} = useParams();
     const [ submitForm ] = Form.useForm();
     const [modal, contextHolder] = Modal.useModal();
+    const [fileList, setFileList] = useState<any[]>([]);
 
-    const [equityList, setEquityList] = useState([]);
-
-    useEffect(() => {
-        //do something
-    });
+    const{ userToken } = props
 
     const onFinish = (values:any) => {
         console.log(values);
-        const { plateNo,plateColor,equityConfigId,whitelistUri,expirationTime,parkIdList } =  values;
+        let { plateNo,plateColor,couponAmount,couponlistUri,expirationTime,provideCount,parkingIds } =  values,
+                parkingIdsSearch = !Array.isArray(parkingIds)? parkingIds: '';
+        parkingIds = Array.isArray(parkingIds)?parkingIds:''
         if(params.type == 'single'){
             let _data ={
-                plateNo,
-                plateColor,
-                equityConfigId,
-                expirationTime,
-                parkIdList
+                couponAmount,
+                provideCount
             }
-            grantEquity(_data).then((data:any) => {
+            getProvideConfirmData(_data).then((data:any) => {
+                const { couponTotalAmount, availableEquityAmount, industryUser } = data.data
                 modal.confirm({
                     icon:<ExclamationCircleOutlined />,
                     title: '发放确认',
@@ -203,25 +237,28 @@ function Equity() {
                                 <div className="import-cell">
                                     <p>企业信息</p>
                                     <div className="import-content">
-                                        <p><span>行业用户名称：</span>某某某某某某某有限公司</p>
-                                        <p><span>权益余额：</span>40000元</p>
+                                        <p><span>行业用户名称：</span>{ industryUser }</p>
+                                        <p><span>权益余额：</span>{ availableEquityAmount }元</p>
                                     </div>
                                 </div>
                                 <div className="import-cell">
                                     <p>导入信息</p>
                                     <div className="import-content">
-                                        <p><span>共计：</span>某某某某某某某有限公司</p>
-                                        <p><span>余额总计：</span>40000元</p>
+                                        <p><span>共计：</span>{ data.data.provideCount } 张</p>
+                                        <p><span>金额总计：</span>{ couponTotalAmount } 元</p>
                                     </div>
                                 </div>
                             </div>
                     ),
                     onOk: () => {
-                        handleDialogConfirm({
-                            equityConfigId,
-                            whitelistUri,
-                            expirationTime,
-                            parkIdList
+                        handleDialogSingleConfirm({
+                            plateNo,
+                            plateColor,
+                            couponAmount,
+                            expirationTime:Dayjs(expirationTime).format('YYYY-MM-DD 23:59:59'),
+                            provideCount,
+                            parkingIds,
+                            parkingIdsSearch
                         })//确认按钮的回调方法，在下面
                     },
                     onCancel() {
@@ -231,10 +268,13 @@ function Equity() {
             })
         }else{
             let _data ={
-                whitelistUri,
-                parkIdList
+                couponlistUri,
+                expirationTime:Dayjs(expirationTime).format('YYYY-MM-DD 23:59:59'),
+                parkingIds,
+                parkingIdsSearch
             }
-            parseWhitelist(_data).then((data:any) => {
+            importDataConfirm(_data).then((data:any) => {
+                const { couponTotalAmount, availableEquityAmount, industryUser } = data.data
                 modal.confirm({
                     icon:<ExclamationCircleOutlined />,
                     title: '导入确认',
@@ -245,25 +285,25 @@ function Equity() {
                                 <div className="import-cell">
                                     <p>企业信息</p>
                                     <div className="import-content">
-                                        <p><span>行业用户名称：</span>某某某某某某某有限公司</p>
-                                        <p><span>权益余额：</span>40000元</p>
+                                        <p><span>行业用户名称：</span>{ industryUser }</p>
+                                        <p><span>权益余额：</span>{ availableEquityAmount }元</p>
                                     </div>
                                 </div>
                                 <div className="import-cell">
                                     <p>导入信息</p>
                                     <div className="import-content">
-                                        <p><span>共计：</span>某某某某某某某有限公司</p>
-                                        <p><span>余额总计：</span>40000元</p>
+                                        <p><span>共计：</span>{ data.data.provideCount } 张</p>
+                                        <p><span>金额总计：</span>{ couponTotalAmount } 元</p>
                                     </div>
                                 </div>
                             </div>
                     ),
                     onOk: () => {
                         handleDialogConfirm({
-                            equityConfigId,
-                            whitelistUri,
-                            expirationTime,
-                            parkIdList
+                            couponlistUri,
+                            expirationTime:Dayjs(expirationTime).format('YYYY-MM-DD 23:59:59'),
+                            parkingIds,
+                            parkingIdsSearch
                         })//确认按钮的回调方法，在下面
                     },
                     onCancel() {
@@ -276,11 +316,52 @@ function Equity() {
 
     };
 
-    const handleDialogConfirm = (_data:any) => {
-        importEquity(_data).then((data:any) => {
+    const handleDialogSingleConfirm = (_data:any) => {
+        provideCouponOne(_data).then((data:any) => {
 
         })
     }
+    const handleDialogConfirm = (_data:any) => {
+        importCouponBatch(_data).then((data:any) => {
+
+        })
+    }
+
+    const onFileChange= ({ file,fileList,event }:any) => {
+        // setFileList(fileList);
+        // console.log(file);
+    };
+
+    const handleRemove= ({ file,fileList,event }:any) => {
+        setFileList([]);
+    };
+
+    const handleBeforeUpload =(file:any,_fileList:any)=>{
+        const isLt2M = file.size / 1024 / 1024 < 2;
+        if (!isLt2M) {
+            message.error( '超过2M限制，不允许上传');
+            return Promise.reject(false);
+        }
+        const fileType = '.xls, .xlsx, .csv';
+        if(fileType.indexOf(file.name.split(/\./)[1]) === -1){
+            message.error( '仅支持上传.xls, .xlsx, .csv格式');
+            return Promise.reject(false);
+        }
+        setFileList([file]);
+        return true ;
+    };
+
+    const normFile = ({ file,fileList,event }:any) => {
+        if(file.status !== 'uploading') return false;
+        if(file.status === 'removed') return ;
+        const { response } = file;
+        if(response){
+            if(response.status == 1000){
+                return response.data.fileUri
+            }
+        }
+        return ;
+    };
 
     return (
          <div className="equity-container">
@@ -317,13 +398,22 @@ function Equity() {
                   }
                  {
                      params.type == 'batch' &&
-                     <Form.Item name="plateNoList" label="车牌号" className="upload-container" wrapperCol={{span: 18}}
+                     <Form.Item name="couponlistUri" label="停车券" getValueFromEvent={ normFile } className="upload-container" wrapperCol={{span: 18}}
                                 rules={[{required: true}]}>
-                         <Upload name="logo" className="upload-wrapper" action="/upload.do" listType="picture">
+                         <Upload name="file"
+                                 accept=".xls, .xlsx, .csv"
+                                 className="upload-wrapper"
+                                 action={ site.upload + "/upload/etc-coupon"}
+                                 data={{ type:"etc-equity" }}
+                                 headers = {{ token:userToken }}
+                                 fileList={ fileList }
+                                 beforeUpload = { handleBeforeUpload }
+                                 onRemove = { handleRemove }
+                                 onChange={ onFileChange }>
                              <Button>选择文件</Button>
+                             <span className="upload-template">请按照<i>模板</i>上传</span>
+                             <p className="upload-txt">支持.xls, .xlsx, .csv格式长传，单次上传上限1000行，请勿删除模板表头</p>
                          </Upload>
-                         <span className="upload-template">请按照<i>模板</i>上传</span>
-                         <p className="upload-txt">支持.xls, .xlsx, .csv格式长传，单次上传上限1000行，请勿删除模板表头</p>
                      </Form.Item>
                  }
                  < Form.Item name="expirationTime" label="截止时间" rules={[{required: true}]}>
@@ -337,7 +427,7 @@ function Equity() {
                          <InputNumber maxLength={8} placeholder="请输入"/>&nbsp;&nbsp;&nbsp;张
                      </Form.Item>
                  }
-                 <Form.Item name="parkIdList" label="可用停车场" rules={[{ required: true,message:'至少选择一个停车场' }]} wrapperCol={{ span:18 }}>
+                 <Form.Item name="parkingIds" label="可用停车场" rules={[{ required: true,message:'至少选择一个停车场' }]} wrapperCol={{ span:18 }}>
                      <FormTable />
                  </Form.Item>
                  <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 2 }}>

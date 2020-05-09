@@ -3,14 +3,14 @@ import React, {useState, useEffect} from 'react';
 import moment from 'moment';
 
 import {Form, Input, Button, Modal, DatePicker, Select, Table, Tag, message, Checkbox} from 'antd';
-import { couponList, verifyRevokeAvailable, revokeCouponBatch } from '@/api/coupon-api'
-import {whiteList} from "@/api/white-api";
+import { couponList, confirmRevokeCoupon, verifyRevokeAvailable, revokeCouponBatch } from '@/api/coupon-api'
+
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 const equityStatusList:any = {
     0:{
-        label:'已发放',
+        label:'未领取',
         color:'blue',
     },
     1:{
@@ -37,77 +37,64 @@ const columns = [
     {
         title: '券码',
         dataIndex: 'couponNo',
-        key:'couponNo',
-        width: 120,
+        width: 160,
+        ellipsis:true,
+        fixed:true
     },
     {
         title: '车牌号',
-        dataIndex: 'plateNo',
-        key:'plateNo',
+        dataIndex: 'plateNo'
     },
     {
         title: '车牌颜色',
         dataIndex: 'plateColor',
-        key:'plateColor',
-    },
-    {
-        title: '权益等级',
-        dataIndex: 'equityLevel',
-        key:'equityLevel',
-    },
-    {
-        title: '权益金额/元',
-        dataIndex: 'equityAmount',
-        key:'equityAmount',
-    },
-    {
-        title: '权益停车场',
-        dataIndex: 'parkingNames',
-        key:'parkingNames',
-    },
-    {
-        title: '发放时间',
-        dataIndex: 'equityGrantTime',
-        key:'equityGrantTime',
-    },
-    {
-        title: '截止时间',
-        dataIndex: 'expirationTime',
-        key:'expirationTime',
-    },
-    {
-        title: '已使用金额/元',
-        dataIndex: 'equityUsed',
-        key:'equityUsed',
+        width: 120,
+        render:(cell:number) => (
+                <span>{ colorList[cell] }</span>
+        )
     },
     {
         title: '金额/元',
-        dataIndex: 'equityAmount',
-        key:'equityAmount',
+        dataIndex: 'couponAmount'
     },
     {
-        title: '最后使用时间',
-        dataIndex: 'lastUsageTime',
-        key:'lastUsageTime',
+        title: '停车场',
+        dataIndex: 'parkingNames'
+    },
+    {
+        title: '发放时间',
+        dataIndex: 'couponGrantTime'
+    },
+    {
+        title: '截止时间',
+        dataIndex: 'expirationTime'
+    },
+    {
+        title: '使用时间',
+        dataIndex: 'verifyTime'
     },
     {
         title: '状态',
-        dataIndex: 'equityStatus',
-        key:'equityStatus',
+        dataIndex: 'couponStatus',
+        render: (cell:number) => (
+                <Tag color={ equityStatusList[cell].color }>{ equityStatusList[cell].label }</Tag>
+        )
     },
 ];
 
 function Coupon() {
+    const [loading, setLoading] = useState(false);
     const [selectedRow, setSelectedRow] = useState([]);
     const [tableData,setTableData] = useState<object[]>([])
     const [page,setPage] = useState({
         current:1,
-        pageSize:30,
+        pageSize:20,
         total:0
     });
     const [show, setShow] = useState(false);
     const [revokeEquity, setRevokeEquity] = useState({
-        revokeHit:''
+        selectLine:0,
+        totalBalance:0
     });
     const [confirmLoading, setConfirmLoading] = useState(false);
 
@@ -125,9 +112,9 @@ function Coupon() {
 
     const handleBatch = ()=>{
         let _data = {
-            ids:selectedRow.map((item:any) => item.id)
+            ids:selectedRow
         }
-        verifyRevokeAvailable(_data).then((data:any) => {
+        confirmRevokeCoupon(_data).then((data:any) => {
             setRevokeEquity(data.data);
             setShow(true);
             modalForm.resetFields();
@@ -189,12 +176,16 @@ function Coupon() {
             pageSize,
             ...args
         };
+        setLoading(true)
         couponList(_data).then((data:any) => {
             setTableData(data.data.list);
             setPage({
                 ...page,
                 total:data.data.total
             })
+            setLoading(false)
+        }).catch(err => {
+            setLoading(false)
         })
     };
 
@@ -232,13 +223,13 @@ function Coupon() {
                                 '近一个月': [moment().startOf('month'), moment().endOf('month')],
                             }} showTime format="YYYY-MM-DD HH:mm:ss" />
                         </Form.Item>
-                        <Form.Item label="状态" name="equityStatus">
+                        <Form.Item label="状态" name="couponStatus">
                             <Select
                                     placeholder="请选择"
                                     allowClear>
-                                <Option value="0">未使用</Option>
-                                <Option value="1">使用中</Option>
-                                <Option value="2">核销完成</Option>
+                                <Option value="0">未领取</Option>
+                                <Option value="1">已领取</Option>
+                                <Option value="2">已核销</Option>
                                 <Option value="3">已过期</Option>
                                 <Option value="4">已撤销</Option>
                             </Select>
@@ -251,7 +242,8 @@ function Coupon() {
             </div>
             <div className="search-container export">
                 <div className="input-cells">
-                    <Checkbox onChange={ checkboxChange }>全选</Checkbox> 已选中 { selectedRow.length } 条
+                    {/*<Checkbox onChange={ checkboxChange }>全选</Checkbox> */}
+                    已选中 { selectedRow.length } 条
                     <Button type="primary" onClick={ handleBatch } disabled={ selectedRow.length == 0 }>
                         撤销停车券
                     </Button>
@@ -263,7 +255,9 @@ function Coupon() {
                         bordered
                         rowSelection={ rowSelection }
                         columns={ columns }
+                        loading={ loading }
                         dataSource={ tableData }
+                        scroll={{ x: 1500 }}
                         pagination={{ onChange:pagesChange,...page }}/>
             </div>
             <Modal
@@ -282,7 +276,7 @@ function Coupon() {
                         <Input.TextArea rows={4} />
                     </Form.Item>
                 </Form>
-                <p className="common-dialog-tips">{ revokeEquity.revokeHit }</p>
+                <p className="common-dialog-tips">当前选择{ revokeEquity.selectLine || 0 }笔，余额共计{ revokeEquity.totalBalance || 0 }元，撤销后会将未使用金额返回行业用户余额，撤销后不可恢复!</p>
             </Modal>
         </div>
     );

@@ -11,13 +11,13 @@ const ContentLayout  = lazy(() => import('./layout/content'));
 const HeaderLayout  = lazy(() => import('./layout/header'));
 const MenuLayout  = lazy(() => import('./layout/menu'));
 
-const ErrorBoundary  = lazy(() => import('./../../components/ErrorBoundary'));
+const ErrorBoundary  = lazy(() => import('@/components/ErrorBoundary'));
 
 class Home extends Component<Props, State>{
 
     render() {
         if(!!!this.props.userToken){
-            return <Redirect to='/login'/>
+            this.props.history.push('/login')
         }
         return (
             <Layout className="main-container">
@@ -43,6 +43,7 @@ class Home extends Component<Props, State>{
 interface Props {
     // url:string
     match:any,
+    history:any,
     userToken:string,
     collapsed:boolean
 }
