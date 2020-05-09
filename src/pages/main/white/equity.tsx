@@ -215,7 +215,7 @@ function Equity(props:Props) {
     const onFinish = (values:any) => {
         let { plateNo,plateColor,equityConfigId,whitelistUri,expirationTime,parkIdList } =  values,
                 parkIdListSearch = !Array.isArray(parkIdList)? parkIdList:'';
-        parkIdList = Array.isArray(parkIdList)?parkIdList:[]
+        parkIdList = Array.isArray(parkIdList)?parkIdList.join(','):[]
         if(params.type == 'single'){
             let _data ={
                 plateNo,
@@ -367,7 +367,7 @@ function Equity(props:Props) {
     };
 
     const normFile = ({ file,fileList,event }:any) => {
-        if(file.status !== 'uploading') return false;
+        if(file.status === 'uploading') return false;
         if(file.status === 'removed') return ;
         const { response } = file;
         if(response){

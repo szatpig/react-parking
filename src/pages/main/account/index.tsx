@@ -1,8 +1,7 @@
 // Created by szatpig at 2020/4/30.
 import React, { useState, useEffect } from 'react';
-import moment from 'moment';
 
-import { Form, Input, Button, Modal, DatePicker, Select, Table, Row, Col, Cascader, Upload } from 'antd';
+import {Form, Input, Button, Modal, Table, Row, Col, Cascader, Upload, message} from 'antd';
 
 import { getParkingDetailByBusinessId } from '@/api/common-api'
 import { getAccountDetails, uploadLogo, updateIndustryLoginUserPwd } from "@/api/account-api";
@@ -11,12 +10,9 @@ import logo from '@/images/login-logo.png'
 import region from '@/json/region'
 
 import site from '@/utils/config'
-import {connect} from "react-redux";
+import { connect } from "react-redux";
 
-
-const { Option } = Select;
 const options = region;
-
 const columns = [
     {
         title: '停车场名称',
@@ -60,6 +56,10 @@ const columns = [
         dataIndex: 'endDate',
     }
 ];
+const layout = {
+    labelCol: { span: 6 },
+    wrapperCol: { span: 17 },
+};
 
 function Account(props:Props) {
     const [userInfo, setUserInfo] = useState({
@@ -73,7 +73,6 @@ function Account(props:Props) {
         usedEquityAmount:0,
         freezeEquityAmount:0
     });
-    const [loading, setLoading] = useState(false);
     const [tableData,setTableData] = useState<object[]>([])
     const [page,setPage] = useState({
         current:1,
@@ -90,7 +89,7 @@ function Account(props:Props) {
         // setFormLayout(layout);
     };
 
-    const handleBatch = ()=>{
+    const handleShow = ()=>{
         setShow(true)
     }
 
@@ -99,10 +98,28 @@ function Account(props:Props) {
 
     const handleSubmit = () => {
         setConfirmLoading(true);
+        form.validateFields().then(values => {
+            let _data = {
+                ...values
+            }
+            updateIndustryLoginUserPwd(_data).then((data:any) => {
+                setConfirmLoading(false);
+                setShow(false);
+                form.resetFields();
+                message.success('密码修改成功')
+                list();
+            }).catch(err =>{
+                setConfirmLoading(false);
+            })
+        }).catch(info => {
+            setConfirmLoading(false);
+            console.log('Validate Failed:', info);
+        });
         setTimeout(() => {
             setShow(false);
             setConfirmLoading(false);
         }, 2000);
+
     };
 
     const handleCancel = () => {
@@ -166,7 +183,7 @@ function Account(props:Props) {
                     <div className="cell-content">
                         <Row>
                             <Col flex="100px">名称</Col>
-                            <Col flex="auto">{ userInfo.name }</Col>
+                            <Col flex="auto">{ userInfo.name } <Button type="link" onClick={ handleShow }>修改密码</Button></Col>
                         </Row>
                         <Row>
                             <Col flex="100px">证件类型</Col>
@@ -260,6 +277,37 @@ function Account(props:Props) {
                     </div>
                 </div>
             </div>
+            <Modal
+                    title="修改密码"
+                    forceRender
+                    visible={ show }
+                    className="common-dialog"
+                    onOk={ handleSubmit }
+                    okText={"保存"}
+                    maskClosable={ false }
+                    confirmLoading={ confirmLoading }
+                    onCancel={ handleCancel }>
+                <Form {...layout} form={ form }>
+                    <Form.Item name="oldPassword" label="原密码" rules={ [
+                        { required: true, message: '请输入原密码' },
+                        { pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,16}$/, message: '6-16位，至少包含字母和数字' }
+                    ] }>
+                        <Input.Password maxLength={ 20 } placeholder="请输入至少6位英文 + 数字密码" />
+                    </Form.Item>
+                    <Form.Item name="newPassword" label="新密码" rules={ [
+                        { required: true, message: '请输入原密码' },
+                        { pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,16}$/, message: '6-16位，至少包含字母和数字' }
+                    ] }>
+                        <Input.Password maxLength={ 20 } placeholder="请输入至少6位英文 + 数字密码" />
+                    </Form.Item>
+                    <Form.Item name="confirmNewPassword" label="确认新密码" rules={ [
+                        { required: true, message: '请输入确认新密码' },
+                        { pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,16}$/, message: '6-16位，至少包含字母和数字' }
+                    ] }>
+                        <Input.Password maxLength={ 20 } placeholder="请输入至少6位英文 + 数字密码" />
+                    </Form.Item>
+                </Form>
+            </Modal>
         </div>
     );
 }

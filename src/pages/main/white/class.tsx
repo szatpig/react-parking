@@ -4,11 +4,10 @@ import { useParams, useHistory } from 'react-router-dom';
 
 import { LeftOutlined, UploadOutlined } from '@ant-design/icons';
 
-import moment from 'moment';
-import { Form, Input, Button, Modal, DatePicker, InputNumber, Select, Table, Popconfirm, message  } from 'antd';
+
+import { Form, Input, Button, Modal, InputNumber, Table, Popconfirm, message  } from 'antd';
 import { equityConfigList, equityConfigAdd, equityConfigUpdate, equityConfigDelete } from "@/api/white-api";
-const { RangePicker } = DatePicker;
-const { Option } = Select;
+
 
 const layout = {
     labelCol: { span: 6 },

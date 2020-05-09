@@ -219,7 +219,7 @@ function Equity(props:Props) {
         console.log(values);
         let { plateNo,plateColor,couponAmount,couponlistUri,expirationTime,provideCount,parkingIds } =  values,
                 parkingIdsSearch = !Array.isArray(parkingIds)? parkingIds: '';
-        parkingIds = Array.isArray(parkingIds)?parkingIds:''
+        parkingIds = Array.isArray(parkingIds)?parkingIds.join(','):''
         if(params.type == 'single'){
             let _data ={
                 couponAmount,
@@ -352,7 +352,7 @@ function Equity(props:Props) {
     };
 
     const normFile = ({ file,fileList,event }:any) => {
-        if(file.status !== 'uploading') return false;
+        if(file.status === 'uploading') return false;
         if(file.status === 'removed') return ;
         const { response } = file;
         if(response){
