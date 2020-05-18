@@ -19,8 +19,8 @@ function EquityClass() {
     const history = useHistory();
     const [loading, setLoading] = useState(false);
     const [tableData,setTableData] = useState<object[]>([]);
-    const [page,setPage] = useState<object>({
-        pageNum:1,
+    const [page,setPage] = useState({
+        current:1,
         pageSize:30,
         total:1
     });
@@ -120,14 +120,11 @@ function EquityClass() {
                     setConfirmLoading(false);
                 })
             }
-
-
-
-                    console.log(values)
-                }).catch(info => {
-                    setConfirmLoading(false);
-                    console.log('Validate Failed:', info);
-                });
+            console.log(values)
+        }).catch(info => {
+            setConfirmLoading(false);
+            console.log('Validate Failed:', info);
+        });
     };
 
     const handleCancel = () => {
@@ -136,23 +133,26 @@ function EquityClass() {
     };
 
 
-    const pagesChange = (page:number,pageSize:number| undefined) => {
+    const pagesChange = (current:number,pageSize:any) => {
         setPage({
-            pageNum:page,
+            ...page,
+            current,
             pageSize
-        })
+        });
         form.submit();
     };
 
     const list = (args?:object) => {
+        let { current,pageSize } = page
         let _data={
-            ...page,
+            pageNum:current,
+            pageSize,
             ...args
         };
         equityConfigList(_data).then((data:any) => {
             setTableData(data.data)
             setPage({
-                pageNum:1,
+                current:1,
                 pageSize:30,
                 total:1
             })
@@ -176,7 +176,7 @@ function EquityClass() {
                     </div>
                 </div>
                 <div className="table-container">
-                    <Table rowKey="id" bordered columns={ columns } dataSource={ tableData } pagination={{ onChange:pagesChange,...page }} />
+                    <Table rowKey="id" bordered columns={ columns } dataSource={ tableData } pagination={ false } />
                 </div>
                 <Modal
                         title={ id ? '编辑权益等级':'添加权益等级'}

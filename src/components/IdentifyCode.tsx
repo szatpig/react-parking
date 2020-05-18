@@ -48,7 +48,7 @@ class IdentifyCode extends Component<Props, State> {
             userName:username
         };
         this.setState((state,props)=>({ //'http://192.168.88.51:8080/internal/permission/getVeriCodeImg?account=zhucw&random=0.081783643824209'
-            codeUrl: baseConfig.base + '/permission/getVeriCodeImg?account=' + _data.userName +'&random='+Math.random()
+            codeUrl: baseConfig.base + '/permission/getVeriCodeImg?userName=' + _data.userName +'&random='+Math.random()
         }))
     }
     codeRefresh= () =>{

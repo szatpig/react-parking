@@ -189,7 +189,10 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
             </div>
             <div className="search-container export">
                 <div className="input-cells">
-                    <Checkbox onChange={ checkboxChange }>全选</Checkbox> 已选中 { selectedRow.length } 条
+                    <Checkbox onChange={ checkboxChange }>全选</Checkbox>
+                    {
+                        !!!tableSelect&& (`已选中 ${ selectedRow.length } 条`)
+                    }
                 </div>
             </div>
             <div className="table-container">
@@ -218,7 +221,7 @@ function Equity(props:Props) {
     const onFinish = (values:any) => {
         console.log(values);
         let { plateNo,plateColor,couponAmount,couponlistUri,expirationTime,provideCount,parkingIds } =  values,
-                parkingIdsSearch = !Array.isArray(parkingIds)? parkingIds: '';
+                parkingIdsSearch = !Array.isArray(parkingIds)? parkingIds:{};
         parkingIds = Array.isArray(parkingIds)?parkingIds.join(','):''
         if(params.type == 'single'){
             let _data ={
@@ -227,7 +230,7 @@ function Equity(props:Props) {
             }
             getProvideConfirmData(_data).then((data:any) => {
                 const { couponTotalAmount, availableEquityAmount, industryUser } = data.data
-                modal.confirm({
+                modal.info({
                     icon:<ExclamationCircleOutlined />,
                     title: '发放确认',
                     className:'import-dialog-container',
@@ -269,9 +272,7 @@ function Equity(props:Props) {
         }else{
             let _data ={
                 couponlistUri,
-                expirationTime:Dayjs(expirationTime).format('YYYY-MM-DD 23:59:59'),
-                parkingIds,
-                parkingIdsSearch
+                expirationTime:Dayjs(expirationTime).format('YYYY-MM-DD 23:59:59')
             }
             importDataConfirm(_data).then((data:any) => {
                 const { couponTotalAmount, availableEquityAmount, industryUser } = data.data
@@ -357,11 +358,23 @@ function Equity(props:Props) {
         const { response } = file;
         if(response){
             if(response.status == 1000){
-                return response.data.fileUri
+                return response.data.filePath
             }
         }
         return ;
     };
+
+    const handleDownLoad = (e:any) => {
+        e.stopPropagation();
+        e.nativeEvent.stopImmediatePropagation();
+        const aLink = document.createElement('a');
+        document.body.appendChild(aLink);
+        aLink.style.display='none';
+        aLink.target = '_blank'
+        aLink.href = site.exeUrl + '/internal/template/download/coupon/批量导入停车券.xls';
+        aLink.click();
+        document.body.removeChild(aLink);
+    }
 
     return (
          <div className="equity-container">
@@ -389,10 +402,10 @@ function Equity(props:Props) {
                                  }
                              </Select>
                          </Form.Item>
-                         <Form.Item name="equityAmount" label="金额" wrapperCol={{ span:8 }} rules={ [
+                         <Form.Item name="couponAmount" label="金额" wrapperCol={{ span:8 }} rules={ [
                                  { required: true, type: 'number', min: 0, max: 99999999, message: '请输入金额' }
                              ]}>
-                             <InputNumber  maxLength={ 8 } placeholder="请输入" />&nbsp;&nbsp;&nbsp;元
+                             <InputNumber  maxLength={ 8 } placeholder="请输入" />
                          </Form.Item>
                      </>
                   }
@@ -411,7 +424,7 @@ function Equity(props:Props) {
                                  onRemove = { handleRemove }
                                  onChange={ onFileChange }>
                              <Button>选择文件</Button>
-                             <span className="upload-template">请按照<i>模板</i>上传</span>
+                             <span className="upload-template"  onClick={ handleDownLoad } >请按照<i>模板</i>上传</span>
                              <p className="upload-txt">支持.xls, .xlsx, .csv格式长传，单次上传上限1000行，请勿删除模板表头</p>
                          </Upload>
                      </Form.Item>
@@ -421,10 +434,10 @@ function Equity(props:Props) {
                  </Form.Item>
                  {
                      params.type == 'single' &&
-                     <Form.Item name="equityAmount" label="发放数量" wrapperCol={{span: 8}} rules={[
+                     <Form.Item name="provideCount" label="发放数量" wrapperCol={{span: 8}} rules={[
                                {required: true, type: 'number', min: 0, max: 99999999, message: '请输入数量'}
                           ]}>
-                         <InputNumber maxLength={8} placeholder="请输入"/>&nbsp;&nbsp;&nbsp;张
+                         <InputNumber maxLength={8} placeholder="请输入"/>
                      </Form.Item>
                  }
                  <Form.Item name="parkingIds" label="可用停车场" rules={[{ required: true,message:'至少选择一个停车场' }]} wrapperCol={{ span:18 }}>

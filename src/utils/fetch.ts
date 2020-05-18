@@ -2,11 +2,13 @@
 import axios,{ AxiosRequestConfig } from 'axios'
 import { createBrowserHistory } from 'history';
 import { stringify } from 'qs'
-import store from './../store'
+import store from '@/store'
 
 import { message } from 'antd';
 
 const history = createBrowserHistory();
+
+console.log('store',store)
 
 // axios 配置
 axios.defaults.timeout = 5000;
@@ -101,6 +103,7 @@ export default function fetch (url:string, options:Options) {
             } else {
                 switch (response.data.status) {
                     case 1001:
+                        store.dispatch({type:'USER_LOGIN_OUT'});
                         history.push('/login');
                         reject(response.data);
                         break;

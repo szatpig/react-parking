@@ -1,12 +1,11 @@
 // Created by szatpig at 2020/4/30.
 import React, { useState, useEffect } from 'react';
 
-import {Form, Input, Button, Modal, Table, Row, Col, Cascader, Upload, message} from 'antd';
+import {Form, Input, Button, Modal, Table, Row, Col, Cascader, Upload, message } from 'antd';
 
 import { getParkingDetailByBusinessId } from '@/api/common-api'
 import { getAccountDetails, uploadLogo, updateIndustryLoginUserPwd } from "@/api/account-api";
 
-import logo from '@/images/login-logo.png'
 import region from '@/json/region'
 
 import site from '@/utils/config'
@@ -64,7 +63,7 @@ const layout = {
 function Account(props:Props) {
     const [userInfo, setUserInfo] = useState({
         name:'--',
-        certType:'--',
+        certTypeName:'--',
         certNo:'--',
         certValidity:'--',
         contractTerm:'--',
@@ -81,6 +80,12 @@ function Account(props:Props) {
     });
     const [show, setShow] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
+
+    const [Img, setImg] = useState({
+        logo:'',
+        code:''
+    });
+    const [modal, contextHolder] = Modal.useModal();
 
     const{ userToken } = props
 
@@ -115,11 +120,6 @@ function Account(props:Props) {
             setConfirmLoading(false);
             console.log('Validate Failed:', info);
         });
-        setTimeout(() => {
-            setShow(false);
-            setConfirmLoading(false);
-        }, 2000);
-
     };
 
     const handleCancel = () => {
@@ -127,8 +127,26 @@ function Account(props:Props) {
         setShow(false)
     };
 
-    const fileUpload= ({ file }:any) => {
+    const onFileChange= ({ file,fileList,event }:any) => {
+        // setFileList(fileList);
         console.log(file);
+        if(file.status === 'done'){
+            getImg()
+        }
+    };
+
+    const handleBeforeUpload =(file:any,_fileList:any)=>{
+        const isLt2M = file.size / 1024 / 1024 < 1;
+        if (!isLt2M) {
+            message.error( '超过1M限制，不允许上传');
+            return Promise.reject(false);
+        }
+        const fileType = '.jpeg, .jpg, .png, gif, .bmp';
+        if(fileType.indexOf(file.name.split(/\./)[1]) === -1){
+            message.error( '仅支持上传.jpeg, .jpg, .png, gif, .bmp格式');
+            return Promise.reject(false);
+        }
+        return true ;
     };
 
     const getUserInfo = () => {
@@ -152,6 +170,27 @@ function Account(props:Props) {
         form.submit();
     };
 
+    const handleView = (src:any) => {
+        modal.info({
+            title: '查看二维码',
+            className:'view-dialog-container',
+            content: (
+                    <div className="import-dialog-wrapper">
+                        <img src ={ src } />
+                    </div>
+            ),
+            onOk: () => {
+            }
+        });
+    }
+
+    const getImg = ()=>{
+        setImg({
+            logo:site.base + '/businessAccount/getCompanyLogo?token='+ userToken + '&random='+ Math.random(),
+            code:site.base + '/businessAccount/getQrCodeImage?token='+ userToken + '&random='+ Math.random()
+        })
+    }
+
     const list = (args?:object) => {
         let { current,pageSize } = page
         let _data={
@@ -172,6 +211,7 @@ function Account(props:Props) {
         //do something
         list();
         getUserInfo();
+        getImg();
     },[1]);
 
     return (
@@ -187,7 +227,7 @@ function Account(props:Props) {
                         </Row>
                         <Row>
                             <Col flex="100px">证件类型</Col>
-                            <Col flex="auto">{ userInfo.certType }</Col>
+                            <Col flex="auto">{ userInfo.certTypeName }</Col>
                         </Row>
                         <Row>
                             <Col flex="100px">证件编号</Col>
@@ -205,19 +245,23 @@ function Account(props:Props) {
                             <Col flex="100px">公司logo</Col>
                             <Col flex="auto">
                                 <Upload name="logo"
-                                        className="upload-wrapper"
-                                        action={ site.upload + "/businessAccount/uploadLogo"} headers = {{ token:userToken }}
-                                        showUploadList={ false } onChange={ fileUpload }>
+                                    className="upload-wrapper"
+                                    accept=".jpeg, .jpg, .png, gif, .bmp"
+                                    action={ site.upload + "/businessAccount/uploadLogo"}
+                                    headers = {{ token:userToken }}
+                                    showUploadList={ false }
+                                    beforeUpload = { handleBeforeUpload }
+                                    onChange={ onFileChange }>
                                     <Button>选择文件</Button>
                                 </Upload>
                                 <p className="upload-txt">上传后将同步更新行业用户二维码</p>
-                                <p><img src={ logo } alt=""/></p>
+                                <p><img src={ Img.logo } alt=""/></p>
                             </Col>
                         </Row>
                         <Row className="upload-container">
                             <Col flex="100px">二维码</Col>
                             <Col flex="auto">
-                                <p><img src={ logo } alt=""/></p>
+                                <p><img onClick={ () => handleView(Img.code) } src={ Img.code } alt=""/></p>
                             </Col>
                         </Row>
                     </div>
@@ -272,11 +316,17 @@ function Account(props:Props) {
                             </div>
                         </div>
                         <div className="table-container">
-                            <Table rowKey="id" bordered columns={ columns } dataSource={ tableData } pagination={{ onChange:pagesChange,...page }} />
+                            <Table
+                                    rowKey="id"
+                                    bordered
+                                    columns={ columns }
+                                    dataSource={ tableData }
+                                    pagination={{ onChange:pagesChange,...page }} />
                         </div>
                     </div>
                 </div>
             </div>
+            { contextHolder }
             <Modal
                     title="修改密码"
                     forceRender

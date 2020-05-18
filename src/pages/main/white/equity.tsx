@@ -7,6 +7,7 @@ import { LeftOutlined, UploadOutlined, ExclamationCircleOutlined } from '@ant-de
 import { Form, Input, Select, Button, DatePicker, Table, Checkbox, Cascader, Upload, Modal, message } from 'antd';
 
 import Dayjs from 'dayjs';
+import XLSX from 'xlsx'
 
 import site from '@/utils/config'
 import { getParkingDetailByBusinessId } from '@/api/common-api'
@@ -185,7 +186,10 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
             </div>
             <div className="search-container export">
                 <div className="input-cells">
-                    <Checkbox onChange={ checkboxChange }>全选</Checkbox> 已选中 { selectedRow.length } 条
+                    <Checkbox onChange={ checkboxChange }>全选</Checkbox>
+                    {
+                        !!!tableSelect&& (`已选中 ${ selectedRow.length } 条`)
+                    }
                 </div>
             </div>
             <div className="table-container">
@@ -214,16 +218,13 @@ function Equity(props:Props) {
 
     const onFinish = (values:any) => {
         let { plateNo,plateColor,equityConfigId,whitelistUri,expirationTime,parkIdList } =  values,
-                parkIdListSearch = !Array.isArray(parkIdList)? parkIdList:'';
-        parkIdList = Array.isArray(parkIdList)?parkIdList.join(','):[]
+                parkIdListSearch = !Array.isArray(parkIdList)? parkIdList:{};
+
+        parkIdList = Array.isArray(parkIdList)?parkIdList.join(','):''
         if(params.type == 'single'){
             let _data ={
                 plateNo,
-                plateColor,
-                equityConfigId,
-                expirationTime:Dayjs(expirationTime).format('YYYY-MM-DD 23:59:59'),
-                parkIdList,
-                parkIdListSearch,
+                equityConfigId
             }
             grantConfirmData(_data).then((data:any) => {
                 const { industryUserName, equityBalance, currentAvailableCount, equityUserCount, grandCount, newCount, totalAmount } = data.data
@@ -255,9 +256,10 @@ function Equity(props:Props) {
                     ),
                     onOk: () => {
                         handleDialogSingleConfirm({
+                            plateNo,
+                            plateColor,
                             equityConfigId,
-                            whitelistUri,
-                            expirationTime,
+                            expirationTime:Dayjs(expirationTime).format('YYYY-MM-DD 23:59:59'),
                             parkIdList,
                             parkIdListSearch
                         })//确认按钮的回调方法，在下面
@@ -272,11 +274,9 @@ function Equity(props:Props) {
                 whitelistUri,
                 equityConfigId,
                 expirationTime:Dayjs(expirationTime).format('YYYY-MM-DD 23:59:59'),
-                parkIdList,
-                parkIdListSearch
             }
             parseWhitelist(_data).then((data:any) => {
-                const { industryUserName, equityBalance, currentAvailableCount, equityUserCount, grandCount, newCount, totalAmount } = data.data
+                const { industryUserName, equityBalance, currentAvailableCount, equityUserCount, importCount, newCount, totalAmount } = data.data
                 modal.confirm({
                     icon:<ExclamationCircleOutlined />,
                     title: '导入确认',
@@ -296,7 +296,7 @@ function Equity(props:Props) {
                                 <div className="import-cell">
                                     <p>导入信息</p>
                                     <div className="import-content">
-                                        <p><span>共计：</span>{ grandCount } 笔</p>
+                                        <p><span>共计：</span>{ importCount } 笔</p>
                                         <p><span>其中新增白名单：</span>{ newCount }个</p>
                                         <p><span>权益余额总计：</span>{ totalAmount }元</p>
                                     </div>
@@ -307,7 +307,7 @@ function Equity(props:Props) {
                         handleDialogConfirm({
                             equityConfigId,
                             whitelistUri,
-                            expirationTime,
+                            expirationTime:Dayjs(expirationTime).format('YYYY-MM-DD 23:59:59'),
                             parkIdList,
                             parkIdListSearch
                         })//确认按钮的回调方法，在下面
@@ -362,6 +362,33 @@ function Equity(props:Props) {
             message.error( '仅支持上传.xls, .xlsx, .csv格式');
             return Promise.reject(false);
         }
+
+        let _reader = new FileReader();
+        _reader.readAsBinaryString(file);
+
+        _reader.onloadend = (evt:any) => {
+            let _text = evt.target.result;
+            let wb = XLSX.read(_text,{type:'binary'});
+            let _data = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]])
+            console.log(_data)
+            // _text = _text.split('-').filter((item:any)=>item);
+            //
+            // // 判断表头不能删除
+            // if(!_text[0] || _text[0].indexOf("勿删表头")==-1){
+            //     message.error('【'+ file.name +'】表请勿删除表头');
+            //     return Promise.reject(false);
+            // }else{
+            //     _text.shift();
+            // }
+            //
+            // // 判断导入数
+            // if(_text.length > 1000){
+            //     message.error("单次导入不要超过1000条");
+            //     return Promise.reject(false);
+            // }
+
+        };
+
         setFileList([file]);
         return true ;
     };
@@ -372,11 +399,23 @@ function Equity(props:Props) {
         const { response } = file;
         if(response){
             if(response.status == 1000){
-                return response.data.fileUri
+                return response.data.filePath
             }
         }
         return ;
     };
+
+    const handleDownLoad = (e:any) => {
+        e.stopPropagation();
+        e.nativeEvent.stopImmediatePropagation();
+        const aLink = document.createElement('a');
+        document.body.appendChild(aLink);
+        aLink.style.display='none';
+        aLink.target = '_blank'
+        aLink.href = site.exeUrl + '/internal/template/download/coupon/批量导入白名单.xls';
+        aLink.click();
+        document.body.removeChild(aLink);
+    }
 
     useEffect(() => {
         getEquityList()
@@ -439,7 +478,7 @@ function Equity(props:Props) {
                                  beforeUpload = { handleBeforeUpload }
                                  onRemove = { handleRemove }
                                  onChange={ onFileChange }>
-                             <Button>选择文件</Button> <span className="upload-template">请按照<i>模板</i>上传</span>
+                             <Button>选择文件</Button> <span onClick={ handleDownLoad } className="upload-template">请按照<i>模板</i>上传</span>
                              <p className="upload-txt">支持.xls, .xlsx, .csv格式长传，单次上传上限1000行，请勿删除模板表头</p>
                          </Upload>
                      </Form.Item>

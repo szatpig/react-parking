@@ -40,6 +40,7 @@ config = {
     // upload:base + upload,
     upload:base + prefix,
     admin: admin+ '/internal',
+    download:'http://192.168.88.71',
     version,
     exeUrl
 }
@@ -48,6 +49,7 @@ interface ConfigInterface {
     base?: string,
     admin?: string,
     upload?: string,
+    download?:string,
     version?: string,
     exeUrl?: string
 }

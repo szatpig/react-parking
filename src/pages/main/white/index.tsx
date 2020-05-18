@@ -191,6 +191,10 @@ function White() {
         form.submit();
     };
 
+    const showTotal = (total:number) => {
+        return `总共 ${total} 条`
+    }
+
     const list = (args?:object) => {
         let { current,pageSize } = page
         let _data={
@@ -310,7 +314,7 @@ function White() {
                         loading={ loading }
                         dataSource={ tableData }
                         scroll={{ x: 1500 }}
-                        pagination={{ onChange:pagesChange,...page }} />
+                        pagination={{ onChange:pagesChange,...page, showTotal: showTotal }} />
             </div>
             <Modal
                 title="撤销原因"

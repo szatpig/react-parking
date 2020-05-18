@@ -59,7 +59,8 @@ const columns = [
     },
     {
         title: '停车场',
-        dataIndex: 'parkingNames'
+        dataIndex: 'parkingNames',
+        ellipsis:true
     },
     {
         title: '发放时间',

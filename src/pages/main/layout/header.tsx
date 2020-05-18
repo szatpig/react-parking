@@ -13,7 +13,10 @@ import { ReloadOutlined } from '@ant-design/icons';
 import { headerCollapsed } from "@/store/actions/header";
 import { userLoginOutAction } from "@/store/actions/user";
 import defaultHeadImg from '@/images/default.png'
+import logo from '@/images/image-logo.png'
 
+import site from '@/utils/config'
+import {userInfo} from "os";
 
 const { Header } = Layout;
 
@@ -59,7 +62,7 @@ class HeaderLayout extends Component<Props, State> {
     }
 
     render() {
-        const { name } = this.props.userInfo;
+        const { name,token } = this.props.userInfo;
         const content = (
                 <div>
                     <p onClick={ this.routerLink }>个人信息</p>
@@ -70,7 +73,7 @@ class HeaderLayout extends Component<Props, State> {
             <Header  className="header-container">
                 <div className="head-content">
                     <div className="left-wrap">
-                         <img src={ require('../../../images/image-logo.png')} alt="停车场logo" />
+                         <img src={ logo } alt="停车场logo" />
                     </div>
                     <div className="right-wrap">
                         {/*<div className="item-wrap">*/}
@@ -86,7 +89,7 @@ class HeaderLayout extends Component<Props, State> {
                         <div className="item-wrap">
                             <Popover placement="bottom" overlayClassName="header-popover-container" content={content} trigger="hover">
                                 <div>
-                                    <img src={ defaultHeadImg } alt="用户头像"/>
+                                    <img src={  `${ site.base }/businessAccount/getCompanyLogo?token=${ token }&random=${ Math.random() }` } alt="用户头像"/>
                                     <span className="item-name">{ name }</span>
                                 </div>
                             </Popover>
