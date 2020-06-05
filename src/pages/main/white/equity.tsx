@@ -3,6 +3,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useHistory, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux'
 
+import moment from 'moment';
+
 import { LeftOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { Form, Input, Select, Button, DatePicker, Table, Checkbox, Cascader, Upload, Modal, message } from 'antd';
 
@@ -113,7 +115,17 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
     const checkboxChange = (e:any) => {
         setTableSelect(e.target.checked);
         if(e.target.checked){
-            triggerChange(form.getFieldsValue())
+            let { parkingName,region,address,owner } = form.getFieldsValue(),
+                    [province, city, county]= region || [],
+                    _data ={
+                        parkingName,
+                        address,
+                        owner,
+                        province,
+                        city,
+                        county
+                    }
+            triggerChange(_data)
         }else{
             triggerChange(selectedRow)
         }
@@ -142,7 +154,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
         setSelectedRow([]);
         list(_data)
         if(tableSelect){
-            triggerChange(values)
+            triggerChange(_data)
         }
     };
 
@@ -217,6 +229,11 @@ function Equity(props:Props) {
     const [fileList, setFileList] = useState<any[]>([]);
 
     const{ userToken } = props
+
+    const disabledDate = (current:any) => {
+        // Can not select days before today and today
+        return current && current < moment().endOf('day');
+    }
 
     const onFinish = (values:any) => {
         let { plateNo,plateColor,equityConfigId,whitelistUri,expirationTime,parkIdList } =  values,
@@ -324,13 +341,15 @@ function Equity(props:Props) {
 
     const handleDialogSingleConfirm = (_data:any) => {
         grantEquity(_data).then((data:any) => {
-
+            message.success('发放成功');
+            history.go(-1)
         })
     }
 
     const handleDialogConfirm = (_data:any) => {
         importEquity(_data).then((data:any) => {
-
+            message.success('导入成功');
+            history.go(-1)
         })
     }
 
@@ -486,7 +505,7 @@ function Equity(props:Props) {
                      </Form.Item>
                  }
                  <Form.Item name="expirationTime" label="截止时间" rules={[{ required: true }]}>
-                     <DatePicker />
+                     <DatePicker disabledDate={ disabledDate } />
                  </Form.Item>
                  <Form.Item name="parkIdList" label="可用停车场" rules={[{ required: true,message:'至少选择一个停车场' }]} wrapperCol={{ span:18 }}>
                      <FormTable />

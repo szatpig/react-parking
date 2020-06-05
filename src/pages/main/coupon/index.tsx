@@ -149,16 +149,15 @@ function Coupon(props:Props) {
                 ...values
             }
             revokeCouponBatch(_data).then((data:any) => {
-                message.success('批量处理成功')
+                message.success('批量处理成功');
+                setShow(false);
+                setConfirmLoading(false);
+                form.submit();
             })
         }).catch(info => {
             setConfirmLoading(false);
             console.log('Validate Failed:', info);
         });
-        setTimeout(() => {
-            setShow(false);
-            setConfirmLoading(false);
-        }, 2000);
     };
 
     const handleCancel = () => {
@@ -290,6 +289,7 @@ function Coupon(props:Props) {
                     confirmLoading={ confirmLoading }
                     onCancel={ handleCancel }>
                 <Form
+                        form = { modalForm }
                         onFinish={ handleSubmit }>
                     <Form.Item name="revokeReason" label="撤销原因" rules={ [
                         { required: true, message: '请输入内容' }

@@ -172,16 +172,15 @@ function White(props:Props) {
                 ...values
             }
             revokeEquitySubmit(_data).then((data:any) => {
-                message.success('批量处理成功')
+                message.success('批量处理成功');
+                form.submit();
+                setShow(false);
+                setConfirmLoading(false);
             })
         }).catch(info => {
             setConfirmLoading(false);
             console.log('Validate Failed:', info);
         });
-        setTimeout(() => {
-            setShow(false);
-            setConfirmLoading(false);
-        }, 2000);
     };
 
     const handleCancel = () => {
@@ -191,7 +190,7 @@ function White(props:Props) {
 
     const handleSearch = (values:any) => {
         console.log(values)
-        let { couponNo,plateNo,couponStatus,equityLevel,equityGrantTime } = values,
+        let { couponNo,plateNo,couponStatus,equityLevel,equityGrantTime,equityStatus } = values,
              [startTime,endTime] = equityGrantTime || [];
         setSelectedRow([]);
         list({
@@ -200,7 +199,8 @@ function White(props:Props) {
             couponStatus,
             equityConfigId:equityLevel,
             startTime:startTime && Dayjs(startTime).format('YYYY-MM-DD HH:mm:ss'),
-            endTime:endTime && Dayjs(endTime).format('YYYY-MM-DD HH:mm:ss')
+            endTime:endTime && Dayjs(endTime).format('YYYY-MM-DD HH:mm:ss'),
+            equityStatus
         })
     }
 

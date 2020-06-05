@@ -3,6 +3,8 @@ import React, {useState, useEffect} from 'react';
 import { useParams, useHistory, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux'
 
+import moment from 'moment';
+
 import { LeftOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import {
     Form,
@@ -119,7 +121,17 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
     const checkboxChange = (e:any) => {
         setTableSelect(e.target.checked);
         if(e.target.checked){
-            triggerChange(form.getFieldsValue())
+            let { parkingName,region,address,owner } = form.getFieldsValue(),
+                    [province, city, county]= region || [],
+                    _data ={
+                        parkingName,
+                        address,
+                        owner,
+                        province,
+                        city,
+                        county
+                    }
+            triggerChange(_data)
         }else{
             triggerChange(selectedRow)
         }
@@ -147,7 +159,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
         setSelectedRow([]);
         list(_data)
         if(tableSelect){
-            triggerChange(values)
+            triggerChange(_data)
         }
     };
     const list = (args?:object) => {
@@ -221,6 +233,11 @@ function Equity(props:Props) {
 
     const{ userToken } = props
 
+    const disabledDate = (current:any) => {
+        // Can not select days before today and today
+        return current && current < moment().endOf('day');
+    }
+
     const onFinish = (values:any) => {
         console.log(values);
         let { plateNo,plateColor,couponAmount,couponlistUri,expirationTime,provideCount,parkingIds } =  values,
@@ -278,7 +295,7 @@ function Equity(props:Props) {
                 expirationTime:Dayjs(expirationTime).format('YYYY-MM-DD 23:59:59')
             }
             importDataConfirm(_data).then((data:any) => {
-                const { couponTotalAmount, availableEquityAmount, industryUser } = data.data
+                const { couponAmount, equityBalance, industryUser } = data.data
                 modal.confirm({
                     icon:<ExclamationCircleOutlined />,
                     title: '导入确认',
@@ -290,14 +307,14 @@ function Equity(props:Props) {
                                     <p>企业信息</p>
                                     <div className="import-content">
                                         <p><span>行业用户名称：</span>{ industryUser }</p>
-                                        <p><span>权益余额：</span>{ availableEquityAmount }元</p>
+                                        <p><span>权益余额：</span>{ equityBalance }元</p>
                                     </div>
                                 </div>
                                 <div className="import-cell">
                                     <p>导入信息</p>
                                     <div className="import-content">
                                         <p><span>共计：</span>{ data.data.provideCount } 张</p>
-                                        <p><span>金额总计：</span>{ couponTotalAmount } 元</p>
+                                        <p><span>金额总计：</span>{ couponAmount } 元</p>
                                     </div>
                                 </div>
                             </div>
@@ -322,12 +339,14 @@ function Equity(props:Props) {
 
     const handleDialogSingleConfirm = (_data:any) => {
         provideCouponOne(_data).then((data:any) => {
-
+            message.success('发放成功');
+            history.go(-1)
         })
     }
     const handleDialogConfirm = (_data:any) => {
         importCouponBatch(_data).then((data:any) => {
-
+            message.success('导入成功');
+            history.go(-1)
         })
     }
 
@@ -432,8 +451,8 @@ function Equity(props:Props) {
                          </Upload>
                      </Form.Item>
                  }
-                 < Form.Item name="expirationTime" label="截止时间" rules={[{required: true}]}>
-                     <DatePicker />
+                 < Form.Item name="expirationTime" label="截止时间"  rules={[{required: true}]}>
+                     <DatePicker disabledDate={ disabledDate }/>
                  </Form.Item>
                  {
                      params.type === 'single' &&
