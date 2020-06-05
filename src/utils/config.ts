@@ -11,22 +11,18 @@ const hostname = window.location.host.split('.')[0]
 */
 
 let base='',
-    admin="", //中台请求地址
+    admin='', //中台请求地址
     prefix='/industryUser',
     version='202003091319',
-    exeUrl=""
+    exeUrl=''
 
 
 switch (hostname){
     case '10':
-    case '192':
     case 'localhost':
         base = 'http://10.1.20.86:8085';
-        // base = 'http://10.1.20.193:8080';
         admin = "http://192.168.88.51:8080"
-
         exeUrl = 'http://192.168.88.54'
-        // exeUrl='http://10.1.20.182'
         break;
     default:
         base = '';
@@ -35,7 +31,6 @@ switch (hostname){
 
 config = {
     base: base + prefix,
-    // upload:base + upload,
     upload:base + prefix,
     admin: admin+ '/internal',
     download:'http://192.168.88.71',
