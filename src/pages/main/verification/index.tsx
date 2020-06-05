@@ -2,7 +2,7 @@
 import React, {useState, useEffect} from 'react';
 import moment from 'moment';
 
-import { Form, Input, Button, Modal, DatePicker, Select, Table } from 'antd';
+import { Form, Input, Button, DatePicker, Select, Table } from 'antd';
 
 import { equityVerifyRecordList, equityVerifyRecordStatistics, equityVerifyRecordExport } from '@/api/verification-api'
 
@@ -73,14 +73,14 @@ function Verification() {
 
     const handleExport = (values:object) => {
         let { parkingName, verifyType, couponNo, plateNo,time } = form.getFieldsValue(),
-                [startTime,endTime] = time || []
+                [startTime,endTime] = time ||  ['',''];
         let _data ={
             parkingName,
             verifyType,
             couponNo,
             plateNo,
-            startTime:Dayjs(startTime).format('YYYY-MM-DD HH:mm:ss'),
-            endTime:Dayjs(endTime).format('YYYY-MM-DD HH:mm:ss'),
+            startTime:startTime && Dayjs(startTime).format('YYYY-MM-DD HH:mm:ss'),
+            endTime:endTime && Dayjs(endTime).format('YYYY-MM-DD HH:mm:ss'),
         }
         equityVerifyRecordExport(_data).then((data:any)=>{
 
@@ -95,8 +95,8 @@ function Verification() {
             verifyType,
             couponNo,
             plateNo,
-            startTime:Dayjs(startTime).format('YYYY-MM-DD HH:mm:ss'),
-            endTime:Dayjs(endTime).format('YYYY-MM-DD HH:mm:ss'),
+            startTime:startTime && Dayjs(startTime).format('YYYY-MM-DD HH:mm:ss'),
+            endTime:endTime && Dayjs(endTime).format('YYYY-MM-DD HH:mm:ss'),
         }
         list(_data)
     }

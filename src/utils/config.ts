@@ -13,9 +13,7 @@ const hostname = window.location.host.split('.')[0]
 let base='',
     admin="", //中台请求地址
     prefix='/industryUser',
-    api = process.env.NODE_ENV === 'production' ? '':'/api',
     version='202003091319',
-    upload = '',
     exeUrl=""
 
 
@@ -23,7 +21,7 @@ switch (hostname){
     case '10':
     case '192':
     case 'localhost':
-        base = 'http://192.168.88.51:8085';
+        base = 'http://10.1.20.86:8085';
         // base = 'http://10.1.20.193:8080';
         admin = "http://192.168.88.51:8080"
 

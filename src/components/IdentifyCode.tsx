@@ -87,7 +87,7 @@ class IdentifyCode extends Component<Props, State> {
             number:state.number + 1 ,
             codeArray:state.codeArray.concat([Math.round(xserver*360/380) +'_'+ yserver])
         }),()=>{
-            if (this.state.number == 3) {
+            if (this.state.number === 3) {
                 this.checkOutTree();
                 this.props.handleEmitCode(this.state.codeArray)
             }

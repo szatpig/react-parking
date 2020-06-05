@@ -3,7 +3,7 @@ import React, {useState, useEffect} from 'react';
 import { useParams, useHistory, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux'
 
-import { LeftOutlined, UploadOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { LeftOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import {
     Form,
     Input,
@@ -111,6 +111,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
     };
 
     const onSelectChange = (selectedRowKeys:any,selectedRows:any) => {
+        console.log(selectedRowKeys);
         setSelectedRow(selectedRowKeys);
         triggerChange(selectedRowKeys)
     };
@@ -127,6 +128,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
         disabled: tableSelect, // Column configuration not to be checked
     });
     const rowSelection = {
+        selectedRowKeys:selectedRow,
         onChange: onSelectChange,
         getCheckboxProps:onSelectAll
     };
@@ -142,6 +144,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
                     city,
                     county
                 }
+        setSelectedRow([]);
         list(_data)
         if(tableSelect){
             triggerChange(values)
@@ -223,7 +226,7 @@ function Equity(props:Props) {
         let { plateNo,plateColor,couponAmount,couponlistUri,expirationTime,provideCount,parkingIds } =  values,
                 parkingIdsSearch = !Array.isArray(parkingIds)? parkingIds:{};
         parkingIds = Array.isArray(parkingIds)?parkingIds.join(','):''
-        if(params.type == 'single'){
+        if(params.type === 'single'){
             let _data ={
                 couponAmount,
                 provideCount
@@ -357,7 +360,7 @@ function Equity(props:Props) {
         if(file.status === 'removed') return ;
         const { response } = file;
         if(response){
-            if(response.status == 1000){
+            if(response.status === 1000){
                 return response.data.filePath
             }
         }
@@ -381,12 +384,12 @@ function Equity(props:Props) {
              <div className="breadcrumb-container line">
                  <div className="breadcrumb-cell">
                      <div onClick={ () => history.go(-1) }><LeftOutlined />返回</div>
-                     <div>{ params.type == 'single' ? '发放停车券':'批量导入停车券' }</div>
+                     <div>{ params.type === 'single' ? '发放停车券':'批量导入停车券' }</div>
                  </div>
              </div>
              <Form form={ submitForm } {...layout} className="form-container" name="nest-messages" onFinish={ onFinish } validateMessages={validateMessages}>
                  {
-                     params.type == 'single' &&
+                     params.type === 'single' &&
                      <>
                          <Form.Item name="plateNo" label="车牌号" rules={[{ required: true }]}>
                              <Input maxLength={ 20 } placeholder="请输入车牌号" />
@@ -410,7 +413,7 @@ function Equity(props:Props) {
                      </>
                   }
                  {
-                     params.type == 'batch' &&
+                     params.type === 'batch' &&
                      <Form.Item name="couponlistUri" label="停车券" getValueFromEvent={ normFile } className="upload-container" wrapperCol={{span: 18}}
                                 rules={[{required: true}]}>
                          <Upload name="file"
@@ -433,7 +436,7 @@ function Equity(props:Props) {
                      <DatePicker />
                  </Form.Item>
                  {
-                     params.type == 'single' &&
+                     params.type === 'single' &&
                      <Form.Item name="provideCount" label="发放数量" wrapperCol={{span: 8}} rules={[
                                {required: true, type: 'number', min: 0, max: 99999999, message: '请输入数量'}
                           ]}>

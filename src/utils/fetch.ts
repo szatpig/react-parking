@@ -1,5 +1,5 @@
 // Created by szatpig at 2019/5/21.
-import axios,{ AxiosRequestConfig } from 'axios'
+import axios from 'axios'
 import { createBrowserHistory } from 'history';
 import { stringify } from 'qs'
 import store from '@/store'
@@ -21,6 +21,7 @@ axios.interceptors.request.use(
         if (token) {
             config.headers.token = token;
         }
+        console.log(config)
         // message.loading('加载中...',15);
         return config;
     },
@@ -72,18 +73,6 @@ interface Options {
 // 封装请求
 export default function fetch (url:string, options:Options) {
     let opt = options || {};
-    let config = {
-        method: opt.type || 'post',
-        url: url,
-        params: opt.params || {},
-        // 判断是否有自定义头部，以对参数进行序列化。不定义头部，默认对参数序列化为查询字符串。
-        data: (opt.headers && opt.headers['Content-Type'].indexOf('x-www-form-urlencoded') > 0 ? stringify(opt.data) : opt.data) || {},
-        responseType: opt.dataType || 'json',
-        // 设置默认请求头
-        headers: opt.headers || {'Content-Type': 'application/json; charset=UTF-8'},
-        //设置超时时间
-        timeout: opt.timeout || 30000
-    }
     // console.log(store.getState())
     return new Promise((resolve, reject) => {
         axios({

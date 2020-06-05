@@ -10,8 +10,26 @@
     &.column{
         flex-flow: column nowrap;
     }
+    &.between{
+        justify-content: space-between;
+    }
     .flex-cell{
         flex:1
+    }
+}
+
+.table-popover-container{
+    min-width: 250px;
+    .ant-popover-title{
+        .flex{
+            span{
+                &:last-child{
+                    font-size: 12px;
+                    color: #909499;
+                    font-weight: normal;
+                }
+            }
+        }
     }
 }
 

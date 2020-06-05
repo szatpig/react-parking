@@ -1,9 +1,12 @@
 // Created by szatpig at 2020/4/30.
 import React, {useState, useEffect} from 'react';
+import { connect } from "react-redux";
 import moment from 'moment';
 
-import {Form, Input, Button, Modal, DatePicker, Select, Table, Tag, message, Checkbox} from 'antd';
+import {Form, Input, Button, Modal, DatePicker, Select, Table, Tag, Popover, message, Checkbox} from 'antd';
 import { couponList, confirmRevokeCoupon, verifyRevokeAvailable, revokeCouponBatch } from '@/api/coupon-api'
+
+import Dayjs from 'dayjs';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -77,13 +80,17 @@ const columns = [
     {
         title: '状态',
         dataIndex: 'couponStatus',
-        render: (cell:number) => (
-                <Tag color={ equityStatusList[cell].color }>{ equityStatusList[cell].label }</Tag>
+        render: (cell:number,row:any) => (
+                cell == 4 ?
+                        <Popover overlayClassName="table-popover-container" content={ row.revokeReason } title={ <div className="flex between"><span>提示</span><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span>{ row.updateTime }</span></div> } trigger="hover">
+                            <Tag color={ equityStatusList[cell].color }>{ equityStatusList[cell].label }</Tag>
+                        </Popover>:
+                        <Tag color={ equityStatusList[cell].color }>{ equityStatusList[cell].label }</Tag>
         )
     },
 ];
 
-function Coupon() {
+function Coupon(props:Props) {
     const [loading, setLoading] = useState(false);
     const [selectedRow, setSelectedRow] = useState([]);
     const [tableData,setTableData] = useState<object[]>([])
@@ -115,14 +122,17 @@ function Coupon() {
         let _data = {
             ids:selectedRow
         }
-        confirmRevokeCoupon(_data).then((data:any) => {
-            setRevokeEquity(data.data);
-            setShow(true);
-            modalForm.resetFields();
+        verifyRevokeAvailable(_data).then(data => {
+            confirmRevokeCoupon(_data).then((data:any) => {
+                setRevokeEquity(data.data);
+                setShow(true);
+                modalForm.resetFields();
+            })
         })
     }
 
     const rowSelection = {
+        selectedRowKeys:selectedRow,
         onChange: onSelectChange,
     };
 
@@ -135,7 +145,7 @@ function Coupon() {
         setConfirmLoading(true);
         modalForm.validateFields().then((values:any) => {
             let _data ={
-                ids:selectedRow.map((item:any) => item.id),
+                ids:selectedRow,
                 ...values
             }
             revokeCouponBatch(_data).then((data:any) => {
@@ -156,9 +166,16 @@ function Coupon() {
         setShow(false)
     };
 
-    const handleSearch = (values:object) => {
+    const handleSearch = (values:any) => {
         console.log(values)
-        list(values)
+        let { couponNo,plateNo,couponStatus,equityGrantTime } = values,
+                [startTime,endTime] = equityGrantTime || [];
+        setSelectedRow([]);
+        list({
+            couponNo,plateNo,couponStatus,
+            startTime:startTime && Dayjs(startTime).format('YYYY-MM-DD HH:mm:ss'),
+            endTime:endTime && Dayjs(endTime).format('YYYY-MM-DD HH:mm:ss')
+        })
     }
 
     const pagesChange = (current:number,pageSize:any) => {
@@ -245,9 +262,12 @@ function Coupon() {
                 <div className="input-cells">
                     {/*<Checkbox onChange={ checkboxChange }>全选</Checkbox> */}
                     已选中 { selectedRow.length } 条
-                    <Button type="primary" onClick={ handleBatch } disabled={ selectedRow.length == 0 }>
-                        撤销停车券
-                    </Button>
+                    {
+                        !!!props.revokable &&
+                        <Button type="primary" onClick={ handleBatch } disabled={ selectedRow.length == 0 }>
+                            撤销停车券
+                        </Button>
+                    }
                 </div>
             </div>
             <div className="table-container">
@@ -282,5 +302,12 @@ function Coupon() {
         </div>
     );
 }
+interface Props  {
+    revokable:number
+}
 
-export default Coupon
+const mapStateToProps = (state:any) => ({
+    revokable:state.user.info.revokable
+})
+
+export default connect(mapStateToProps,{})(Coupon)

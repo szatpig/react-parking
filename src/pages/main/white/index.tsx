@@ -1,9 +1,12 @@
 // Created by szatpig at 2020/4/30.
 import React, { useState, useEffect } from 'react';
+import { connect } from "react-redux";
 import moment from 'moment';
+import Dayjs from 'dayjs';
 
-import {Form, Input, Button, Modal, DatePicker, Select, Table, Tag, message} from 'antd';
-import { whiteList, equityConfigList, grantValid, confirmRevokeEquity, revokeEquitySubmit } from '@/api/white-api'
+import {Form, Input, Button, Modal, DatePicker, Select, Table, Tag, Popover, message} from 'antd';
+import { whiteList, equityConfigList, grantValid, confirmRevokeEquity, revokeEquitySubmit, validRevokeAvailable } from '@/api/white-api'
+
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
@@ -99,13 +102,17 @@ const columns = [
     {
         title: '状态',
         dataIndex: 'equityStatus',
-        render: (cell:number) => (
-            <Tag color={ equityStatusList[cell].color }>{ equityStatusList[cell].label }</Tag>
+        render: (cell:number,row:any) => (
+                cell == 4 ?
+                <Popover overlayClassName="table-popover-container" content={ row.revokeReason } title={ <div className="flex between"><span>提示</span><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span>{ row.updateTime }</span></div> } trigger="hover">
+                    <Tag color={ equityStatusList[cell].color }>{ equityStatusList[cell].label }</Tag>
+                </Popover>:
+                <Tag color={ equityStatusList[cell].color }>{ equityStatusList[cell].label }</Tag>
         )
     },
 ];
 
-function White() {
+function White(props:Props) {
     const [loading, setLoading] = useState(false);
     const [buttonDisabled, setButtonDisabled] = useState(true);
     const [equityList, setEquityList] = useState([]);
@@ -126,28 +133,33 @@ function White() {
     const [ form ] = Form.useForm();
     const [ modalForm ] = Form.useForm();
 
+    const{ revokable } = props
+
     const onFormLayoutChange = ({  }) => {
         // setFormLayout(layout);
     };
 
     const onSelectChange = (selectedRowKeys:any,selectedRow:any) => {
         console.log('selectedRowKeys changed: ', selectedRowKeys,selectedRow);
-        console.log('selectedRowKeys changed: ', selectedRowKeys,selectedRow);
-        setSelectedRow(selectedRow);
+        setSelectedRow(selectedRowKeys);
     };
 
     const handleBatch = ()=>{
         let _data = {
-            ids:selectedRow.map((item:any) => item.id)
+            ids:selectedRow
         }
-        confirmRevokeEquity(_data).then((data:any) => {
-            setRevokeEquity(data.data);
-            setShow(true);
-            modalForm.resetFields();
+        validRevokeAvailable(_data).then(data => {
+            confirmRevokeEquity(_data).then((data:any) => {
+                setRevokeEquity(data.data);
+                setShow(true);
+                modalForm.resetFields();
+            })
         })
+
     }
 
     const rowSelection = {
+        selectedRowKeys:selectedRow,
         onChange: onSelectChange,
     };
 
@@ -156,7 +168,7 @@ function White() {
         setConfirmLoading(true);
         modalForm.validateFields().then((values:any) => {
             let _data ={
-                ids:selectedRow.map((item:any) => item.id),
+                ids:selectedRow,
                 ...values
             }
             revokeEquitySubmit(_data).then((data:any) => {
@@ -177,9 +189,19 @@ function White() {
         setShow(false)
     };
 
-    const handleSearch = (values:object) => {
+    const handleSearch = (values:any) => {
         console.log(values)
-        list(values)
+        let { couponNo,plateNo,couponStatus,equityLevel,equityGrantTime } = values,
+             [startTime,endTime] = equityGrantTime || [];
+        setSelectedRow([]);
+        list({
+            couponNo,
+            plateNo,
+            couponStatus,
+            equityConfigId:equityLevel,
+            startTime:startTime && Dayjs(startTime).format('YYYY-MM-DD HH:mm:ss'),
+            endTime:endTime && Dayjs(endTime).format('YYYY-MM-DD HH:mm:ss')
+        })
     }
 
     const pagesChange = (current:number,pageSize:any) => {
@@ -300,9 +322,13 @@ function White() {
             <div className="search-container export">
                 <div className="input-cells">
                     当前有效白名单：{ selectedRow.length }&nbsp;&nbsp;个
-                    <Button type="primary" onClick={ handleBatch } disabled={ selectedRow.length === 0 }>
-                        撤销权益金
-                    </Button>
+                    {
+                        !!!revokable &&
+                        <Button type="primary" onClick={ handleBatch } disabled={ selectedRow.length === 0 }>
+                            撤销权益金
+                        </Button>
+                    }
+
                 </div>
             </div>
             <div className="table-container">
@@ -338,4 +364,12 @@ function White() {
     );
 }
 
-export default White
+interface Props  {
+    revokable:number
+}
+
+const mapStateToProps = (state:any) => ({
+    revokable:state.user.info.revokable
+})
+
+export default connect(mapStateToProps,{})(White)

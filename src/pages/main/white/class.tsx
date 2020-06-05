@@ -2,7 +2,7 @@
 import React, {useState, useEffect} from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 
-import { LeftOutlined, UploadOutlined } from '@ant-design/icons';
+import { LeftOutlined } from '@ant-design/icons';
 
 
 import { Form, Input, Button, Modal, InputNumber, Table, Popconfirm, message  } from 'antd';

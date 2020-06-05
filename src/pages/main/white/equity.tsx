@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useHistory, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux'
 
-import { LeftOutlined, UploadOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { LeftOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { Form, Input, Select, Button, DatePicker, Table, Checkbox, Cascader, Upload, Modal, message } from 'antd';
 
 import Dayjs from 'dayjs';
@@ -123,6 +123,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
     })
 
     const rowSelection = {
+        selectedRowKeys:selectedRow,
         onChange: onSelectChange,
         getCheckboxProps:onSelectAll
     };
@@ -138,6 +139,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
             city,
             county
         }
+        setSelectedRow([]);
         list(_data)
         if(tableSelect){
             triggerChange(values)
@@ -221,7 +223,7 @@ function Equity(props:Props) {
                 parkIdListSearch = !Array.isArray(parkIdList)? parkIdList:{};
 
         parkIdList = Array.isArray(parkIdList)?parkIdList.join(','):''
-        if(params.type == 'single'){
+        if(params.type === 'single'){
             let _data ={
                 plateNo,
                 equityConfigId
@@ -398,7 +400,7 @@ function Equity(props:Props) {
         if(file.status === 'removed') return ;
         const { response } = file;
         if(response){
-            if(response.status == 1000){
+            if(response.status === 1000){
                 return response.data.filePath
             }
         }
@@ -431,7 +433,7 @@ function Equity(props:Props) {
              </div>
              <Form form={ submitForm } {...layout} className="form-container" name="nest-messages" onFinish={ onFinish } validateMessages={validateMessages}>
                  {
-                     params.type == 'single' &&
+                     params.type === 'single' &&
                      <>
                          <Form.Item name="plateNo" label="车牌号" rules={[{ required: true }]}>
                              <Input maxLength={ 20 } placeholder="请输入车牌号" />
@@ -461,7 +463,7 @@ function Equity(props:Props) {
                      </Select>
                  </Form.Item>
                  {
-                     params.type == 'batch' &&
+                     params.type === 'batch' &&
                      <Form.Item name="whitelistUri"
                             label="车牌号"
                             getValueFromEvent={ normFile }

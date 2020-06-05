@@ -1,5 +1,6 @@
 {
   "name": "parking-verification",
+  "homepage":"./etc-verification",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

@@ -38,6 +38,10 @@ export const equityConfigDelete= (data:any) => fetch(site.base + '/equityConfig/
     data
 });
 
+export const validRevokeAvailable= (data:any) => fetch(site.base + '/customerEquity/validRevokeAvailable' ,{
+    type: 'post',
+    data
+});
 //判断列表页余额是不是够发
 export const grantValid= (data:any) => fetch(site.base + '/customerEquity/grantValid' ,{
     type: 'post',

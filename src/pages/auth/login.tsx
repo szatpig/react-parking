@@ -5,7 +5,6 @@ import { Form, Input, Button } from 'antd';
 
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { FormInstance } from 'antd/lib/form';
-import { EncryptStr } from '@/utils/utils'
 import md5 from "md5"
 
 import { userLoginRequestAction, userLoginOutAction } from '@/store/actions/user'
@@ -95,7 +94,7 @@ class Login extends Component<UserFormProps, State> {
                                     />
                                 </Form.Item>
                                 {
-                                    this.props.error == 5010 &&
+                                    this.props.error === 5010 &&
                                     <Form.Item
                                         className="identify-wrap"
                                         shouldUpdate={(prevValues, currentValues) => prevValues.account !== currentValues.account}>
