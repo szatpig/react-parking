@@ -267,9 +267,9 @@ function White(props:Props) {
             <div className="breadcrumb-container left-border line">
                 白名单管理
                 <span>
-                    <Button type="link" href={'/home/white/class'}>权益等级管理</Button>
-                    <Button disabled={ !!!buttonDisabled } type="primary" href={'/home/white/equity/single'}>发放权益金</Button>
-                    <Button type="primary" href={'/home/white/equity/batch'}>批量导入权益</Button>
+                    <Button type="link" href={'white/class'}>权益等级管理</Button>
+                    <Button disabled={ !!!buttonDisabled } type="primary" href={'white/equity/single'}>发放权益金</Button>
+                    <Button type="primary" href={'white/equity/batch'}>批量导入权益</Button>
                 </span>
             </div>
             <div className="search-container">
