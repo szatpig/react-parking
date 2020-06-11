@@ -37,10 +37,11 @@ axios.interceptors.response.use(
     error => {
         message.destroy();
         if (error.response) {
-            switch (error.response.data.status) {
+            console.log(error.response)
+            switch (error.response.status) {
                 case 401:
                     // 401 清除token信息并跳转到登录页面
-                    message.error(error.response.data.data.msg);
+                    message.error(error.response.statusText);
                     break;
                 case 403:
                     break;
@@ -92,18 +93,16 @@ export default function fetch (url:string, options:Options) {
             } else {
                 switch (response.data.status) {
                     case 1001:
-                        store.dispatch({type:'USER_LOGIN_OUT'});
-                        history.push('/login');
-                        reject(response.data);
-                        break;
                     case 8001:
                         if(Number(sessionStorage.getItem('code_2001'))){
                             reject(response.data);
                         }else{
                             sessionStorage.setItem('code_2001','1');
-                            message.error('账号已在其他设备登录').then(()=>{
+                            message.error(response.data.msg || '账号已在其他设备登录').then(()=>{
                                 sessionStorage.setItem('code_2001','0');
                             },()=>{})
+                            store.dispatch({type:'USER_LOGIN_OUT'});
+                            history.push('/login');
                         }
                         reject(response.data);
                         break;

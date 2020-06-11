@@ -12,11 +12,9 @@ import { ReloadOutlined } from '@ant-design/icons';
 
 import { headerCollapsed } from "@/store/actions/header";
 import { userLoginOutAction } from "@/store/actions/user";
-import defaultHeadImg from '@/images/default.png'
 import logo from '@/images/image-logo.png'
 
 import site from '@/utils/config'
-import {userInfo} from "os";
 
 const { Header } = Layout;
 
@@ -65,8 +63,8 @@ class HeaderLayout extends Component<Props, State> {
         const { name,token } = this.props.userInfo;
         const content = (
                 <div>
-                    <p onClick={ this.routerLink }>个人信息</p>
-                    <p onClick={ this.loginOut  }>退出登录</p>
+                    {/*<p onClick={ this.routerLink }>个人信息</p>*/}
+                    <p style={ {cursor:'pointer'} } onClick={ this.loginOut  }>退出登录</p>
                 </div>
         );
         return (
@@ -89,7 +87,7 @@ class HeaderLayout extends Component<Props, State> {
                         <div className="item-wrap">
                             <Popover placement="bottom" overlayClassName="header-popover-container" content={content} trigger="hover">
                                 <div>
-                                    <img src={  `${ site.base }/businessAccount/getCompanyLogo?token=${ token }&random=${ Math.random() }` } alt="用户头像"/>
+                                    <img src={ `${ site.base }/businessAccount/getCompanyLogo?token=${ token }&random=${ Math.random() }` } alt="用户头像"/>
                                     <span className="item-name">{ name }</span>
                                 </div>
                             </Popover>

@@ -117,10 +117,27 @@ function Verification() {
         })
     };
 
+    const handleQuery = () => {
+        setPage({
+            ...page,
+            current:1
+        });
+        form.submit();
+    };
+
     const pagesChange = (current:number,pageSize:any) => {
         setPage({
             ...page,
             current,
+            pageSize
+        });
+        form.submit();
+    };
+
+    const pageSizeChange= (current:number,pageSize:any) => {
+        setPage({
+            ...page,
+            current:1,
             pageSize
         });
         form.submit();
@@ -171,11 +188,11 @@ function Verification() {
                         <Form.Item  label="发放时间" name="time">
                             <RangePicker ranges={{
                                 "今天": [moment(), moment()],
-                                '近一个月': [moment().startOf('month'), moment().endOf('month')],
+                                '近一个月': [moment(new Date()).subtract(1,'months'), moment(new Date())],
                             }} showTime format="YYYY-MM-DD HH:mm:ss" />
                         </Form.Item>
                         <Form.Item>
-                            <Button type="primary" htmlType="submit">查询</Button>
+                            <Button type="primary" htmlType="button" onClick={ handleQuery }>查询</Button>
                             <Button type="primary" htmlType="button" style={{ marginLeft:"12px" }} onClick={ handleExport }>导出</Button>
                         </Form.Item>
                     </Form>
@@ -192,7 +209,7 @@ function Verification() {
                 </span>
             </div>
             <div className="table-container">
-                <Table rowKey="id" bordered columns={ columns } dataSource={ tableData } pagination={{ onChange:pagesChange,...page }}/>
+                <Table rowKey="id" bordered columns={ columns } dataSource={ tableData } pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,...page }}/>
             </div>
         </div>
     );

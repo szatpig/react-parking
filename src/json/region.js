@@ -1,9 +1,114 @@
 export default[{
-		"children": [],
+		"children": [{
+			"children": [{
+				"label": "东城区",
+				"pid": 110100,
+				"value": "110101",
+				"yzcode": "Dongcheng",
+				"merlabel": "中国,北京,北京市,东城区"
+			}, {
+				"label": "西城区",
+				"pid": 110100,
+				"value": "110102",
+				"yzcode": "Xicheng",
+				"merlabel": "中国,北京,北京市,西城区"
+			}, {
+				"label": "朝阳区",
+				"pid": 110100,
+				"value": "110105",
+				"yzcode": "Chaoyang",
+				"merlabel": "中国,北京,北京市,朝阳区"
+			}, {
+				"label": "丰台区",
+				"pid": 110100,
+				"value": "110106",
+				"yzcode": "Fengtai",
+				"merlabel": "中国,北京,北京市,丰台区"
+			}, {
+				"label": "石景山区",
+				"pid": 110100,
+				"value": "110107",
+				"yzcode": "Shijingshan",
+				"merlabel": "中国,北京,北京市,石景山区"
+			}, {
+				"label": "海淀区",
+				"pid": 110100,
+				"value": "110108",
+				"yzcode": "Havalueian",
+				"merlabel": "中国,北京,北京市,海淀区"
+			}, {
+				"label": "门头沟区",
+				"pid": 110100,
+				"value": "110109",
+				"yzcode": "Mentougou",
+				"merlabel": "中国,北京,北京市,门头沟区"
+			}, {
+				"label": "房山区",
+				"pid": 110100,
+				"value": "110111",
+				"yzcode": "Fangshan",
+				"merlabel": "中国,北京,北京市,房山区"
+			}, {
+				"label": "通州区",
+				"pid": 110100,
+				"value": "110112",
+				"yzcode": "Tongzhou",
+				"merlabel": "中国,北京,北京市,通州区"
+			}, {
+				"label": "顺义区",
+				"pid": 110100,
+				"value": "110113",
+				"yzcode": "Shunyi",
+				"merlabel": "中国,北京,北京市,顺义区"
+			}, {
+				"label": "昌平区",
+				"pid": 110100,
+				"value": "110114",
+				"yzcode": "Changping",
+				"merlabel": "中国,北京,北京市,昌平区"
+			}, {
+				"label": "大兴区",
+				"pid": 110100,
+				"value": "110115",
+				"yzcode": "Daxing",
+				"merlabel": "中国,北京,北京市,大兴区"
+			}, {
+				"label": "怀柔区",
+				"pid": 110100,
+				"value": "110116",
+				"yzcode": "Huairou",
+				"merlabel": "中国,北京,北京市,怀柔区"
+			}, {
+				"label": "平谷区",
+				"pid": 110100,
+				"value": "110117",
+				"yzcode": "Pinggu",
+				"merlabel": "中国,北京,北京市,平谷区"
+			}, {
+				"label": "密云县",
+				"pid": 110100,
+				"value": "110228",
+				"yzcode": "Miyun",
+				"merlabel": "中国,北京,北京市,密云县"
+			}, {
+				"label": "延庆县",
+				"pid": 110100,
+				"value": "110229",
+				"yzcode": "Yanqing",
+				"merlabel": "中国,北京,北京市,延庆县"
+			}],
+			"label": "北京市",
+			"pid": 110000,
+			"value": "110100",
+			"yzcode": "Beijing",
+			"merlabel": "中国,北京,北京市"
+		}],
 		"label": "北京",
 		"pid": 100000,
-		"value":"110000",
-	}, {
+		"value": "110000",
+		"yzcode": "Beijing",
+		"merlabel": "中国,北京"
+    },{
 		"children": [{
 			"children": [{
 				"label": "和平区",

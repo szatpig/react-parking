@@ -177,10 +177,27 @@ function Coupon(props:Props) {
         })
     }
 
+    const handleQuery = () => {
+        setPage({
+            ...page,
+            current:1
+        });
+        form.submit();
+    };
+
     const pagesChange = (current:number,pageSize:any) => {
         setPage({
             ...page,
             current,
+            pageSize
+        });
+        form.submit();
+    };
+
+    const pageSizeChange= (current:number,pageSize:any) => {
+        setPage({
+            ...page,
+            current:1,
             pageSize
         });
         form.submit();
@@ -237,7 +254,7 @@ function Coupon(props:Props) {
                         <Form.Item  label="发放时间" name="equityGrantTime">
                             <RangePicker ranges={{
                                 "今天": [moment(), moment()],
-                                '近一个月': [moment().startOf('month'), moment().endOf('month')],
+                                '近一个月': [moment(new Date()).subtract(1,'months'), moment(new Date())],
                             }} showTime format="YYYY-MM-DD HH:mm:ss" />
                         </Form.Item>
                         <Form.Item label="状态" name="couponStatus">
@@ -252,7 +269,7 @@ function Coupon(props:Props) {
                             </Select>
                         </Form.Item>
                         <Form.Item>
-                            <Button type="primary" htmlType="submit">查询</Button>
+                            <Button type="primary" htmlType="button" onClick={ handleQuery }>查询</Button>
                         </Form.Item>
                     </Form>
                 </div>
@@ -278,7 +295,7 @@ function Coupon(props:Props) {
                         loading={ loading }
                         dataSource={ tableData }
                         scroll={{ x: 1500 }}
-                        pagination={{ onChange:pagesChange,...page }}/>
+                        pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,...page }}/>
             </div>
             <Modal
                     title="撤销原因"
@@ -292,9 +309,9 @@ function Coupon(props:Props) {
                         form = { modalForm }
                         onFinish={ handleSubmit }>
                     <Form.Item name="revokeReason" label="撤销原因" rules={ [
-                        { required: true, message: '请输入内容' }
+                        { required: true, whitespace: true, message: '请输入内容' }
                     ] }>
-                        <Input.TextArea rows={4} />
+                        <Input.TextArea rows={4} maxLength={ 200 } />
                     </Form.Item>
                 </Form>
                 <p className="common-dialog-tips">当前选择{ revokeEquity.selectLine || 0 }笔，余额共计{ revokeEquity.totalBalance || 0 }元，撤销后会将未使用金额返回行业用户余额，撤销后不可恢复!</p>

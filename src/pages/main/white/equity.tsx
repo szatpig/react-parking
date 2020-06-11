@@ -96,6 +96,11 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
     const [loading, setLoading] = useState(false);
     const [tableData,setTableData] = useState<object[]>([]);
     const [tableSelect, setTableSelect] = useState(false);
+    const [page,setPage] = useState({
+        current:1,
+        pageSize:20,
+        total:0
+    });
 
     const [ form ] = Form.useForm();
     const onFormLayoutChange = ({  }) => {
@@ -140,6 +145,14 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
         getCheckboxProps:onSelectAll
     };
 
+    const handleQuery = () => {
+        setPage({
+            ...page,
+            current:1
+        });
+        form.submit();
+    };
+
     const handleSearch = (values:{ parkingName?:string,region?:any[],address?:string,owner?:string }) => {
         let { parkingName,region,address,owner } = values,
         [province, city, county]= region || [],
@@ -149,7 +162,8 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
             owner,
             province,
             city,
-            county
+            county,
+            beforeEndDate:true
         }
         setSelectedRow([]);
         list(_data)
@@ -160,7 +174,8 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
 
     const list = (args?:object) => {
         let _data={
-            ...args
+            ...args,
+            pageSize:200
         };
         setLoading(true)
         getParkingDetailByBusinessId(_data).then((data:any) => {
@@ -170,6 +185,10 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
             setLoading(false)
         })
     };
+
+    useEffect(() => {
+        handleSearch({})
+    },[0]);
 
     return(
         <>
@@ -193,7 +212,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
                             <Input placeholder="请输入" maxLength={ 10 } />
                         </Form.Item>
                         <Form.Item>
-                            <Button type="primary" htmlType="submit">查询</Button>
+                            <Button type="primary"  htmlType="button" onClick={ handleQuery }>查询</Button>
                         </Form.Item>
                     </Form>
                 </div>
@@ -202,7 +221,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
                 <div className="input-cells">
                     <Checkbox onChange={ checkboxChange }>全选</Checkbox>
                     {
-                        !!!tableSelect&& (`已选中 ${ selectedRow.length } 条`)
+                        `已选中 ${ tableSelect ? tableData.length :  selectedRow.length } 条`
                     }
                 </div>
             </div>
@@ -264,11 +283,11 @@ function Equity(props:Props) {
                                     </div>
                                 </div>
                                 <div className="import-cell">
-                                    <p>导入信息</p>
+                                    <p>发放信息</p>
                                     <div className="import-content">
                                         <p><span>共计：</span>{ grandCount } 笔</p>
                                         <p><span>其中新增白名单：</span>{ newCount }个</p>
-                                        <p><span>权益余额总计：</span>{ totalAmount }元</p>
+                                        <p><span>权益金额总计：</span>{ totalAmount }元</p>
                                     </div>
                                 </div>
                             </div>
@@ -342,14 +361,14 @@ function Equity(props:Props) {
     const handleDialogSingleConfirm = (_data:any) => {
         grantEquity(_data).then((data:any) => {
             message.success('发放成功');
-            history.go(-1)
+            history.replace('/home/white')
         })
     }
 
     const handleDialogConfirm = (_data:any) => {
         importEquity(_data).then((data:any) => {
             message.success('导入成功');
-            history.go(-1)
+            history.replace('/home/white')
         })
     }
 
@@ -378,9 +397,9 @@ function Equity(props:Props) {
             message.error( '超过2M限制，不允许上传');
             return Promise.reject(false);
         }
-        const fileType = '.xls, .xlsx, .csv';
+        const fileType = '.xls, .xlsx';
         if(fileType.indexOf(file.name.split(/\./)[1]) === -1){
-            message.error( '仅支持上传.xls, .xlsx, .csv格式');
+            message.error( '仅支持上传.xls, .xlsx格式');
             return Promise.reject(false);
         }
 
@@ -454,7 +473,7 @@ function Equity(props:Props) {
                  {
                      params.type === 'single' &&
                      <>
-                         <Form.Item name="plateNo" label="车牌号" rules={[{ required: true }]}>
+                         <Form.Item name="plateNo" label="车牌号" rules={[{ required: true,whitespace: true }]}>
                              <Input maxLength={ 20 } placeholder="请输入车牌号" />
                          </Form.Item>
                          <Form.Item name="plateColor" label="车牌颜色" rules={[{ required: true }]}>
@@ -500,7 +519,7 @@ function Equity(props:Props) {
                                  onRemove = { handleRemove }
                                  onChange={ onFileChange }>
                              <Button>选择文件</Button> <span onClick={ handleDownLoad } className="upload-template">请按照<i>模板</i>上传</span>
-                             <p className="upload-txt">支持.xls, .xlsx, .csv格式长传，单次上传上限1000行，请勿删除模板表头</p>
+                             <p className="upload-txt">支持.xls, .xlsx格式长传，单次上传上限1000行，请勿删除模板表头</p>
                          </Upload>
                      </Form.Item>
                  }

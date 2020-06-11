@@ -6,13 +6,13 @@ import Dayjs from 'dayjs';
 
 import {Form, Input, Button, Modal, DatePicker, Select, Table, Tag, Popover, message} from 'antd';
 import { whiteList, equityConfigList, grantValid, confirmRevokeEquity, revokeEquitySubmit, validRevokeAvailable } from '@/api/white-api'
-
+import { ExclamationCircleFilled } from '@ant-design/icons';
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 const equityStatusList:any = {
     0:{
-        label:'已发放',
+        label:'未使用',
         color:'blue',
     },
     1:{
@@ -20,7 +20,7 @@ const equityStatusList:any = {
         color:'green',
     },
     2:{
-        label:'已核销',
+        label:'核销完成',
         color:'default',
     },
     3:{
@@ -46,7 +46,7 @@ const columns = [
     {
         title: '车牌号',
         dataIndex: 'plateNo',
-        width: 100
+        width: 120
     },
     {
         title: '车牌颜色',
@@ -104,8 +104,11 @@ const columns = [
         dataIndex: 'equityStatus',
         render: (cell:number,row:any) => (
                 cell == 4 ?
-                <Popover overlayClassName="table-popover-container" content={ row.revokeReason } title={ <div className="flex between"><span>提示</span><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span>{ row.updateTime }</span></div> } trigger="hover">
-                    <Tag color={ equityStatusList[cell].color }>{ equityStatusList[cell].label }</Tag>
+                <Popover overlayClassName="table-popover-container" placement="topRight" content={ row.revokeReason } title={ <div className="flex between"><span>原因</span><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span>{ row.updateTime }</span></div> } trigger="hover">
+                    <span>
+                        <Tag color={ equityStatusList[cell].color }>{ equityStatusList[cell].label }</Tag>
+                        <ExclamationCircleFilled style={{ color:'#C0C6CC' }} />
+                    </span>
                 </Popover>:
                 <Tag color={ equityStatusList[cell].color }>{ equityStatusList[cell].label }</Tag>
         )
@@ -114,8 +117,8 @@ const columns = [
 
 function White(props:Props) {
     const [loading, setLoading] = useState(false);
-    const [buttonDisabled, setButtonDisabled] = useState(true);
     const [equityList, setEquityList] = useState([]);
+    const [effectiveWhileListCount, setEffectiveWhileListCount] = useState([]);
     const [selectedRow, setSelectedRow] = useState([]);
     const [tableData,setTableData] = useState<object[]>([])
     const [page,setPage] = useState({
@@ -133,7 +136,7 @@ function White(props:Props) {
     const [ form ] = Form.useForm();
     const [ modalForm ] = Form.useForm();
 
-    const{ revokable } = props
+    const{ revokable, history } = props
 
     const onFormLayoutChange = ({  }) => {
         // setFormLayout(layout);
@@ -189,7 +192,7 @@ function White(props:Props) {
     };
 
     const handleSearch = (values:any) => {
-        console.log(values)
+        console.log(page)
         let { couponNo,plateNo,couponStatus,equityLevel,equityGrantTime,equityStatus } = values,
              [startTime,endTime] = equityGrantTime || [];
         setSelectedRow([]);
@@ -200,14 +203,29 @@ function White(props:Props) {
             equityConfigId:equityLevel,
             startTime:startTime && Dayjs(startTime).format('YYYY-MM-DD HH:mm:ss'),
             endTime:endTime && Dayjs(endTime).format('YYYY-MM-DD HH:mm:ss'),
-            equityStatus
+            equityStatus,
+            current:1
         })
     }
-
+    const handleQuery = () => {
+        setPage({
+            ...page,
+            current:1
+        });
+        form.submit();
+    };
     const pagesChange = (current:number,pageSize:any) => {
         setPage({
             ...page,
             current,
+            pageSize
+        });
+        form.submit();
+    };
+    const pageSizeChange= (current:number,pageSize:any) => {
+        setPage({
+            ...page,
+            current:1,
             pageSize
         });
         form.submit();
@@ -218,7 +236,8 @@ function White(props:Props) {
     }
 
     const list = (args?:object) => {
-        let { current,pageSize } = page
+        let { current,pageSize } = page;
+        console.log(page)
         let _data={
             pageNum:current,
             pageSize,
@@ -231,6 +250,7 @@ function White(props:Props) {
                 ...page,
                 total:data.data.customerEquityList.total
             })
+            setEffectiveWhileListCount(data.data.effectiveWhileListCount)
             setLoading(false)
         }).catch(err => {
             setLoading(false)
@@ -250,16 +270,15 @@ function White(props:Props) {
     const getGrantValid = () => {
         let _data ={}
         grantValid(_data).then((data:any) => {
-            setButtonDisabled(data.data);
+            history.push('/home/white/equity/single')
         }).catch(err => {
-            setButtonDisabled(false);
         })
     }
 
     useEffect(() => {
         list();
         getEquityList();
-        getGrantValid();
+        // getGrantValid();
     },[]);
 
     return (
@@ -268,7 +287,7 @@ function White(props:Props) {
                 白名单管理
                 <span>
                     <Button type="link" href={'white/class'}>权益等级管理</Button>
-                    <Button disabled={ !!!buttonDisabled } type="primary" href={'white/equity/single'}>发放权益金</Button>
+                    <Button type="primary" onClick={ () => getGrantValid() }>发放权益金</Button>
                     <Button type="primary" href={'white/equity/batch'}>批量导入权益</Button>
                 </span>
             </div>
@@ -288,7 +307,7 @@ function White(props:Props) {
                         <Form.Item  label="发放时间" name="equityGrantTime">
                             <RangePicker ranges={{
                                 "今天": [moment(), moment()],
-                                '近一个月': [moment().startOf('month'), moment().endOf('month')],
+                                '近一个月': [moment(new Date()).subtract(1,'months'), moment(new Date())],
                             }} showTime format="YYYY-MM-DD HH:mm:ss" />
                         </Form.Item>
                         <Form.Item  label="权益等级" name="equityLevel">
@@ -314,14 +333,14 @@ function White(props:Props) {
                             </Select>
                         </Form.Item>
                         <Form.Item>
-                            <Button type="primary" htmlType="submit">查询</Button>
+                            <Button type="primary" htmlType="button" onClick={ handleQuery }>查询</Button>
                         </Form.Item>
                     </Form>
                 </div>
             </div>
             <div className="search-container export">
                 <div className="input-cells">
-                    当前有效白名单：{ selectedRow.length }&nbsp;&nbsp;个
+                    当前有效白名单：{ effectiveWhileListCount }&nbsp;&nbsp;个
                     {
                         !!!revokable &&
                         <Button type="primary" onClick={ handleBatch } disabled={ selectedRow.length === 0 }>
@@ -340,7 +359,7 @@ function White(props:Props) {
                         loading={ loading }
                         dataSource={ tableData }
                         scroll={{ x: 1500 }}
-                        pagination={{ onChange:pagesChange,...page, showTotal: showTotal }} />
+                        pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,...page, showTotal: showTotal }} />
             </div>
             <Modal
                 title="撤销原因"
@@ -353,9 +372,9 @@ function White(props:Props) {
                 <Form
                     form={ modalForm }>
                     <Form.Item name="revokeReason" label="撤销原因" rules={ [
-                        { required: true, message: '请输入内容' }
+                        { required: true,whitespace: true, message: '请输入内容' }
                     ] }>
-                        <Input.TextArea rows={4} />
+                        <Input.TextArea rows={4} maxLength={ 200 } />
                     </Form.Item>
                 </Form>
                 <p className="common-dialog-tips">当前选择{ revokeEquity.selectLine }笔，余额共计{ revokeEquity.totalBalance }元，撤销后会将未使用金额返回行业用户余额，撤销后不可恢复!</p>
@@ -365,7 +384,8 @@ function White(props:Props) {
 }
 
 interface Props  {
-    revokable:number
+    revokable:number,
+    history:any
 }
 
 const mapStateToProps = (state:any) => ({

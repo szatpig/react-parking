@@ -33,6 +33,7 @@ function EquityClass() {
     const columns = [
         {
             title: '权益等级名称',
+            ellipsis:true,
             dataIndex: 'equityLevel',
             width: 180,
         },
@@ -190,19 +191,19 @@ function EquityClass() {
                         onCancel={ handleCancel }>
                     <Form {...layout} form={ form }>
                         <Form.Item name="equityLevel" label="权益等级名称" rules={ [
-                            { required: true, message: '请输入权益等级名称' }
+                            { whitespace: true, required: true, message: '请输入权益等级名称' }
                         ] }>
-                            <Input maxLength={ 20 } placeholder="请输入如：白急、1级等" />
+                            <Input  maxLength={ 20 } placeholder="请输入如：白急、1级等" />
                         </Form.Item>
                         <Form.Item name="equityAmount" label="权益等级金额" wrapperCol={{ span:8 }} rules={ [
-                            { required: true, type: 'number', min: 0, max: 99999999, message: '请输入权益等级金额' }
+                            { required: true, type: 'number', min: 0, max: 999999999, message: '请输入金额0-999999999' }
                         ] }>
-                            <InputNumber  maxLength={ 8 } placeholder="请输入" />
+                            <InputNumber min={1} max={ 999999999 } step={ 1 } parser={(value:any) => parseInt(value) } maxLength={ 9 } placeholder="请输入" />
                         </Form.Item>
                         <Form.Item name="remark" label="描述" rules={ [
                             { message: '请输入内容' }
                         ] }>
-                            <Input.TextArea rows={4} />
+                            <Input.TextArea rows={ 4 } maxLength={ 100 } />
                         </Form.Item>
                     </Form>
                 </Modal>

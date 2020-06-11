@@ -10,6 +10,7 @@ import region from '@/json/region'
 
 import site from '@/utils/config'
 import { connect } from "react-redux";
+import { userLoginOutAction } from "@/store/actions/user";
 
 const options = region;
 const columns = [
@@ -87,15 +88,18 @@ function Account(props:Props) {
     });
     const [modal, contextHolder] = Modal.useModal();
 
-    const{ userToken } = props
+    console.log(props)
+    const{ userToken, userLoginOutAction,history } = props
 
     const [ form ] = Form.useForm();
+    const [ passwordForm ] = Form.useForm();
     const onFormLayoutChange = ({  }) => {
         // setFormLayout(layout);
     };
 
     const handleShow = ()=>{
         setShow(true)
+        passwordForm.resetFields();
     }
 
 
@@ -103,16 +107,16 @@ function Account(props:Props) {
 
     const handleSubmit = () => {
         setConfirmLoading(true);
-        form.validateFields().then(values => {
+        passwordForm.validateFields().then(values => {
             let _data = {
                 ...values
             }
             updateIndustryLoginUserPwd(_data).then((data:any) => {
                 setConfirmLoading(false);
                 setShow(false);
-                form.resetFields();
-                message.success('密码修改成功')
-                list();
+                passwordForm.resetFields();
+                message.success('密码修改成功,请重新登录')
+                loginOut();
             }).catch(err =>{
                 setConfirmLoading(false);
             })
@@ -149,6 +153,11 @@ function Account(props:Props) {
         return true ;
     };
 
+    const loginOut = () => {
+        userLoginOutAction();
+        history.push('/login')
+    }
+
     const getUserInfo = () => {
         let _data ={}
         getAccountDetails(_data).then((data:any) => {
@@ -161,10 +170,27 @@ function Account(props:Props) {
         list(values)
     }
 
+    const handleQuery = () => {
+        setPage({
+            ...page,
+            current:1
+        });
+        form.submit();
+    };
+
     const pagesChange = (current:number,pageSize:any) => {
         setPage({
             ...page,
             current,
+            pageSize
+        });
+        form.submit();
+    };
+
+    const pageSizeChange= (current:number,pageSize:any) => {
+        setPage({
+            ...page,
+            current:1,
             pageSize
         });
         form.submit();
@@ -310,7 +336,7 @@ function Account(props:Props) {
                                         <Input placeholder="请输入" maxLength={ 10 } />
                                     </Form.Item>
                                     <Form.Item>
-                                        <Button type="primary" htmlType="submit">查询</Button>
+                                        <Button type="primary" htmlType="button" onClick={ handleQuery }>查询</Button>
                                     </Form.Item>
                                 </Form>
                             </div>
@@ -321,7 +347,7 @@ function Account(props:Props) {
                                     bordered
                                     columns={ columns }
                                     dataSource={ tableData }
-                                    pagination={{ onChange:pagesChange,...page }} />
+                                    pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,...page }} />
                         </div>
                     </div>
                 </div>
@@ -337,7 +363,7 @@ function Account(props:Props) {
                     maskClosable={ false }
                     confirmLoading={ confirmLoading }
                     onCancel={ handleCancel }>
-                <Form {...layout} form={ form }>
+                <Form {...layout} form={ passwordForm }>
                     <Form.Item name="oldPassword" label="原密码" rules={ [
                         { required: true, message: '请输入原密码' },
                         { pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,16}$/, message: '6-16位，至少包含字母和数字' }
@@ -363,11 +389,16 @@ function Account(props:Props) {
 }
 
 interface Props  {
-    userToken:string
+    userToken:string,
+    userLoginOutAction:any,
+    history:any
 }
 
 const mapStateToProps = (state:any) => ({
     userToken:state.user.token
 })
+const mapDispatchToProps = {
+    userLoginOutAction
+}
 
-export default connect(mapStateToProps,{})(Account)
+export default connect(mapStateToProps,mapDispatchToProps)(Account)
