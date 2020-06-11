@@ -51,10 +51,12 @@ const columns = [
         title: '停车场名称',
         dataIndex: 'parkingName',
         width: 120,
+        ellipsis:true
     },
     {
         title: '地址',
         dataIndex: 'address',
+        ellipsis:true
     },
     {
         title: '所属业主',
@@ -100,7 +102,11 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
     const [loading, setLoading] = useState(false);
     const [tableData,setTableData] = useState<object[]>([]);
     const [tableSelect, setTableSelect] = useState(false);
-
+    const [page,setPage] = useState({
+        current:1,
+        pageSize:20,
+        total:0
+    });
     const [ form ] = Form.useForm();
     const onFormLayoutChange = ({  }) => {
         // setFormLayout(layout);
@@ -154,7 +160,8 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
                     owner,
                     province,
                     city,
-                    county
+                    county,
+                    beforeEndDate:true
                 }
         setSelectedRow([]);
         list(_data)
@@ -162,13 +169,47 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
             triggerChange(_data)
         }
     };
+
+    const handleQuery = () => {
+        setPage({
+            ...page,
+            current:1
+        });
+        form.submit();
+    };
+    const pagesChange = (current:number,pageSize:any) => {
+        setPage({
+            ...page,
+            current,
+            pageSize
+        });
+        form.submit();
+    };
+    const pageSizeChange= (current:number,pageSize:any) => {
+        setPage({
+            ...page,
+            current:1,
+            pageSize
+        });
+        form.submit();
+    };
+
+    const showTotal = (total:number) => {
+        return `总共 ${total} 条`
+    }
+
     const list = (args?:object) => {
         let _data={
-            ...args
+            ...args,
+            pageSize:200
         };
         setLoading(true)
         getParkingDetailByBusinessId(_data).then((data:any) => {
             setTableData(data.data.list);
+            setPage({
+                ...page,
+                total:data.data.customerEquityList.total
+            })
             setLoading(false)
         }).catch(err => {
             setLoading(false)
@@ -221,7 +262,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
                         loading={ loading }
                         dataSource={ tableData }
                         scroll={{ x: 1270,y:250 }}
-                        pagination = {false} />
+                        pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,...page, showTotal: showTotal }} />
             </div>
         </>
     )

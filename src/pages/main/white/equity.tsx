@@ -43,6 +43,7 @@ const columns = [
         title: '停车场名称',
         dataIndex: 'parkingName',
         width: 120,
+        ellipsis:true,
         fixed:true,
     },
     {
@@ -145,14 +146,6 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
         getCheckboxProps:onSelectAll
     };
 
-    const handleQuery = () => {
-        setPage({
-            ...page,
-            current:1
-        });
-        form.submit();
-    };
-
     const handleSearch = (values:{ parkingName?:string,region?:any[],address?:string,owner?:string }) => {
         let { parkingName,region,address,owner } = values,
         [province, city, county]= region || [],
@@ -172,14 +165,45 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
         }
     };
 
+    const handleQuery = () => {
+        setPage({
+            ...page,
+            current:1
+        });
+        form.submit();
+    };
+    const pagesChange = (current:number,pageSize:any) => {
+        setPage({
+            ...page,
+            current,
+            pageSize
+        });
+        form.submit();
+    };
+    const pageSizeChange= (current:number,pageSize:any) => {
+        setPage({
+            ...page,
+            current:1,
+            pageSize
+        });
+        form.submit();
+    };
+
+    const showTotal = (total:number) => {
+        return `总共 ${total} 条`
+    }
+
     const list = (args?:object) => {
         let _data={
-            ...args,
-            pageSize:200
+            ...args
         };
         setLoading(true)
         getParkingDetailByBusinessId(_data).then((data:any) => {
             setTableData(data.data.list);
+            setPage({
+                ...page,
+                total:data.data.customerEquityList.total
+            })
             setLoading(false)
         }).catch(err => {
             setLoading(false)
@@ -233,7 +257,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
                        loading={ loading }
                        dataSource={ tableData }
                        scroll={{ x: 1270,y:250 }}
-                       pagination = {false} />
+                       pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,...page, showTotal: showTotal }} />
             </div>
         </>
     )
