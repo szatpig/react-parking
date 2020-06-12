@@ -14,13 +14,13 @@ let base='',
     admin='', //中台请求地址
     prefix='/industryUser',
     version='202003091319',
-    exeUrl=''
+    exeUrl='http://192.168.88.54'
 
 
 switch (hostname){
     case '10':
     case 'localhost':
-        base = 'http://10.1.20.86:8085';
+        base = 'http://192.168.88.51:8085';
         admin = "http://192.168.88.51:8080"
         exeUrl = 'http://192.168.88.54'
         break;

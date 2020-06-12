@@ -163,7 +163,6 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
                     county,
                     beforeEndDate:true
                 }
-        setSelectedRow([]);
         list(_data)
         if(tableSelect){
             triggerChange(_data)
@@ -175,6 +174,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
             ...page,
             current:1
         });
+        setSelectedRow([]);
         form.submit();
     };
     const pagesChange = (current:number,pageSize:any) => {
@@ -199,16 +199,18 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
     }
 
     const list = (args?:object) => {
+        let { current,pageSize } = page;
         let _data={
-            ...args,
-            pageSize:200
+            pageNum:current,
+            pageSize,
+            ...args
         };
         setLoading(true)
         getParkingDetailByBusinessId(_data).then((data:any) => {
             setTableData(data.data.list);
             setPage({
                 ...page,
-                total:data.data.customerEquityList.total
+                total:data.data.total
             })
             setLoading(false)
         }).catch(err => {
@@ -241,7 +243,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
                             <Input placeholder="请输入" maxLength={ 10 } />
                         </Form.Item>
                         <Form.Item>
-                            <Button type="primary" htmlType="submit">查询</Button>
+                            <Button type="primary" htmlType="button" onClick={ handleQuery }>查询</Button>
                         </Form.Item>
                     </Form>
                 </div>
@@ -250,7 +252,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
                 <div className="input-cells">
                     <Checkbox onChange={ checkboxChange }>全选</Checkbox>
                     {
-                        `已选中 ${ tableSelect ? tableData.length :  selectedRow.length } 条`
+                        `已选中 ${ tableSelect ? page.total :  selectedRow.length } 条`
                     }
                 </div>
             </div>
@@ -294,11 +296,12 @@ function Equity(props:Props) {
             }
             getProvideConfirmData(_data).then((data:any) => {
                 const { couponTotalAmount, availableEquityAmount, industryUser } = data.data
-                modal.info({
+                modal.confirm({
                     icon:<ExclamationCircleOutlined />,
                     title: '发放确认',
                     className:'import-dialog-container',
                     okText:'确认发放',
+                    cancelText:'取消',
                     content: (
                             <div className="import-dialog-wrapper">
                                 <div className="import-cell">
@@ -309,7 +312,7 @@ function Equity(props:Props) {
                                     </div>
                                 </div>
                                 <div className="import-cell">
-                                    <p>导入信息</p>
+                                    <p>发放信息</p>
                                     <div className="import-content">
                                         <p><span>共计：</span>{ data.data.provideCount } 张</p>
                                         <p><span>金额总计：</span>{ couponTotalAmount } 元</p>

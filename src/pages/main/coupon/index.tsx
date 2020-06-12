@@ -169,7 +169,7 @@ function Coupon(props:Props) {
         console.log(values)
         let { couponNo,plateNo,couponStatus,equityGrantTime } = values,
                 [startTime,endTime] = equityGrantTime || [];
-        setSelectedRow([]);
+
         list({
             couponNo,plateNo,couponStatus,
             startTime:startTime && Dayjs(startTime).format('YYYY-MM-DD HH:mm:ss'),
@@ -182,6 +182,7 @@ function Coupon(props:Props) {
             ...page,
             current:1
         });
+        setSelectedRow([]);
         form.submit();
     };
 

@@ -158,7 +158,6 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
             county,
             beforeEndDate:true
         }
-        setSelectedRow([]);
         list(_data)
         if(tableSelect){
             triggerChange(_data)
@@ -170,6 +169,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
             ...page,
             current:1
         });
+        setSelectedRow([]);
         form.submit();
     };
     const pagesChange = (current:number,pageSize:any) => {
@@ -194,7 +194,10 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
     }
 
     const list = (args?:object) => {
+        let { current,pageSize } = page;
         let _data={
+            pageNum:current,
+            pageSize,
             ...args
         };
         setLoading(true)
@@ -202,7 +205,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
             setTableData(data.data.list);
             setPage({
                 ...page,
-                total:data.data.customerEquityList.total
+                total:data.data.total
             })
             setLoading(false)
         }).catch(err => {
@@ -245,7 +248,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
                 <div className="input-cells">
                     <Checkbox onChange={ checkboxChange }>全选</Checkbox>
                     {
-                        `已选中 ${ tableSelect ? tableData.length :  selectedRow.length } 条`
+                        `已选中 ${ tableSelect ? page.total :  selectedRow.length } 条`
                     }
                 </div>
             </div>
@@ -295,6 +298,7 @@ function Equity(props:Props) {
                     title: '发放确认',
                     className:'import-dialog-container',
                     okText:'确认发放',
+                    cancelText:'取消',
                     content: (
                             <div className="import-dialog-wrapper">
                                 <div className="import-cell">
@@ -344,6 +348,7 @@ function Equity(props:Props) {
                     title: '导入确认',
                     className:'import-dialog-container',
                     okText:'确认导入',
+                    cancelText:'取消',
                     content: (
                             <div className="import-dialog-wrapper">
                                 <div className="import-cell">

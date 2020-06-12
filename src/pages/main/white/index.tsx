@@ -195,7 +195,7 @@ function White(props:Props) {
         console.log(page)
         let { couponNo,plateNo,couponStatus,equityLevel,equityGrantTime,equityStatus } = values,
              [startTime,endTime] = equityGrantTime || [];
-        setSelectedRow([]);
+
         list({
             couponNo,
             plateNo,
@@ -212,6 +212,7 @@ function White(props:Props) {
             ...page,
             current:1
         });
+        setSelectedRow([]);
         form.submit();
     };
     const pagesChange = (current:number,pageSize:any) => {

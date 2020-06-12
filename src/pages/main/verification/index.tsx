@@ -204,7 +204,7 @@ function Verification() {
                     <i>{ summaryData.verifyRecordCount }</i>
                 </span>
                 <span className="flex column">
-                    <i>交易交易（折后）/元</i>
+                    <i>交易金额（折后）/元</i>
                     <i>{ summaryData.verifyRecordAmount }</i>
                 </span>
             </div>
