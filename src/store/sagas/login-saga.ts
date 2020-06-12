@@ -14,19 +14,19 @@ function* loginAsync(payload:any) {
         let menuList = [{
             id:1,
             title:'白名单管理',
-            path:'white'
+            path:'/home/white'
         },{
             id:2,
             title:'停车券管理',
-            path:'coupon'
+            path:'/home/coupon'
         },{
             id:3,
             title:'核销记录',
-            path:'verification'
+            path:'/home/verification'
         },{
             id:4,
             title:'企业账户',
-            path:'account'
+            path:'/home/account'
         }]
         sessionStorage.setItem('USER_MENU_LIST',JSON.stringify(menuList || []));
         yield put({ type: 'USER_MENU_LIST', payload:menuList })

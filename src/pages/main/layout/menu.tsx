@@ -2,7 +2,6 @@
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { RouteComponentProps, withRouter } from 'react-router-dom'
-import { Link } from 'react-router-dom';
 
 import { Menu } from 'antd';
 import { CarOutlined,TeamOutlined,ProjectOutlined,FundProjectionScreenOutlined } from '@ant-design/icons';
@@ -31,31 +30,11 @@ class MenuLayout extends Component<Props, State> {
     };
 
     menuSelect = (item:any)=>{
+        console.log(item);
         this.setState({
-            selectedKeys:[item.key.toString()]
+            selectedKeys:[item.key]
         })
-    }
-
-    menuFilter = (menuList:[],pathname:string) =>{
-        let _arr:any = []
-        menuList.forEach((item:any) =>{
-            if(item.children && item.children.length){
-                _arr = _arr.concat(item.children)
-                delete item.children
-                _arr.push(item)
-            }else{
-                _arr.push(item)
-            }
-        });
-        // console.log(pathname,_arr)
-        const _filterObject = _arr.find((item:any) => pathname.indexOf(item.path) > -1) || _arr[0];
-        console.log(pathname,_arr,_filterObject)
-        if(_filterObject){
-            this.setState((state)=>({
-                selectedKeys:[_filterObject.id.toString()],
-                openKeys:[(_filterObject.parentId || _filterObject.id).toString()]
-            }))
-        }
+        this.props.history.push(item.key)
     }
 
     iconShow = (id:number) => {
@@ -77,8 +56,13 @@ class MenuLayout extends Component<Props, State> {
     }
 
     componentDidMount() {
-        const { location:{ pathname },menuList } = this.props;
-        this.menuFilter(JSON.parse(JSON.stringify(menuList)),pathname);
+        const { location:{ pathname } } = this.props;
+        let path:any = pathname.match(/^(\/home\/\w+)(\/.*)?$/);
+        // let openKey:any =  path[1].match(/^(\/home\/\w+)(\/.*)?$/);
+        this.setState((state)=>({
+            selectedKeys:[path[1]],
+            openKeys:[path[1]]
+        }))
     }
 
     render() {
@@ -101,11 +85,11 @@ class MenuLayout extends Component<Props, State> {
                                           <TeamOutlined type="user" />
                                           <span>{ item.title }</span>
                                         </span>
-                                    } key={ item.id }>
+                                    } key={ item.path }>
                                         {
                                             item.children.map((cell:any)=>{
-                                                return <Menu.Item key={ cell.id } onClick={ this.menuSelect }>
-                                                    <Link to={ "/home/"+ item.path + '/' + cell.path }>{ cell.title }</Link>
+                                                return <Menu.Item key={ cell.path } onClick={ this.menuSelect }>
+                                                    { cell.title }
                                                 </Menu.Item>
                                             })
                                         }
@@ -113,9 +97,9 @@ class MenuLayout extends Component<Props, State> {
                                 )
                             }else{
                                return (
-                                    <Menu.Item key={ item.id } onClick={ this.menuSelect }>
+                                    <Menu.Item key={ item.path }  onClick={ this.menuSelect }>
                                         { this.iconShow(item.id) }
-                                        <span><Link to={ "/home/"+ item.path }>{ item.title }</Link></span>
+                                        <span>{ item.title }</span>
                                     </Menu.Item>
                                )
                             }

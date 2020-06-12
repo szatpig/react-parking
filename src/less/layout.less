@@ -105,36 +105,50 @@
             margin: 0 !important;
             height: auto;
             line-height: 50px;
-            background: #20335d;
+            background: transparent !important;
+
             &.ant-menu-submenu-open{
-                color: rgba(255, 255, 255, 0.65);
+                .ant-menu-item{
+                    color: #57626D;
+                }
             }
             &.ant-menu-submenu-selected{
                 color: #2196F3;
-                .ant-menu-submenu-title{
-                    i{
+                .ant-menu-item{
+                    &.ant-menu-item-active{
                         color: #2196F3;
-                        &:before,&:after{
-                            background: #2196F3;
-                        }
+                    }
+                }
+                .ant-menu-item{
+                    &.ant-menu-item-selected{
+                        color: #2196F3;
                     }
                 }
             }
             &.ant-menu-submenu-active{
                 color: #2196F3;
+                .ant-menu-submenu-title{
+                    i,span{
+                        color: #2196F3;
+                    }
+                    i{
+                        &:after,&:before{
+                            background-color: #2196F3;
+                        }
+                    }
+                }
             }
             .ant-menu-submenu-title{
                 margin: 0 !important;
                 height: 50px;
                 line-height: 50px;
-                background: #20335d;
-                &:hover{
-                    color: #2196F3;
-                    i{
-                        color: inherit;
-                        &:before,&:after{
-                            background: #2196F3;
-                        }
+                background: transparent !important;
+                i,span{
+                    color: #57626D;
+                }
+                i{
+                    &:after,&:before{
+                        background-color: #57626D;
                     }
                 }
             }
@@ -147,7 +161,7 @@
             }
         }
         .ant-menu-dark .ant-menu-item-selected{
-            color:#4a8df1 ;
+            color:#2196F3 ;
         }
         .ant-menu-dark, .ant-menu-dark .ant-menu-sub{
             background-color: transparent !important;

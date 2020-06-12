@@ -5,7 +5,7 @@ import moment from 'moment';
 import Dayjs from 'dayjs';
 
 import {Form, Input, Button, Modal, DatePicker, Select, Table, Tag, Popover, message} from 'antd';
-import { whiteList, equityConfigList, grantValid, confirmRevokeEquity, revokeEquitySubmit, validRevokeAvailable } from '@/api/white-api'
+import { whiteList, equityConfigList, grantValid, getRevocable, confirmRevokeEquity, revokeEquitySubmit, validRevokeAvailable } from '@/api/white-api'
 import { ExclamationCircleFilled } from '@ant-design/icons';
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -103,7 +103,7 @@ const columns = [
         title: '状态',
         dataIndex: 'equityStatus',
         render: (cell:number,row:any) => (
-                cell == 4 ?
+                cell === 4 ?
                 <Popover overlayClassName="table-popover-container" placement="topRight" content={ row.revokeReason } title={ <div className="flex between"><span>原因</span><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span>{ row.updateTime }</span></div> } trigger="hover">
                     <span>
                         <Tag color={ equityStatusList[cell].color }>{ equityStatusList[cell].label }</Tag>
@@ -116,6 +116,7 @@ const columns = [
 ];
 
 function White(props:Props) {
+    const [revokable, setRevokable] = useState(false);
     const [loading, setLoading] = useState(false);
     const [equityList, setEquityList] = useState([]);
     const [effectiveWhileListCount, setEffectiveWhileListCount] = useState([]);
@@ -136,7 +137,7 @@ function White(props:Props) {
     const [ form ] = Form.useForm();
     const [ modalForm ] = Form.useForm();
 
-    const{ revokable, history } = props
+    const{ history } = props
 
     const onFormLayoutChange = ({  }) => {
         // setFormLayout(layout);
@@ -267,7 +268,12 @@ function White(props:Props) {
             })))
         })
     }
-
+    const getRevocableFun = () => {
+        let _data ={ }
+        getRevocable(_data).then((data:any) => {
+            setRevokable(!!data.data)
+        })
+    }
     const getGrantValid = () => {
         let _data ={}
         grantValid(_data).then((data:any) => {
@@ -277,9 +283,9 @@ function White(props:Props) {
     }
 
     useEffect(() => {
+        getRevocableFun();
         list();
         getEquityList();
-        // getGrantValid();
     },[]);
 
     return (
@@ -343,7 +349,7 @@ function White(props:Props) {
                 <div className="input-cells">
                     当前有效白名单：{ effectiveWhileListCount }&nbsp;&nbsp;个
                     {
-                        !!!revokable &&
+                        !revokable &&
                         <Button type="primary" onClick={ handleBatch } disabled={ selectedRow.length === 0 }>
                             撤销权益金
                         </Button>
@@ -385,12 +391,7 @@ function White(props:Props) {
 }
 
 interface Props  {
-    revokable:number,
     history:any
 }
 
-const mapStateToProps = (state:any) => ({
-    revokable:state.user.info.revokable
-})
-
-export default connect(mapStateToProps,{})(White)
+export default White

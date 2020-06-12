@@ -48,6 +48,11 @@ export const grantValid= (data:any) => fetch(site.base + '/customerEquity/grantV
     data
 });
 
+export const getRevocable= (params:any) => fetch(site.base + '/permission/getRevocable' ,{
+    type: 'get',
+    params
+});
+
 export const grantConfirmData= (data:any) => fetch(site.base + '/customerEquity/grantConfirmData' ,{
     type: 'post',
     data
