@@ -7,6 +7,7 @@ import { Form, Input, Button, DatePicker, Select, Table } from 'antd';
 import { equityVerifyRecordList, equityVerifyRecordStatistics, equityVerifyRecordExport } from '@/api/verification-api'
 
 import Dayjs from 'dayjs';
+import site from "@/utils/config";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -83,7 +84,13 @@ function Verification() {
             endTime:endTime && Dayjs(endTime).format('YYYY-MM-DD HH:mm:ss'),
         }
         equityVerifyRecordExport(_data).then((data:any)=>{
-
+            const aLink = document.createElement('a');
+            document.body.appendChild(aLink);
+            aLink.style.display='none';
+            aLink.target = '_blank'
+            aLink.href = site.exeUrl + data.data;
+            aLink.click();
+            document.body.removeChild(aLink);
         })
     }
 
