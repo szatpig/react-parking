@@ -1,9 +1,10 @@
 // Created by szatpig at 2020/6/16.
 import React, {useState, useEffect} from 'react';
 import { RouteComponentProps } from "react-router-dom";
+import {connect} from "react-redux";
 
 function Authorized(props:Props) {
-    const [count, setCount] = useState(0);
+    const { path,redirect,authority,component:Component } = props
 
     useEffect(() => {
         //do something
@@ -19,7 +20,17 @@ interface Props extends RouteComponentProps {
     path:string,
     redirect:string,
     authority:string[],
+    component:React.ComponentType<any>
+}
+
+const mapStateToProps = (state:any) => ({
+    menuList:state.user.menuList,
+    userInfo:state.user.info
+})
+
+const mapDispatchToProps = {
+
 }
 
 
-export default Authorized
+export default connect(mapStateToProps,mapDispatchToProps)(Authorized)
