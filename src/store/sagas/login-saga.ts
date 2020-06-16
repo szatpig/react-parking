@@ -18,7 +18,19 @@ function* loginAsync(payload:any) {
         },{
             id:2,
             title:'停车券管理',
-            path:'/home/coupon'
+            path:'/home/coupon',
+            children:[
+                {
+                    id:6,
+                    title:'发放停券',
+                    path:'/home/coupon/give',
+                },
+                {
+                    id:5,
+                    title:'销售管理',
+                    path:'/home/coupon/sale',
+                }
+            ]
         },{
             id:3,
             title:'核销记录',
@@ -26,7 +38,19 @@ function* loginAsync(payload:any) {
         },{
             id:4,
             title:'企业账户',
-            path:'/home/account'
+            path:'/home/account',
+            children:[
+                {
+                    id:6,
+                    title:'基础信息',
+                    path:'/home/account/info',
+                },
+                {
+                    id:5,
+                    title:'账单',
+                    path:'/home/account/bill',
+                }
+            ]
         }]
         sessionStorage.setItem('USER_MENU_LIST',JSON.stringify(menuList || []));
         yield put({ type: 'USER_MENU_LIST', payload:menuList })

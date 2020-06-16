@@ -2,16 +2,18 @@
 
 import { lazy } from 'react'
 
-const Account  = lazy(() => import('./account/index'));
+const Account  = lazy(() => import('./industryUser/account/index'));
+const AccountBill  = lazy(() => import('./industryUser/account/bill'));
 
-const Coupon  = lazy(() => import('./coupon'));
-const CouponEquity  = lazy(() => import('./coupon/equity'));
+const Coupon  = lazy(() => import('./industryUser/coupon'));
+const CouponSale  = lazy(() => import('./industryUser/coupon/sale'));
+const CouponEquity  = lazy(() => import('./industryUser/coupon/equity'));
 
-const Verification  = lazy(() => import('./verification'));
+const Verification  = lazy(() => import('./industryUser/verification'));
 
-const White  = lazy(() => import('./white'));
-const Equity  = lazy(() => import('./white/equity'));
-const EquityClass  = lazy(() => import('./white/class'));
+const White  = lazy(() => import('./industryUser/white'));
+const Equity  = lazy(() => import('./industryUser/white/equity'));
+const EquityClass  = lazy(() => import('./industryUser/white/class'));
 
 const NoMatch = lazy(() => import('./../error/404'));
 
@@ -33,7 +35,8 @@ export default [
             collapsed:true,
             title:{
                 mainMenu:'白名单管理'
-            }
+            },
+            class:1
         }
     },
     {
@@ -43,7 +46,8 @@ export default [
             collapsed:true,
             title:{
                 mainMenu:'权益金管理'
-            }
+            },
+            class:1
         }
     },
     {
@@ -63,36 +67,60 @@ export default [
             collapsed:true,
             title:{
                 mainMenu:'核销记录'
-            }
+            },
+            class:1
         }
     },
     {
-        path:'/coupon/equity/:type',
+        path:'/coupon/give/:type',
         component:CouponEquity,
         meta:{
             collapsed:true,
             title:{
                 mainMenu:'停车券发放'
-            }
+            },
+            class:2
         }
     },
     {
-        path:'/coupon',
+        path:'/coupon/give',
         component:Coupon,
         meta:{
             collapsed:true,
             title:{
                 mainMenu:'停车券管理'
-            }
+            },
+            class:2
         }
     },
     {
-        path:'/account',
+        path:'/coupon/sale',
+        component:CouponSale,
+        meta:{
+            collapsed:true,
+            title:{
+                mainMenu:'销售管理'
+            },
+            class:2
+        }
+    },
+    {
+        path:'/account/info',
         component:Account,
         meta:{
             collapsed:true,
             title:{
-                mainMenu:'个人账户设置'
+                mainMenu:'基础信息'
+            }
+        }
+    },
+    {
+        path:'/account/bill',
+        component:AccountBill,
+        meta:{
+            collapsed:true,
+            title:{
+                mainMenu:'账单'
             }
         }
     },

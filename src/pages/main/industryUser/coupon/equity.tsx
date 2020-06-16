@@ -387,13 +387,13 @@ function Equity(props:Props) {
     const handleDialogSingleConfirm = (_data:any) => {
         provideCouponOne(_data).then((data:any) => {
             message.success('发放成功');
-            history.replace('/home/coupon')
+            history.replace('/home/coupon/give')
         })
     }
     const handleDialogConfirm = (_data:any) => {
         importCouponBatch(_data).then((data:any) => {
             message.success('导入成功');
-            history.replace('/home/coupon')
+            history.replace('/home/coupon/give')
         })
     }
 

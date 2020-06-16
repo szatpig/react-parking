@@ -235,8 +235,8 @@ function Coupon(props:Props) {
             <div className="breadcrumb-container left-border line">
                 停车券管理
                 <span>
-                    <Button type="primary" href={'coupon/equity/single'}>发放停车券</Button>
-                    <Button type="primary" href={'coupon/equity/batch'}>批量导入停车券</Button>
+                    <Button type="primary" href={'give/single'}>发放停车券</Button>
+                    <Button type="primary" href={'give/batch'}>批量导入停车券</Button>
                 </span>
             </div>
             <div className="search-container">

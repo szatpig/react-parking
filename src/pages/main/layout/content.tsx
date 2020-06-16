@@ -27,7 +27,7 @@ class ContentLayout extends Component<Props, State> {
                     {
                         routes.map((item:any,i) =>
                             item.path ?
-                                <Route key={ i } { ...item.meta } path={ url + item.path } component={ item.component } exact strict /> :
+                                <Route key={ i } path={ url + item.path } render={ (routeProps:any)=>( <item.component meta={ item.meta } { ...routeProps } /> ) } exact strict /> :
                                 <Route key={ i } component={ item.component } />
                         )
                     }
