@@ -237,7 +237,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
                             <Cascader options={ options } placeholder="请选择省市区" />
                         </Form.Item>
                         <Form.Item  label="详细地址" name="address">
-                            <Input placeholder="停车场名称" maxLength={ 18 } />
+                            <Input placeholder="请输入详细地址" maxLength={ 18 } />
                         </Form.Item>
                         <Form.Item label="所属业主" name="owner">
                             <Input placeholder="请输入" maxLength={ 10 } />
