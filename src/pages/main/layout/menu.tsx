@@ -64,7 +64,6 @@ class MenuLayout extends Component<Props, State> {
         }else{
             path = pathname.match(/^(\/home\/\w+)(\/.*)?$/);
         }
-
         console.log(path);
         // let openKey:any =  path[1].match(/^(\/home\/\w+)(\/.*)?$/);
         this.setState((state)=>({
