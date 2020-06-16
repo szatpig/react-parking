@@ -532,7 +532,7 @@ function Equity(props:Props) {
                  {
                      params.type === 'batch' &&
                      <Form.Item name="whitelistUri"
-                            label="车牌号"
+                            label="文件"
                             getValueFromEvent={ normFile }
                             className="upload-container"
                             wrapperCol={{ span:18 }}

@@ -472,15 +472,15 @@ function Equity(props:Props) {
                              </Select>
                          </Form.Item>
                          <Form.Item name="couponAmount" label="金额" wrapperCol={{ span:8 }} rules={ [
-                                 { required: true, type: 'number', min: 0, max: 99999999, message: '请输入金额' }
+                                 { required: true, type: 'number', min: 0, max: 99999999, message: '请输入0-9999999数值' }
                              ]}>
-                             <InputNumber  maxLength={ 8 } placeholder="请输入" />
+                             <InputNumber  maxLength={ 8 } min={ 0 } max={ 99999999 } placeholder="请输入" />
                          </Form.Item>
                      </>
                   }
                  {
                      params.type === 'batch' &&
-                     <Form.Item name="couponlistUri" label="停车券" getValueFromEvent={ normFile } className="upload-container" wrapperCol={{span: 18}}
+                     <Form.Item name="couponlistUri" label="文件" getValueFromEvent={ normFile } className="upload-container" wrapperCol={{span: 18}}
                                 rules={[{required: true}]}>
                          <Upload name="file"
                                  accept=".xls, .xlsx, .csv"
