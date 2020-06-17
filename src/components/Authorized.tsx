@@ -1,26 +1,22 @@
 // Created by szatpig at 2020/6/16.
-import React, {useState, useEffect} from 'react';
-import { RouteComponentProps } from "react-router-dom";
-import {connect} from "react-redux";
+import React from 'react';
+import { connect } from "react-redux";
 
 function Authorized(props:Props) {
-    const { path,redirect,authority,component:Component } = props
+    const { path,authority,children,userInfo,noMatch } = props;
+    const currentAuthority =  userInfo;
 
-    useEffect(() => {
-        //do something
-    });
-
-    return (
-            <div className="Authorized-container"></div>
-    );
+    if (!authority) return children;
+    if (authority.includes(currentAuthority)) return children;
+    return noMatch;
 }
 
-interface Props extends RouteComponentProps {
-    key:string,
+interface Props{
     path:string,
-    redirect:string,
     authority:string[],
-    component:React.ComponentType<any>
+    noMatch:any;
+    children:any,
+    userInfo:any
 }
 
 const mapStateToProps = (state:any) => ({
