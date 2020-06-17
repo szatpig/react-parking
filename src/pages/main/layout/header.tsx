@@ -49,7 +49,7 @@ class HeaderLayout extends Component<Props, State> {
     }
     loginOut = () => {
         this.props.userLoginOutAction();
-        this.props.history.push('/login')
+        this.props.history.push('/etc-verification/login')
     }
 
     render() {

@@ -16,7 +16,7 @@ class Home extends Component<Props, State>{
 
     render() {
         if(!!!this.props.userToken){
-            this.props.history.push('/login')
+            this.props.history.push('/etc-verification/login')
         }
         return (
             <Layout className="main-container">
