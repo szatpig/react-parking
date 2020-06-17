@@ -57,14 +57,12 @@ class MenuLayout extends Component<Props, State> {
 
     componentDidMount() {
         const { location:{ pathname } } = this.props;
-        console.log(this.props)
         let path:any= [];
         if(pathname.indexOf('/home/coupon') > -1 || pathname.indexOf('/home/account')> -1){
             path = pathname.match(/^(\/home(\/\w+){2})(\/.*)?$/);
         }else{
             path = pathname.match(/^(\/home\/\w+)(\/.*)?$/);
         }
-        console.log(path);
         // let openKey:any =  path[1].match(/^(\/home\/\w+)(\/.*)?$/);
         this.setState((state)=>({
             selectedKeys:[path[1]],

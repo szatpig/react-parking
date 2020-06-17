@@ -239,7 +239,6 @@ function White(props:Props) {
 
     const list = (args?:object) => {
         let { current,pageSize } = page;
-        console.log(page)
         let _data={
             pageNum:current,
             pageSize,

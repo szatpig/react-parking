@@ -4,7 +4,9 @@ import { connect } from "react-redux";
 
 function Authorized(props:Props) {
     const { path,authority,children,userInfo,noMatch } = props;
-    const currentAuthority =  userInfo;
+    const currentAuthority =  'user';
+
+    console.log('authority',userInfo,authority)
 
     if (!authority) return children;
     if (authority.includes(currentAuthority)) return children;

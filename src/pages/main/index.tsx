@@ -15,7 +15,6 @@ const ErrorBoundary  = lazy(() => import('@/components/ErrorBoundary'));
 class Home extends Component<Props, State>{
 
     render() {
-        console.log(this.props)
         if(!!!this.props.userToken){
             this.props.history.push('/login')
         }

@@ -1,5 +1,5 @@
 // Created by szatpig at 2019/8/15.
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 
 interface Props {
 }
@@ -15,8 +15,9 @@ class ErrorBoundary extends Component<Props, State> {
         hasError:false
     }
 
-    static getDerivedStateFromError() {
+    static getDerivedStateFromError(e:any) {
         // 更新 state 使下一次渲染能够显示降级后的 UI
+        console.log(e)
         return { hasError: true };
     }
 

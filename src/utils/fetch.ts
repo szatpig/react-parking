@@ -21,7 +21,6 @@ axios.interceptors.request.use(
         if (token) {
             config.headers.token = token;
         }
-        console.log(config)
         // message.loading('加载中...',15);
         return config;
     },

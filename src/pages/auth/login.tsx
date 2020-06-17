@@ -49,7 +49,6 @@ class Login extends Component<UserFormProps, State> {
             code
         })
         userLoginRequestAction(_data)
-
     };
     handleEmitCode = (val:string[]) =>{
         this.setState({
@@ -62,9 +61,6 @@ class Login extends Component<UserFormProps, State> {
     };
 
     render() {
-        if(this.props.userToken){
-            this.props.history.push('/home/white')
-        }
         return (
             <div className="login-container">
                 <div className="login-logo"></div>
