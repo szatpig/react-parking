@@ -193,7 +193,7 @@ function EquityClass() {
                         <Form.Item name="equityLevel" label="权益等级名称" rules={ [
                             { whitespace: true, required: true, message: '请输入权益等级名称' }
                         ] }>
-                            <Input  maxLength={ 20 } placeholder="请输入如：白急、1级等" />
+                            <Input  maxLength={ 50 } placeholder="请输入如：白急、1级等" />
                         </Form.Item>
                         <Form.Item name="equityAmount" label="权益等级金额" wrapperCol={{ span:8 }} rules={ [
                             { required: true, type: 'number', min: 0, max: 999999999, message: '请输入金额0-999999999' }
