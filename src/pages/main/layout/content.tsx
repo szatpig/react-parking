@@ -8,17 +8,6 @@ import { Layout } from 'antd';
 const { Content } = Layout;
 
 class ContentLayout extends Component<Props, State> {
-    static defaultProps = {}
-
-    componentDidMount() {
-    }
-
-    componentDidUpdate() {
-    }
-
-    componentWillUnmount() {
-    }
-
     render() {
         const  { url } =this.props;
         return (

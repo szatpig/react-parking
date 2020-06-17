@@ -260,7 +260,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
                        loading={ loading }
                        dataSource={ tableData }
                        scroll={{ x: 1270,y:250 }}
-                       pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,...page, showTotal: showTotal }} />
+                       pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,showSizeChanger:true,...page, showTotal: showTotal }} />
             </div>
         </>
     )

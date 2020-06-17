@@ -204,6 +204,10 @@ function Coupon(props:Props) {
         form.submit();
     };
 
+    const showTotal = (total:number) => {
+        return `总共 ${total} 条`
+    }
+
     const list = (args?:object) => {
         let { current,pageSize } = page
         let _data={
@@ -296,7 +300,7 @@ function Coupon(props:Props) {
                         loading={ loading }
                         dataSource={ tableData }
                         scroll={{ x: 1500 }}
-                        pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,...page }}/>
+                        pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,showSizeChanger:true,...page, showTotal: showTotal }}/>
             </div>
             <Modal
                     title="撤销原因"

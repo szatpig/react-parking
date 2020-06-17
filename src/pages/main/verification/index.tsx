@@ -63,7 +63,7 @@ function Verification() {
     const [tableData,setTableData] = useState<object[]>([]);
     const [page,setPage] = useState({
         current:1,
-        pageSize:30,
+        pageSize:20,
         total:0
     });
 
@@ -108,6 +108,9 @@ function Verification() {
         list(_data)
     }
 
+    const showTotal = (total:number) => {
+        return `总共 ${total} 条`
+    }
     const list = (args?:object) => {
         let { current,pageSize } = page
         let _data={
@@ -216,7 +219,8 @@ function Verification() {
                 </span>
             </div>
             <div className="table-container">
-                <Table rowKey="id" bordered columns={ columns } dataSource={ tableData } pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,...page }}/>
+                <Table rowKey="id" bordered columns={ columns } dataSource={ tableData }
+                       pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,showSizeChanger:true,...page, showTotal: showTotal  }}/>
             </div>
         </div>
     );
