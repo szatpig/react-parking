@@ -2,7 +2,7 @@
 import React from 'react';
 import { Route,Redirect } from "react-router-dom";
 
-import Authorized from '@/components/Authorized'
+import Authorized from './Authorized'
 
 interface routes {
     path:string;

@@ -63,41 +63,41 @@ function* loginAsync(payload:any) {
         //     {
         //         id:1,
         //         title:'销售管理',
-        //         path:'/home/white'
+        //         path:'/home/sale'
         //     },{
         //         id:2,
         //         title:'销售记录',
-        //         path:'/home/coupon'
+        //         path:'/home/record'
         //     },
         //     {
         //         id:3,
         //         title:'商家管理',
-        //         path:'/home/coupon'
+        //         path:'/home/merchant'
         //     },
         //     {
         //         id:4,
         //         title:'人工核销',
-        //         path:'/home/coupon'
+        //         path:'/home/manual'
         //     },
         //     {
         //         id:5,
-        //         title:'人工核销',
-        //         path:'/home/coupon',
+        //         title:'系统管理',
+        //         path:'/home/system',
         //         children:[
         //             {
         //                 id:6,
         //                 title:'用户管理',
-        //                 path:'/home/coupon'
+        //                 path:'/home/system/user'
         //             },
         //             {
         //                 id:7,
         //                 title:'角色管理',
-        //                 path:'/home/coupon'
+        //                 path:'/home/system/role'
         //             },
         //             {
         //                 id:8,
         //                 title:'企业账户',
-        //                 path:'/home/coupon'
+        //                 path:'/home/system/account'
         //             },
         //         ]
         //     },
@@ -106,24 +106,20 @@ function* loginAsync(payload:any) {
         //     {
         //         id:1,
         //         title:'停车券管理',
-        //         path:'/home/white'
+        //         path:'/home/ticketlist'
         //     },{
         //         id:2,
         //         title:'停车券发放记录',
-        //         path:'/home/coupon',
-        //         children:[]
+        //         path:'/home/ticketgive'
         //     },
         //     {
         //         id:3,
         //         title:'企业账户',
-        //         path:'/home/coupon',
-        //         children:[]
+        //         path:'/home/system/account'
         //     }
         // ];
         sessionStorage.setItem('USER_MENU_LIST',JSON.stringify(menuList || []));
         yield put({ type: 'USER_MENU_LIST', payload:menuList });
-
-        return history.push('home/white')
     }catch (e) {
         console.log(e);
         yield put({ type: 'FETCH_ERROR', payload:e })

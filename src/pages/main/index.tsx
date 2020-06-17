@@ -16,6 +16,7 @@ class Home extends Component<Props, State>{
 
     render() {
         if(!!!this.props.userToken){
+            console.log('12345')
             this.props.history.push('/login')
         }
         return (

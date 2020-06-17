@@ -95,16 +95,7 @@ export default [
                 mainMenu:'角色管理'
             }
         }
-    },
-    {
-        path:'/system/account',
-        component:Enterprise,
-        authority:["admin"],
-        meta:{
-            title:{
-                mainMenu:'企业账户'
-            }
-        }
     }
+
 ]
 

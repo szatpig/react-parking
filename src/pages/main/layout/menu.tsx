@@ -58,7 +58,7 @@ class MenuLayout extends Component<Props, State> {
     componentDidMount() {
         const { location:{ pathname } } = this.props;
         let path:any= [];
-        if(pathname.indexOf('/home/coupon') > -1 || pathname.indexOf('/home/account')> -1){
+        if(pathname.indexOf('/home/coupon') > -1 || pathname.indexOf('/home/account')> -1|| pathname.indexOf('/home/system')> -1){
             path = pathname.match(/^(\/home(\/\w+){2})(\/.*)?$/);
         }else{
             path = pathname.match(/^(\/home\/\w+)(\/.*)?$/);

@@ -49,6 +49,7 @@ class Login extends Component<UserFormProps, State> {
             code
         })
         userLoginRequestAction(_data)
+
     };
     handleEmitCode = (val:string[]) =>{
         this.setState({
@@ -61,6 +62,9 @@ class Login extends Component<UserFormProps, State> {
     };
 
     render() {
+        if(this.props.userToken && this.props.userInfo.currentAuthority){
+            this.props.history.push('/home/white')
+        }
         return (
             <div className="login-container">
                 <div className="login-logo"></div>
@@ -118,6 +122,7 @@ interface UserFormProps{
     username: string;
     password: string;
     userToken:string;
+    userInfo:any,
     userLoginRequestAction?: any;
     userLoginOutAction:()=>void
     history:any,
@@ -131,6 +136,7 @@ interface State {
 
 const mapStateToProps = (state:any) => ({
     userToken:state.user.token,
+    userInfo:state.user.info,
     error:state.common.error.status ||　''
 })
 

@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import { Route, Switch } from "react-router-dom";
 
 import routes from '../router'
-import AuthorizedRoute from './../router/AuthorizedRoute'
+import AuthorizedRoute from '../router/authorized/AuthorizedRoute'
 
 import { Layout } from 'antd';
 const { Content } = Layout;

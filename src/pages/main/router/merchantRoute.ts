@@ -18,7 +18,7 @@ interface routes {
 
 export default [
     {
-        path:'/couponlist',
+        path:'/ticketlist',
         component:CouponList,
         authority:["merchant"],
         meta:{
@@ -29,7 +29,7 @@ export default [
         }
     },
     {
-        path:'/coupongive',
+        path:'/ticketgive',
         component:CouponGive,
         authority:["merchant"],
         meta:{
