@@ -1,6 +1,6 @@
 // Created by szatpig at 2020/4/30.
 import React, { useState, useEffect } from 'react';
-import { connect } from "react-redux";
+import { useHistory } from "react-router-dom";
 import moment from 'moment';
 import Dayjs from 'dayjs';
 
@@ -115,7 +115,7 @@ const columns = [
     },
 ];
 
-function White(props:Props) {
+function White() {
     const [revokable, setRevokable] = useState(false);
     const [loading, setLoading] = useState(false);
     const [equityList, setEquityList] = useState([]);
@@ -137,7 +137,7 @@ function White(props:Props) {
     const [ form ] = Form.useForm();
     const [ modalForm ] = Form.useForm();
 
-    const{ history } = props
+    const history = useHistory();
 
     const onFormLayoutChange = ({  }) => {
         // setFormLayout(layout);
@@ -387,10 +387,6 @@ function White(props:Props) {
             </Modal>
         </div>
     );
-}
-
-interface Props  {
-    history:any
 }
 
 export default White

@@ -9,6 +9,8 @@ const Coupon  = lazy(() => import('./../industryUser/coupon'));
 const CouponSale  = lazy(() => import('./../industryUser/coupon/sale'));
 const CouponEquity  = lazy(() => import('./../industryUser/coupon/equity'));
 
+const Store  = lazy(() => import('./../industryUser/store'));
+
 const Verification  = lazy(() => import('./../industryUser/verification'));
 
 const White  = lazy(() => import('./../industryUser/white'));
@@ -34,6 +36,17 @@ export default [
             collapsed:true,
             title:{
                 mainMenu:'白名单管理'
+            }
+        }
+    },
+    {
+        path:'/store',
+        component:Store,
+        authority:["user"],
+        meta:{
+            collapsed:true,
+            title:{
+                mainMenu:'商户管理'
             }
         }
     },

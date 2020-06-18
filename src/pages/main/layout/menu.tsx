@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { RouteComponentProps, withRouter } from 'react-router-dom'
 
 import { Menu } from 'antd';
-import { CarOutlined,TeamOutlined,ProjectOutlined,FundProjectionScreenOutlined } from '@ant-design/icons';
+import { CarOutlined,TeamOutlined,ProjectOutlined,FundProjectionScreenOutlined,ShopOutlined } from '@ant-design/icons';
 const { SubMenu } = Menu;
 
 
@@ -51,7 +51,9 @@ class MenuLayout extends Component<Props, State> {
             case 4:
                 return <TeamOutlined />;
                 break;
-
+            case 9:
+                return <ShopOutlined />
+                break;
         }
     }
 

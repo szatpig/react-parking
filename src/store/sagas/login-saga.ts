@@ -17,11 +17,15 @@ function* loginAsync(payload:any) {
         yield put({ type: 'USER_INFO', payload:data })
         // let menuList = yield call(getRoleMenu,{})
         let menuList = [
-           {
+            {
                 id:1,
                 title:'白名单管理',
                 path:'/home/white'
-           },{
+            },{
+                id:9,
+                title:'商户管理',
+                path:'/home/store'
+            },{
                 id:2,
                 title:'停车券管理',
                 path:'/home/coupon',
@@ -37,27 +41,27 @@ function* loginAsync(payload:any) {
                         path:'/home/coupon/sale',
                     }
                 ]
-           },{
+            },{
                 id:3,
                 title:'核销记录',
                 path:'/home/verification'
-           },{
+            },{
                 id:4,
                 title:'企业账户',
                 path:'/home/account',
                 children:[
                     {
-                        id:6,
+                        id:7,
                         title:'基础信息',
                         path:'/home/account/info',
                     },
                     {
-                        id:5,
+                        id:8,
                         title:'账单',
                         path:'/home/account/bill',
                     }
                 ]
-           }
+            }
         ];
         // menuList = [
         //     {
