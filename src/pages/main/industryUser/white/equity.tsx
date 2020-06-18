@@ -233,7 +233,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
                             <Cascader options={ options } placeholder="请选择省市区" />
                         </Form.Item>
                         <Form.Item  label="详细地址" name="address">
-                            <Input placeholder="停车场名称" maxLength={ 18 } />
+                            <Input placeholder="请输入详细地址" maxLength={ 18 } />
                         </Form.Item>
                         <Form.Item label="所属业主" name="owner">
                             <Input placeholder="请输入" maxLength={ 10 } />
@@ -260,7 +260,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
                        loading={ loading }
                        dataSource={ tableData }
                        scroll={{ x: 1270,y:250 }}
-                       pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,...page, showTotal: showTotal }} />
+                       pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,showSizeChanger:true,...page, showTotal: showTotal }} />
             </div>
         </>
     )
@@ -532,7 +532,7 @@ function Equity(props:Props) {
                  {
                      params.type === 'batch' &&
                      <Form.Item name="whitelistUri"
-                            label="车牌号"
+                            label="文件"
                             getValueFromEvent={ normFile }
                             className="upload-container"
                             wrapperCol={{ span:18 }}

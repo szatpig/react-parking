@@ -365,7 +365,7 @@ function White() {
                         loading={ loading }
                         dataSource={ tableData }
                         scroll={{ x: 1500 }}
-                        pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,...page, showTotal: showTotal }} />
+                        pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,showSizeChanger:true,...page, showTotal: showTotal }} />
             </div>
             <Modal
                 title="撤销原因"

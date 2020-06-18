@@ -101,7 +101,7 @@ export default function fetch (url:string, options:Options) {
                                 sessionStorage.setItem('code_2001','0');
                             },()=>{})
                             store.dispatch({type:'USER_LOGIN_OUT'});
-                            history.push('/login');
+                            history.push('/etc-verification/login');
                         }
                         reject(response.data);
                         break;

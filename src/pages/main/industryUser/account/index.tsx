@@ -155,7 +155,7 @@ function Account(props:Props) {
 
     const loginOut = () => {
         userLoginOutAction();
-        history.push('/login')
+        history.push('/etc-verification/login')
     }
 
     const getUserInfo = () => {
@@ -217,12 +217,23 @@ function Account(props:Props) {
         })
     }
 
-    const list = (args?:object) => {
-        let { current,pageSize } = page
+    const showTotal = (total:number) => {
+        return `总共 ${total} 条`
+    }
+
+    const list = (args?:any) => {
+        let { current,pageSize } = page,
+                {parkingName,region,address,owner } = args,
+                [province, city, county]= region || [];
         let _data={
             pageNum:current,
             pageSize,
-            ...args
+            parkingName,
+            address,
+            owner,
+            province,
+            city,
+            county
         };
         getParkingDetailByBusinessId(_data).then((data:any) => {
             setTableData(data.data.list);
@@ -235,7 +246,7 @@ function Account(props:Props) {
 
     useEffect(() => {
         //do something
-        list();
+        list({});
         getUserInfo();
         getImg();
     },[1]);
@@ -347,7 +358,7 @@ function Account(props:Props) {
                                     bordered
                                     columns={ columns }
                                     dataSource={ tableData }
-                                    pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,...page }} />
+                                    pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,showSizeChanger:true,...page, showTotal: showTotal }} />
                         </div>
                     </div>
                 </div>

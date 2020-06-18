@@ -237,7 +237,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
                             <Cascader options={ options } placeholder="请选择省市区" />
                         </Form.Item>
                         <Form.Item  label="详细地址" name="address">
-                            <Input placeholder="停车场名称" maxLength={ 18 } />
+                            <Input placeholder="请输入详细地址" maxLength={ 18 } />
                         </Form.Item>
                         <Form.Item label="所属业主" name="owner">
                             <Input placeholder="请输入" maxLength={ 10 } />
@@ -264,7 +264,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
                         loading={ loading }
                         dataSource={ tableData }
                         scroll={{ x: 1270,y:250 }}
-                        pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,...page, showTotal: showTotal }} />
+                        pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,showSizeChanger:true,...page, showTotal: showTotal }} />
             </div>
         </>
     )
@@ -472,15 +472,15 @@ function Equity(props:Props) {
                              </Select>
                          </Form.Item>
                          <Form.Item name="couponAmount" label="金额" wrapperCol={{ span:8 }} rules={ [
-                                 { required: true, type: 'number', min: 0, max: 99999999, message: '请输入金额' }
+                                 { required: true, type: 'number', min: 0, max: 99999999, message: '请输入0-9999999数值' }
                              ]}>
-                             <InputNumber  maxLength={ 8 } placeholder="请输入" />
+                             <InputNumber  maxLength={ 8 } min={ 0 } max={ 99999999 } placeholder="请输入" />
                          </Form.Item>
                      </>
                   }
                  {
                      params.type === 'batch' &&
-                     <Form.Item name="couponlistUri" label="停车券" getValueFromEvent={ normFile } className="upload-container" wrapperCol={{span: 18}}
+                     <Form.Item name="couponlistUri" label="文件" getValueFromEvent={ normFile } className="upload-container" wrapperCol={{span: 18}}
                                 rules={[{required: true}]}>
                          <Upload name="file"
                                  accept=".xls, .xlsx, .csv"
