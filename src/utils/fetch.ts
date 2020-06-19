@@ -106,9 +106,6 @@ export default function fetch (url:string, options:Options) {
                         }
                         reject(response.data);
                         break;
-                    case 9008:
-                        reject(response.data);
-                        break;
                     default:
                         message.error(response.data.msg || '什么都没有留下');
                         reject(response.data);
