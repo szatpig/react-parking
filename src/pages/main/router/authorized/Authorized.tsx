@@ -1,6 +1,7 @@
 // Created by szatpig at 2020/6/16.
 import React from 'react';
 import { connect } from "react-redux";
+import { Route,Redirect } from "react-router-dom";
 
 function flat(args:[]) {
     var pathArr:any[] = []
@@ -19,6 +20,10 @@ function Authorized(props:Props) {
 
     let currentAuthority = userInfo.currentAuthority,
     _pathArr = flat(menuList);
+    console.log(userInfo,'userInfo')
+    if(Object.keys(userInfo).length === 0){
+        return <Route render={() => <Redirect to={{ pathname: "/login" }} />} />
+    }
     if (!authority) return children;
     if (authority.includes(currentAuthority)) {
         if(currentAuthority === 'admin'){

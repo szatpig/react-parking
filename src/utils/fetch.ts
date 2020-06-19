@@ -8,8 +8,6 @@ import { message } from 'antd';
 
 const history = createBrowserHistory();
 
-console.log('store',store)
-
 // axios 配置
 axios.defaults.timeout = 5000;
 axios.defaults.baseURL = '';
@@ -101,7 +99,7 @@ export default function fetch (url:string, options:Options) {
                                 sessionStorage.setItem('code_2001','0');
                             },()=>{})
                             store.dispatch({type:'USER_LOGIN_OUT'});
-                            history.push('/etc-verification/login');
+                            history.push('/etc-verification/login')
                         }
                         reject(response.data);
                         break;

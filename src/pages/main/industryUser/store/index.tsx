@@ -4,7 +4,6 @@ import { useHistory } from "react-router-dom";
 
 import {Form, Input, Button, Modal, Table, Tag, Popover, message, Cascader, Popconfirm} from 'antd';
 import { whiteList, equityConfigList, grantValid, getRevocable, confirmRevokeEquity, revokeEquitySubmit, validRevokeAvailable } from '@/api/white-api'
-import { ExclamationCircleFilled } from '@ant-design/icons';
 
 import region from '@/json/region'
 const options = region;
@@ -91,13 +90,8 @@ function Store() {
             width: 140,
             render: (cell:number,row:any) => (
                     cell === 4 ?
-                            <Popover overlayClassName="table-popover-container" placement="topRight" content={ row.revokeReason } title={ <div className="flex between"><span>原因</span><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span>{ row.updateTime }</span></div> } trigger="hover">
-                    <span>
+                        <Tag color={ equityStatusList[cell].color }>{ equityStatusList[cell].label }</Tag> :
                         <Tag color={ equityStatusList[cell].color }>{ equityStatusList[cell].label }</Tag>
-                        <ExclamationCircleFilled style={{ color:'#C0C6CC' }} />
-                    </span>
-                            </Popover>:
-                            <Tag color={ equityStatusList[cell].color }>{ equityStatusList[cell].label }</Tag>
             )
         },
         {
@@ -187,8 +181,8 @@ function Store() {
         setShow(false)
     };
 
-    const handleLink = (row:any) => {
-        setShow(false)
+    const handleLink = (id:number) => {
+        history.push('/home/store/detail?id='+id);
     };
 
     const handleSearch = (values:any) => {

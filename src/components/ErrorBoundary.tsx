@@ -17,7 +17,7 @@ class ErrorBoundary extends Component<Props, State> {
 
     static getDerivedStateFromError(e:any) {
         // 更新 state 使下一次渲染能够显示降级后的 UI
-        console.log(e)
+        console.log('getDerivedStateFromError:',e)
         return { hasError: true };
     }
 

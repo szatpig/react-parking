@@ -6,10 +6,13 @@ const Account  = lazy(() => import('./../industryUser/account/index'));
 const AccountBill  = lazy(() => import('./../industryUser/account/bill'));
 
 const Coupon  = lazy(() => import('./../industryUser/coupon'));
-const CouponSale  = lazy(() => import('./../industryUser/coupon/sale'));
 const CouponEquity  = lazy(() => import('./../industryUser/coupon/equity'));
+const CouponSale  = lazy(() => import('./../industryUser/coupon/sale'));
+const CouponSaleDetail  = lazy(() => import('./../industryUser/coupon/saleDetail'));
+
 
 const Store  = lazy(() => import('./../industryUser/store'));
+const StoreDetail  = lazy(() => import('./../industryUser/store/detail'));
 
 const Verification  = lazy(() => import('./../industryUser/verification'));
 
@@ -47,6 +50,17 @@ export default [
             collapsed:true,
             title:{
                 mainMenu:'商户管理'
+            }
+        }
+    },
+    {
+        path:'/store/detail',
+        component:StoreDetail,
+        authority:["user"],
+        meta:{
+            collapsed:true,
+            title:{
+                mainMenu:'商户详情'
             }
         }
     },
@@ -113,6 +127,17 @@ export default [
             collapsed:true,
             title:{
                 mainMenu:'销售管理'
+            }
+        }
+    },
+    {
+        path:'/coupon/sale/detail',
+        component:CouponSaleDetail,
+        authority:["user"],
+        meta:{
+            collapsed:true,
+            title:{
+                mainMenu:'销售停车券'
             }
         }
     },
