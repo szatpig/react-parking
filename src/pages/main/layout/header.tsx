@@ -2,9 +2,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { RouteComponentProps, withRouter } from 'react-router-dom'
-import { Link } from 'react-router-dom';
-
-// import { useHistory } from 'react-router-dom';
 
 import { Layout, Breadcrumb, Popover } from 'antd';
 
@@ -12,7 +9,7 @@ import { ReloadOutlined } from '@ant-design/icons';
 
 import { headerCollapsed } from "@/store/actions/header";
 import { userLoginOutAction } from "@/store/actions/user";
-import VerificateDrawerfrom from "@/pages/main/common/verification";
+import VerificateDrawer from "@/pages/main/common/verification";
 import logo from '@/images/image-logo.png'
 
 import site from '@/utils/config'
@@ -95,7 +92,7 @@ class HeaderLayout extends Component<Props, State> {
                         </div>
                     </div>
                 </div>
-                <VerificateDrawerfrom ref={ this.drawRef } />
+                <VerificateDrawer ref={ this.drawRef } />
             </Header>
         )
     }

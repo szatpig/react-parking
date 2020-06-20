@@ -85,7 +85,7 @@ function MerchantManage() {
             title: '操作',
             key: 'action',
             className:'tableActionCell',
-            width: 285,
+            width: 325,
             render: (cell:number,row:any) => (
                     <div className="table-button">
                         <Popconfirm
