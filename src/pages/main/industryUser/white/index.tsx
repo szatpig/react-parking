@@ -16,7 +16,7 @@ const equityStatusList:any = {
         color:'blue',
     },
     1:{
-        label:'已领取',
+        label:'使用中',
         color:'green',
     },
     2:{
@@ -115,7 +115,7 @@ const columns = [
     },
 ];
 
-function White() {
+function WhiteList() {
     const [revokable, setRevokable] = useState(false);
     const [loading, setLoading] = useState(false);
     const [equityList, setEquityList] = useState([]);
@@ -311,10 +311,7 @@ function White() {
                             <Input placeholder="请输入车牌号" maxLength={ 8 }/>
                         </Form.Item>
                         <Form.Item  label="发放时间" name="equityGrantTime">
-                            <RangePicker ranges={{
-                                "今天": [moment(), moment()],
-                                '近一个月': [moment(new Date()).subtract(1,'months'), moment(new Date())],
-                            }} showTime format="YYYY-MM-DD HH:mm:ss" />
+                            <RangePicker ranges={{}} showTime format="YYYY-MM-DD HH:mm:ss" />
                         </Form.Item>
                         <Form.Item  label="权益等级" name="equityLevel">
                             <Select
@@ -389,4 +386,4 @@ function White() {
     );
 }
 
-export default White
+export default WhiteList

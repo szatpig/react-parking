@@ -196,10 +196,7 @@ function Verification() {
                             <Input placeholder="请输入车牌号" maxLength={ 8 }/>
                         </Form.Item>
                         <Form.Item  label="发放时间" name="time">
-                            <RangePicker ranges={{
-                                "今天": [moment(), moment()],
-                                '近一个月': [moment(new Date()).subtract(1,'months'), moment(new Date())],
-                            }} showTime format="YYYY-MM-DD HH:mm:ss" />
+                            <RangePicker ranges={{}} showTime format="YYYY-MM-DD HH:mm:ss" />
                         </Form.Item>
                         <Form.Item>
                             <Button type="primary" htmlType="button" onClick={ handleQuery }>查询</Button>

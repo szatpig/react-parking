@@ -257,10 +257,7 @@ function Coupon(props:Props) {
                             <Input placeholder="请输入车牌号" maxLength={ 8 }/>
                         </Form.Item>
                         <Form.Item  label="发放时间" name="equityGrantTime">
-                            <RangePicker ranges={{
-                                "今天": [moment(), moment()],
-                                '近一个月': [moment(new Date()).subtract(1,'months'), moment(new Date())],
-                            }} showTime format="YYYY-MM-DD HH:mm:ss" />
+                            <RangePicker ranges={{}} showTime format="YYYY-MM-DD HH:mm:ss" />
                         </Form.Item>
                         <Form.Item label="状态" name="couponStatus">
                             <Select

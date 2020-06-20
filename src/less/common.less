@@ -59,6 +59,9 @@
         line-height: 32px;
         color: #C0C6CC;
     }
+    .form-grid{
+        padding-left: 60px;
+    }
     .region-wrap{
         .ant-form-item-control-input-content{
             &>input.ant-input{
@@ -90,6 +93,89 @@
         .ant-col-6{
             max-width: 100%;
         }
+    }
+}
+
+.drawer-container{
+    top:55px !important;
+    .drawer-wrap{
+        .search-item{
+            justify-content: flex-start;
+            align-items: center;
+            &>span{
+                &:first-child{
+                    flex: 0 0 60px;
+                };
+            }
+            .anticon-search{
+                &:before{
+                   border: 0;
+                }
+            }
+        }
+        .list-item{
+            .ticket-wrap{
+                transition: all 1s;
+                border: 1px solid #F9FAFB;
+                border-radius: 4px;
+                &:hover,&.selected{
+                    background: #F1F9FF;
+                    border: 1px solid #2196F3;
+                }
+            }
+            .ant-empty{
+                margin-top: 50%;
+            }
+            padding-top: 20px;
+            .collapsed{
+                &.active{
+                    display: block;
+                }
+                &.noborder{
+                    border:0;
+                    margin-top: 20px;
+                    padding-top: 0;
+                }
+                display: none;
+                border-top:1px solid #DDDEE1;
+                margin-top: 18px;
+                padding-top: 20px;
+                .ant-form-item{
+                    margin-bottom: 10px;
+                }
+            }
+        }
+    }
+    .ticket-wrap{
+        background: #F9FAFB;
+        padding: 18px 16px;
+        margin: 0 auto 20px;
+        box-sizing: border-box;
+        .ticket-title{
+            font-weight: bold;
+            font-size: 13px;
+            color: #57626D;
+            border-radius: 8px;
+            i{
+                font-weight: normal;
+                color: #57626D;
+            }
+        }
+        .ticket-parking{
+            span{
+                &:first-child{
+                    flex: 0 0 22%
+                }
+                &:last-child{
+                    max-height: 220px;
+                    overflow-y: auto;
+                }
+
+            }
+        }
+    }
+    .ant-drawer-body {
+        padding-bottom: 60px;
     }
 }
 

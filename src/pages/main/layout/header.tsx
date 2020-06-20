@@ -12,6 +12,7 @@ import { ReloadOutlined } from '@ant-design/icons';
 
 import { headerCollapsed } from "@/store/actions/header";
 import { userLoginOutAction } from "@/store/actions/user";
+import VerificateDrawerfrom from "@/pages/main/common/verification";
 import logo from '@/images/image-logo.png'
 
 import site from '@/utils/config'
@@ -31,18 +32,8 @@ class HeaderLayout extends Component<Props, State> {
     componentDidUpdate() {
     }
 
-    getBreadcrumbName = (pathname:string,routes:any) =>{
-        const routeItem = routes.find((item:any)=> item.path && (item.path === pathname.replace(/\/home/g,'')));
-        if(!routeItem) return <Breadcrumb.Item > 404 </Breadcrumb.Item>;
-        const pathUrl = routeItem.path.slice(1).split('/');
-        return Object.values(routeItem.meta.title).map((item:any, index, arr)=>{
-            if(arr.length - index > 1 && (!routeItem.meta.collapsed || routeItem.meta.collapsed && index !== 0)){
-                return <Breadcrumb.Item key={ index }><Link to={ '/home/' + pathUrl.slice(0,-(pathUrl.length - index -1)).join('/') }>{ item }</Link></Breadcrumb.Item>
-            }else {
-                return <Breadcrumb.Item key={ index }>{ item }</Breadcrumb.Item>
-            }
-        })
-    }
+
+    drawRef:any = React.createRef();
 
     routerLink = () => {
         this.props.history.push('/home/account')
@@ -52,8 +43,16 @@ class HeaderLayout extends Component<Props, State> {
         this.props.history.push('/login')
     }
 
+    handleShow = () => {
+        if(this.drawRef.current){
+            this.drawRef.current.show()
+        }
+
+    }
+
+
     render() {
-        const { name,token } = this.props.userInfo;
+        const { name,token,currentAuthority } = this.props.userInfo;
         const content = (
                 <div>
                     {/*<p onClick={ this.routerLink }>个人信息</p>*/}
@@ -64,7 +63,12 @@ class HeaderLayout extends Component<Props, State> {
             <Header  className="header-container">
                 <div className="head-content">
                     <div className="left-wrap">
-                         <img src={ logo } alt="停车场logo" />
+                        <img src={ logo } alt="停车场logo" />
+                        <span className="user-type">
+                            {
+                                currentAuthority === 'admin' ? '商户' : (currentAuthority === 'user' ?  '行业用户' : '商家')
+                            }
+                        </span>
                     </div>
                     <div className="right-wrap">
                         {/*<div className="item-wrap">*/}
@@ -77,6 +81,10 @@ class HeaderLayout extends Component<Props, State> {
                                 {/*<ReloadOutlined type="bell" />消息*/}
                             {/*</Badge>*/}
                         {/*</div>*/}
+                        {
+                            currentAuthority === 'admin' && <div className="item-wrap" onClick={ this.handleShow }>人工核销</div>
+                        }
+
                         <div className="item-wrap">
                             <Popover placement="bottom" overlayClassName="header-popover-container" content={content} trigger="hover">
                                 <div>
@@ -87,7 +95,7 @@ class HeaderLayout extends Component<Props, State> {
                         </div>
                     </div>
                 </div>
-
+                <VerificateDrawerfrom ref={ this.drawRef } />
             </Header>
         )
     }

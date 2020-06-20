@@ -1,0 +1,60 @@
+.coupon-sale-container{
+
+}
+.common-dialog{
+    .ticket-wrap{
+        background: #F9FAFB;
+        padding: 18px 16px;
+        width: 94%;
+        margin: 0 auto 20px;
+        .ticket-title{
+            font-weight: bold;
+            font-size: 13px;
+            color: #57626D;
+            border-radius: 8px;
+            i{
+                color: #57626D;
+            }
+        }
+        .ticket-parking{
+            span{
+                &:first-child{
+                    flex: 0 0 22%
+                }
+                &:last-child{
+                    max-height: 220px;
+                    overflow-y: auto;
+                }
+
+            }
+        }
+    }
+    .form-List-container{
+        .ant-row.ant-form-item{
+            &:not(:first-child){
+                margin-left: 80px;
+            }
+        }
+        .field-list-cell{
+            margin-bottom: 0;
+        }
+        .flex{
+            align-items: center;
+            //margin-top: -24px;
+            .ant-row.ant-form-item{
+                &:not(:first-child){
+                    margin-left: 10px;
+                }
+            }
+            span.anticon-minus-square,.anticon-plus-square{
+                margin-bottom: 24px !important;
+            }
+            .ant-form-item-required{
+                &:before{
+                    content: '';
+                    color: #fff !important;
+                }
+            }
+        }
+    }
+}

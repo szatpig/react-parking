@@ -28,13 +28,36 @@
                 flex-flow: row nowrap;
             }
             .left-wrap {
+                position: relative;
                 img{
                     height: 55px;
+                }
+                span.user-type{
+                    position: absolute;
+                    top:50%;
+                    transform: translateY(-50%);
+                    left:255px;
+                    color:#fff;
+                    padding-left: 15px;
+                    line-height: 52px;
+                    font-size: 16px;
+                    &:before{
+                        content: '';
+                        position: absolute;
+                        left: 0;
+                        top:50%;
+                        transform: translateY(-49%);
+                        height: 16px;
+                        width: 1px;
+                        background-color: #fff;
+                    }
                 }
             }
             .right-wrap{
                 .item-wrap{
                     margin-right: 30px;
+                    color: #fff;
+                    cursor: pointer;
                     img{
                         height: 30px;
                         width: 30px;
@@ -317,14 +340,12 @@
                     color: @primary-color;
                     cursor: pointer;
                 }
-            }
-        }
-        .table-button{
-            button{
-                padding: 0;
-                margin-right: 16px;
-                &:first-child{
+                button{
                     padding: 0;
+                    margin-right: 16px;
+                    &:first-child{
+                        padding: 0;
+                    }
                 }
             }
         }

@@ -7,13 +7,13 @@ const Sale  = lazy(() => import('./../admin/sale'));
 const Record  = lazy(() => import('./../admin/record'));
 
 const Merchant  = lazy(() => import('./../admin/merchant'));
+const MerchantDetail  = lazy(() => import('./../admin/merchant/merchantDetail'));
 const MerchantSale  = lazy(() => import('./../admin/merchant/merchantSale'));
 
 const ManualVerification  = lazy(() => import('./../admin/verification'));
 
 const Role  = lazy(() => import('./../admin/system/role'));
 const User  = lazy(() => import('./../admin/system/user'));
-const Enterprise  = lazy(() => import('./../common/enterprise'));
 
 interface routes {
     path:string;
@@ -57,12 +57,22 @@ export default [
         }
     },
     {
+        path:'/merchant/detail',
+        component:MerchantDetail,
+        authority:["admin"],
+        meta:{
+            title:{
+                mainMenu:'销售折扣'
+            }
+        }
+    },
+    {
         path:'/merchant/sale',
         component:MerchantSale,
         authority:["admin"],
         meta:{
             title:{
-                mainMenu:'商户管理'
+                mainMenu:'销售折扣'
             }
         }
     },

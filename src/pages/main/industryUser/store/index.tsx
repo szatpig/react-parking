@@ -254,12 +254,13 @@ function Store() {
     },[]);
 
     return (
-            <div className="store-container"><div className="breadcrumb-container left-border line">
+            <div className="store-container">
+                <div className="breadcrumb-container left-border line">
                 商户管理
-                <span>
-                    <Button type="primary" onClick={ () => handleLink(0) }>添加商户</Button>
-                </span>
-            </div>
+                    <span>
+                        <Button type="primary" onClick={ () => handleLink(0) }>添加商户</Button>
+                    </span>
+                </div>
                 <div className="search-container">
                     <div className="input-cells">
                         <Form
@@ -317,7 +318,8 @@ function Store() {
                         </Form.Item>
                     </Form>
                     <p className="common-dialog-tips">当前选择{ revokeEquity.selectLine }笔，余额共计{ revokeEquity.totalBalance }元，撤销后会将未使用金额返回行业用户余额，撤销后不可恢复!</p>
-                </Modal></div>
+                </Modal>
+            </div>
     );
 }
 

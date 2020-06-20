@@ -63,7 +63,7 @@ class Login extends Component<UserFormProps, State> {
 
     render() {
         if(this.props.userToken && this.props.userInfo.currentAuthority){
-            this.props.history.push('/home/white')
+            this.props.history.push('/home/sale')
         }
         return (
             <div className="login-container">
