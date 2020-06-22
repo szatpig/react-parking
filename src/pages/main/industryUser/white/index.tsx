@@ -273,10 +273,10 @@ function WhiteList() {
             setRevokable(!!data.data)
         })
     }
-    const getGrantValid = () => {
+    const getGrantValid = (path:string) => {
         let _data ={}
         grantValid(_data).then((data:any) => {
-            history.push('/home/white/equity/single')
+            history.push(path)
         }).catch(err => {
         })
     }
@@ -293,8 +293,8 @@ function WhiteList() {
                 白名单管理
                 <span>
                     <Button type="link" href={'white/class'}>权益等级管理</Button>
-                    <Button type="primary" onClick={ () => getGrantValid() }>发放权益金</Button>
-                    <Button type="primary" href={'white/equity/batch'}>批量导入权益</Button>
+                    <Button type="primary" onClick={ () => getGrantValid('/home/white/equity/single') }>发放权益金</Button>
+                    <Button type="primary" onClick={ () => getGrantValid('/home/white/equity/batch') }>批量导入权益</Button>
                 </span>
             </div>
             <div className="search-container">
