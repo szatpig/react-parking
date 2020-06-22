@@ -16,7 +16,7 @@ const equityStatusList:any = {
         color:'blue',
     },
     1:{
-        label:'已领取',
+        label:'使用中',
         color:'green',
     },
     2:{
