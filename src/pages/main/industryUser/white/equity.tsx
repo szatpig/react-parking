@@ -13,7 +13,7 @@ import XLSX from 'xlsx'
 
 import site from '@/utils/config'
 import { getParkingDetailByBusinessId } from '@/api/common-api'
-import {equityConfigList, grantConfirmData , grantEquity, parseWhitelist, importEquity} from '@/api/white-api'
+import {equityConfigList, grantConfirmData , grantEquity, parseWhitelist, importEquity} from '@/api/industryUser/white-api'
 import region from '@/json/region'
 
 const { Option } = Select;

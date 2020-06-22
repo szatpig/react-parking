@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import {Form, Input, Button, Modal, Table, Row, Col, Cascader, Upload, message } from 'antd';
 
 import { getParkingDetailByBusinessId } from '@/api/common-api'
-import { getAccountDetails, uploadLogo, updateIndustryLoginUserPwd } from "@/api/account-api";
+import { getAccountDetails, uploadLogo, updateIndustryLoginUserPwd } from "@/api/industryUser/account-api";
 
 import region from '@/json/region'
 

@@ -73,7 +73,7 @@ export const commercialUserCouponSave= (data:any) => fetch(site.base + '/commerc
     data
 });
 
-export const selectByIndustryUser= (params:any) => fetch(site.base + '/commercialUser/selectByIndustryUser' ,{
-    type: 'get',
-    params
+export const selectByIndustryUser= (data:any) => fetch(site.base + '/commercialUser/selectByIndustryUser' ,{
+    type: 'post',
+    data
 });

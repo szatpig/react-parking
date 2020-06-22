@@ -4,7 +4,7 @@ import moment from 'moment';
 
 import { Form, Input, Button, DatePicker, Select, Table } from 'antd';
 
-import { equityVerifyRecordList, equityVerifyRecordStatistics, equityVerifyRecordExport } from '@/api/verification-api'
+import { equityVerifyRecordList, equityVerifyRecordStatistics, equityVerifyRecordExport } from '@/api/industryUser/verification-api'
 
 import Dayjs from 'dayjs';
 import site from "@/utils/config";

@@ -25,7 +25,7 @@ import Dayjs from 'dayjs';
 
 import site from '@/utils/config'
 import { getParkingDetailByBusinessId } from '@/api/common-api'
-import { getProvideConfirmData, provideCouponOne, importDataConfirm, importCouponBatch } from '@/api/coupon-api'
+import { getProvideConfirmData, provideCouponOne, importDataConfirm, importCouponBatch } from '@/api/industryUser/coupon-api'
 import region from '@/json/region'
 
 const { Option } = Select;

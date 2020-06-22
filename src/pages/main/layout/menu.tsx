@@ -121,7 +121,7 @@ class MenuLayout extends Component<Props, State> {
 }
 
 interface Props extends RouteComponentProps {
-    menuList:[]
+    menuList:[],
     collapsed:boolean
 }
 

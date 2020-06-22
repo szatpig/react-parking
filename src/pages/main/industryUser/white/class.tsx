@@ -6,7 +6,7 @@ import { LeftOutlined } from '@ant-design/icons';
 
 
 import { Form, Input, Button, Modal, InputNumber, Table, Popconfirm, message  } from 'antd';
-import { equityConfigList, equityConfigAdd, equityConfigUpdate, equityConfigDelete } from "@/api/white-api";
+import { equityConfigList, equityConfigAdd, equityConfigUpdate, equityConfigDelete } from "@/api/industryUser/white-api";
 
 
 const layout = {

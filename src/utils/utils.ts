@@ -10,6 +10,15 @@ const EncryptStr = (password:string,publicKey:string) =>{
     return encrypted;
 }
 
+const Debounce = function (fn:any, wait:number) {
+    let timeout:any = null;
+    return function() {
+        if(timeout !== null) clearTimeout(timeout);
+        timeout = setTimeout(fn, wait);
+    }
+}
+
 export {
+    Debounce,
     EncryptStr
 }

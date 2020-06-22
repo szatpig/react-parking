@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import moment from 'moment';
 
 import {Form, Input, Button, Modal, DatePicker, Select, Table, Tag, Popover, message, Checkbox} from 'antd';
-import { couponList, confirmRevokeCoupon, verifyRevokeAvailable, revokeCouponBatch } from '@/api/coupon-api'
+import { couponList, confirmRevokeCoupon, verifyRevokeAvailable, revokeCouponBatch } from '@/api/industryUser/coupon-api'
 
 import Dayjs from 'dayjs';
 

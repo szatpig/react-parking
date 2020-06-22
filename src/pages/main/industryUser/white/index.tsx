@@ -5,7 +5,7 @@ import moment from 'moment';
 import Dayjs from 'dayjs';
 
 import {Form, Input, Button, Modal, DatePicker, Select, Table, Tag, Popover, message} from 'antd';
-import { whiteList, equityConfigList, grantValid, getRevocable, confirmRevokeEquity, revokeEquitySubmit, validRevokeAvailable } from '@/api/white-api'
+import { whiteList, equityConfigList, grantValid, getRevocable, confirmRevokeEquity, revokeEquitySubmit, validRevokeAvailable } from '@/api/industryUser/white-api'
 import { ExclamationCircleFilled } from '@ant-design/icons';
 const { RangePicker } = DatePicker;
 const { Option } = Select;

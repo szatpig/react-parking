@@ -5,7 +5,7 @@ import moment from 'moment';
 
 import {Form, Input, Button, DatePicker, Select, Table} from 'antd';
 import { ExclamationCircleFilled } from '@ant-design/icons';
-import { industryUserAccountLog } from '@/api/account-api'
+import { industryUserAccountLog } from '@/api/industryUser/account-api'
 
 import Dayjs from 'dayjs';
 

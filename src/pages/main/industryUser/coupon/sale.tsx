@@ -5,7 +5,7 @@ import { useHistory } from "react-router-dom";
 import moment from 'moment';
 
 import {Form, Input, Button, Modal, DatePicker, Select, Table, Tag, Popover, message, Checkbox} from 'antd';
-import { commercialUserCouponList } from '@/api/coupon-api'
+import { commercialUserCouponList } from '@/api/industryUser/coupon-api'
 
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import Dayjs from 'dayjs';

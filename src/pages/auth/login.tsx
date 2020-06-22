@@ -62,8 +62,9 @@ class Login extends Component<UserFormProps, State> {
     };
 
     render() {
-        if(this.props.userToken && this.props.userInfo.currentAuthority){
-            this.props.history.push('/home/white')
+        console.log(this.props.menuList)
+        if(this.props.userToken && this.props.userInfo.currentAuthority && this.props.menuList.length){
+            this.props.history.push(this.props.menuList[0].path)
         }
         return (
             <div className="login-container">
@@ -122,6 +123,7 @@ interface UserFormProps{
     username: string;
     password: string;
     userToken:string;
+    menuList:any[];
     userInfo:any,
     userLoginRequestAction?: any;
     userLoginOutAction:()=>void
@@ -137,6 +139,7 @@ interface State {
 const mapStateToProps = (state:any) => ({
     userToken:state.user.token,
     userInfo:state.user.info,
+    menuList:state.user.menuList,
     error:state.common.error.status ||　''
 })
 

@@ -1,6 +1,6 @@
 // Created by szatpig at 2020/5/6.
 import React, {useState, useEffect} from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import moment from 'moment';
 
@@ -22,8 +22,10 @@ import {
 
 import Dayjs from 'dayjs';
 
+import { Debounce } from '@/utils/utils'
+
 import { getParkingDetailByBusinessId } from '@/api/common-api'
-import {selectByIndustryUser,commercialUserCouponSave } from '@/api/coupon-api'
+import {selectByIndustryUser,commercialUserCouponSave } from '@/api/industryUser/coupon-api'
 import region from '@/json/region'
 
 const { Option } = Select;
@@ -292,13 +294,19 @@ function SaleDetail() {
         return current && current < moment().endOf('day');
     }
 
-    const handleSelectFetch =(name:string)=>{
+    const _merchantFetch = (name:any) => {
         let _data ={
             name
         }
+        console.log(_data)
         selectByIndustryUser(_data).then((data:any) => {
             setMerchantList(data.data)
         })
+    }
+
+    const handleSelectFetch = (name:string) => {
+
+        Debounce(_merchantFetch(name),800)
     }
 
     const onFinish = (values:any) => {
@@ -342,6 +350,7 @@ function SaleDetail() {
                              onSearch={ handleSelectFetch }
                              notFoundContent={ null }
                              placeholder="请选择商户"
+                             filterOption={false}
                              allowClear>
                          {
                              merchantList.map((item:any) => (<Option value={ item.id } key={ item.id }>{ item.name }</Option>))
