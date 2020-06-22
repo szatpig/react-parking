@@ -27,3 +27,8 @@ export const updateIndustryLoginUserPwd= (data:any) => fetch(site.base + '/busin
     type: 'post',
     data
 });
+
+export const industryUserAccountLog= (data:any) => fetch(site.base + '/industryUserAccountLog/list' ,{
+    type: 'post',
+    data
+});

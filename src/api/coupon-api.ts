@@ -62,3 +62,18 @@ export const importCouponBatch= (data:any) => fetch(site.base + '/customerCoupon
     type: 'post',
     data
 });
+
+export const commercialUserCouponList= (data:any) => fetch(site.base + '/commercialUserCoupon/list' ,{
+    type: 'post',
+    data
+});
+
+export const commercialUserCouponSave= (data:any) => fetch(site.base + '/commercialUserCoupon/save' ,{
+    type: 'post',
+    data
+});
+
+export const selectByIndustryUser= (params:any) => fetch(site.base + '/commercialUser/selectByIndustryUser' ,{
+    type: 'get',
+    params
+});

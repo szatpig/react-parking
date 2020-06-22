@@ -14,9 +14,16 @@ const { Option } = Select;
 
 const columns = [
     {
+        title: '商户名称',
+        dataIndex: 'commercialUserName',
+        width: 160,
+        ellipsis:true
+    },
+    {
         title: '停车场名称',
         dataIndex: 'parkingName',
         width: 120,
+        ellipsis:true
     },
     {
         title: '核销类型',

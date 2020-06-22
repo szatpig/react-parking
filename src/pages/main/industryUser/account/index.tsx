@@ -155,7 +155,7 @@ function Account(props:Props) {
 
     const loginOut = () => {
         userLoginOutAction();
-        history.push('/etc-verification/login')
+        history.push('/login')
     }
 
     const getUserInfo = () => {

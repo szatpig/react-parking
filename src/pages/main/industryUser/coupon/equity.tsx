@@ -471,11 +471,15 @@ function Equity(props:Props) {
                                  }
                              </Select>
                          </Form.Item>
-                         <Form.Item name="couponAmount" label="金额" wrapperCol={{ span:8 }} rules={ [
+                         <Form.Item label="金额" required>
+                             <Form.Item name="couponAmount" noStyle wrapperCol={{ span:8 }} rules={ [
                                  { required: true, type: 'number', min: 0, max: 99999999, message: '请输入0-9999999数值' }
                              ]}>
-                             <InputNumber  maxLength={ 8 } min={ 0 } max={ 99999999 } placeholder="请输入" />
+                                 <InputNumber  maxLength={ 8 } min={ 0 } max={ 99999999 } placeholder="请输入" />
+                             </Form.Item>
+                             &nbsp;&nbsp;元
                          </Form.Item>
+
                      </>
                   }
                  {
@@ -498,16 +502,23 @@ function Equity(props:Props) {
                          </Upload>
                      </Form.Item>
                  }
-                 < Form.Item name="expirationTime" label="截止时间"  rules={[{required: true}]}>
-                     <DatePicker disabledDate={ disabledDate }/>
+                 <Form.Item label="截止时间" required>
+                     < Form.Item name="expirationTime" noStyle  rules={[{required: true}]}>
+                         <DatePicker disabledDate={ disabledDate }/>
+                     </Form.Item>
+                     &nbsp;&nbsp;23:59:59
                  </Form.Item>
                  {
                      params.type === 'single' &&
-                     <Form.Item name="provideCount" label="发放数量" wrapperCol={{span: 8}} rules={[
-                               {required: true, type: 'number', min: 0, max: 99999999, message: '请输入数量'}
-                          ]}>
-                         <InputNumber maxLength={8} placeholder="请输入"/>
+                     <Form.Item label="发放数量" required>
+                         <Form.Item name="provideCount" noStyle wrapperCol={{span: 8}} rules={[
+                             {required: true, type: 'number', min: 0, max: 99999999, message: '请输入数量'}
+                         ]}>
+                             <InputNumber maxLength={8} placeholder="请输入"/>
+                         </Form.Item>
+                         &nbsp;&nbsp;张
                      </Form.Item>
+
                  }
                  <Form.Item name="parkingIds" label="可用停车场" rules={[{ required: true,message:'至少选择一个停车场' }]} wrapperCol={{ span:18 }}>
                      <FormTable />

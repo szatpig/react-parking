@@ -2,44 +2,30 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from "react-router-dom";
 
-import {Form, Input, Button, Modal, Table, Tag, Popover, message, Cascader, Popconfirm} from 'antd';
-import { whiteList, equityConfigList, grantValid, getRevocable, confirmRevokeEquity, revokeEquitySubmit, validRevokeAvailable } from '@/api/white-api'
+import { Form, Input, Button,  Table, Tag, Cascader, Popconfirm } from 'antd';
+import { commercialUserList, commercialUserOff, commercialUserDelete, commercialUserReset } from '@/api/store-api'
 
 import region from '@/json/region'
 const options = region;
 
 const equityStatusList:any = {
     0:{
-        label:'未使用',
+        label:'正常',
         color:'blue',
     },
     1:{
-        label:'已领取',
-        color:'green',
+        label:'禁用',
+        color:'gold',
     },
     2:{
-        label:'核销完成',
-        color:'default',
-    },
-    3:{
-        label:'已过期',
-        color:'default',
-    },
-    4:{
-        label:'已撤销',
+        label:'锁定',
         color:'default',
     }
 }
 
-const colorList:any = ['蓝色','黄色','黑色','白色','渐变绿色','黄绿双拼色','蓝白渐变色']
-
-
 
 function Store() {
-    const [revokable, setRevokable] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [equityList, setEquityList] = useState([]);
-    const [effectiveWhileListCount, setEffectiveWhileListCount] = useState([]);
     const [selectedRow, setSelectedRow] = useState([]);
     const [tableData,setTableData] = useState<object[]>([])
     const [page,setPage] = useState({
@@ -47,40 +33,34 @@ function Store() {
         pageSize:20,
         total:0
     });
-    const [show, setShow] = useState(false);
-    const [revokeEquity, setRevokeEquity] = useState({
-        selectLine:0,
-        totalBalance:0
-    });
-    const [confirmLoading, setConfirmLoading] = useState(false);
 
     const columns = [
         {
             title: '商户名称',
-            dataIndex: 'couponNo',
+            dataIndex: 'name',
             ellipsis:true,
             width: 160,
             fixed:true
         },
         {
             title: '商户账号名',
-            dataIndex: 'plateNo',
+            dataIndex: 'username',
             ellipsis:true,
             width: 120
         },
         {
             title: '商户地址',
-            dataIndex: 'plateNo',
+            dataIndex: 'address',
             ellipsis:true
         },
         {
             title: '联系人',
-            dataIndex: 'plateNo',
+            dataIndex: 'contact',
             ellipsis:true
         },
         {
             title: '开具发票',
-            dataIndex: 'plateNo',
+            dataIndex: 'invoiced',
             ellipsis:true,
             width: 120
         },
@@ -102,7 +82,7 @@ function Store() {
                     <div className="table-button">
                         <Popconfirm
                                 title="确定禁用该用户账号吗"
-                                onConfirm={ () => handleDisabled(row) }
+                                onConfirm={ () => handleOff(row) }
                                 okText="确定"
                                 cancelText="取消"
                         >
@@ -117,7 +97,6 @@ function Store() {
     ];
 
     const [ form ] = Form.useForm();
-    const [ modalForm ] = Form.useForm();
 
     const history = useHistory();
 
@@ -125,16 +104,12 @@ function Store() {
         // setFormLayout(layout);
     };
 
-    const onSelectChange = (selectedRowKeys:any,selectedRow:any) => {
-        console.log('selectedRowKeys changed: ', selectedRowKeys,selectedRow);
-        setSelectedRow(selectedRowKeys);
-    };
 
-    const handleDisabled = (row:any)=>{
+    const handleOff = (row:any)=>{
         let _data = {
             ids:selectedRow
         }
-        validRevokeAvailable(_data).then(data => {
+        commercialUserOff(_data).then((data:any) => {
 
         })
     }
@@ -143,7 +118,7 @@ function Store() {
         let _data = {
             ids:selectedRow
         }
-        validRevokeAvailable(_data).then(data => {
+        commercialUserDelete(_data).then((data:any) => {
 
         })
     }
@@ -152,34 +127,10 @@ function Store() {
         let _data = {
             ids:selectedRow
         }
-        validRevokeAvailable(_data).then(data => {
+        commercialUserReset(_data).then((data:any) => {
 
         })
     }
-    //modal
-    const handleSubmit = () => {
-        setConfirmLoading(true);
-        modalForm.validateFields().then((values:any) => {
-            let _data ={
-                ids:selectedRow,
-                ...values
-            }
-            revokeEquitySubmit(_data).then((data:any) => {
-                message.success('批量处理成功');
-                form.submit();
-                setShow(false);
-                setConfirmLoading(false);
-            })
-        }).catch(info => {
-            setConfirmLoading(false);
-            console.log('Validate Failed:', info);
-        });
-    };
-
-    const handleCancel = () => {
-        console.log('Clicked cancel button');
-        setShow(false)
-    };
 
     const handleLink = (id:number) => {
         history.push('/home/store/detail?id='+id);
@@ -236,13 +187,12 @@ function Store() {
             ...args
         };
         setLoading(true)
-        whiteList(_data).then((data:any) => {
+        commercialUserList(_data).then((data:any) => {
             setTableData(data.data.customerEquityList.list);
             setPage({
                 ...page,
                 total:data.data.customerEquityList.total
             })
-            setEffectiveWhileListCount(data.data.effectiveWhileListCount)
             setLoading(false)
         }).catch(err => {
             setLoading(false)
@@ -268,10 +218,10 @@ function Store() {
                                 onValuesChange={ onFormLayoutChange }
                                 form = { form }
                                 onFinish={ handleSearch }>
-                            <Form.Item label="商户名称" name="couponNo">
+                            <Form.Item label="商户名称" name="name">
                                 <Input placeholder="请输入商户名称" maxLength={ 18 } />
                             </Form.Item>
-                            <Form.Item label="账号名" name="plateNo">
+                            <Form.Item label="账号名" name="username">
                                 <Input placeholder="请输入账号名" maxLength={ 8 }/>
                             </Form.Item>
                             <Form.Item label="省市区" name="region">
@@ -280,10 +230,10 @@ function Store() {
                             <Form.Item  label="详细地址" name="address">
                                 <Input placeholder="请输入详细地址" maxLength={ 18 } />
                             </Form.Item>
-                            <Form.Item label="联系人" name="couponNo">
+                            <Form.Item label="联系人" name="contact">
                                 <Input placeholder="请输入联系人" maxLength={ 18 } />
                             </Form.Item>
-                            <Form.Item label="联系电话" name="plateNo">
+                            <Form.Item label="联系电话" name="phone">
                                 <Input placeholder="请输入联系电话" maxLength={ 8 }/>
                             </Form.Item>
                             <Form.Item>
@@ -301,24 +251,6 @@ function Store() {
                             dataSource={ tableData }
                             pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,...page, showTotal: showTotal }} />
                 </div>
-                <Modal
-                        title="撤销原因"
-                        visible={ show }
-                        className="common-dialog"
-                        onOk={ handleSubmit }
-                        okText={"保存"}
-                        confirmLoading={ confirmLoading }
-                        onCancel={ handleCancel }>
-                    <Form
-                            form={ modalForm }>
-                        <Form.Item name="revokeReason" label="撤销原因" rules={ [
-                            { required: true,whitespace: true, message: '请输入内容' }
-                        ] }>
-                            <Input.TextArea rows={4} maxLength={ 200 } />
-                        </Form.Item>
-                    </Form>
-                    <p className="common-dialog-tips">当前选择{ revokeEquity.selectLine }笔，余额共计{ revokeEquity.totalBalance }元，撤销后会将未使用金额返回行业用户余额，撤销后不可恢复!</p>
-                </Modal>
             </div>
     );
 }

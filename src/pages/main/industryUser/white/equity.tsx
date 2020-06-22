@@ -552,8 +552,11 @@ function Equity(props:Props) {
                          </Upload>
                      </Form.Item>
                  }
-                 <Form.Item name="expirationTime" label="截止时间" rules={[{ required: true }]}>
-                     <DatePicker disabledDate={ disabledDate } />
+                 <Form.Item label="截止时间" required>
+                     < Form.Item name="expirationTime" noStyle  rules={[{required: true}]}>
+                         <DatePicker disabledDate={ disabledDate }/>
+                     </Form.Item>
+                     &nbsp;&nbsp;23:59:59
                  </Form.Item>
                  <Form.Item name="parkIdList" label="可用停车场" rules={[{ required: true,message:'至少选择一个停车场' }]} wrapperCol={{ span:18 }}>
                      <FormTable />
