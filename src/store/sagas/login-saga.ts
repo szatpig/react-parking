@@ -10,7 +10,7 @@ const history = createBrowserHistory();
 function* loginAsync(payload:any) {
     try {
         let { data } =  yield call(userLogin,payload);
-        data = { ...data,currentAuthority:'admin' }
+        data = { ...data,currentAuthority:'user' }
         sessionStorage.setItem('USER_TOKEN', data.token);
         sessionStorage.setItem('USER_INFO', JSON.stringify(data));
         yield put({ type: 'USER_TOKEN', payload:{ token:data.token }})
@@ -63,44 +63,44 @@ function* loginAsync(payload:any) {
                 ]
             }
         ];
-        menuList = [
-            {
-                id:1,
-                title:'销售管理',
-                path:'/home/sale'
-            },{
-                id:2,
-                title:'销售记录',
-                path:'/home/record'
-            },
-            {
-                id:3,
-                title:'商家管理',
-                path:'/home/merchant'
-            },
-            {
-                id:5,
-                title:'系统管理',
-                path:'/home/system',
-                children:[
-                    {
-                        id:6,
-                        title:'用户管理',
-                        path:'/home/system/user'
-                    },
-                    {
-                        id:7,
-                        title:'角色管理',
-                        path:'/home/system/role'
-                    },
-                    {
-                        id:8,
-                        title:'企业账户',
-                        path:'/home/system/account'
-                    },
-                ]
-            },
-        ];
+        // menuList = [
+        //     {
+        //         id:1,
+        //         title:'销售管理',
+        //         path:'/home/sale'
+        //     },{
+        //         id:2,
+        //         title:'销售记录',
+        //         path:'/home/record'
+        //     },
+        //     {
+        //         id:3,
+        //         title:'商家管理',
+        //         path:'/home/merchant'
+        //     },
+        //     {
+        //         id:5,
+        //         title:'系统管理',
+        //         path:'/home/system',
+        //         children:[
+        //             {
+        //                 id:6,
+        //                 title:'用户管理',
+        //                 path:'/home/system/user'
+        //             },
+        //             {
+        //                 id:7,
+        //                 title:'角色管理',
+        //                 path:'/home/system/role'
+        //             },
+        //             {
+        //                 id:8,
+        //                 title:'企业账户',
+        //                 path:'/home/system/account'
+        //             },
+        //         ]
+        //     },
+        // ];
         // menuList = [
         //     {
         //         id:1,

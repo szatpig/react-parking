@@ -54,6 +54,14 @@ axios.interceptors.response.use(
                 default:
                     message.error('程序员罢工了,哄哄她去');
             }
+        }else{
+            message.error('请求服务拒绝，请稍候重试');
+            return Promise.reject({
+                data:{
+                    status:5001,
+                    msg:'请求服务拒绝'
+                }
+            })
         }
         return Promise.reject(error.response)
     });
