@@ -90,8 +90,10 @@ function SaleManage() {
         {
             title: '停车场',
             dataIndex: 'parkingNames',
-            width: 200,
-            ellipsis:true
+            ellipsis:true,
+            render:(cell:string) => (
+                    <span title={ cell }>{ cell || '--' }</span>
+            )
         },
         {
             title: '发放时间',

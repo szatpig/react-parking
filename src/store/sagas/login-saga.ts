@@ -10,7 +10,7 @@ const history = createBrowserHistory();
 function* loginAsync(payload:any) {
     try {
         let { data } =  yield call(userLogin,payload);
-        data = { ...data,currentAuthority:'merchant' }
+        data = { ...data,currentAuthority:'admin' }
         sessionStorage.setItem('USER_TOKEN', data.token);
         sessionStorage.setItem('USER_INFO', JSON.stringify(data));
         yield put({ type: 'USER_TOKEN', payload:{ token:data.token }})
@@ -101,22 +101,22 @@ function* loginAsync(payload:any) {
                 ]
             },
         ];
-        menuList = [
-            {
-                id:1,
-                title:'停车券管理',
-                path:'/home/ticketlist'
-            },{
-                id:2,
-                title:'停车券发放记录',
-                path:'/home/ticketgive'
-            },
-            {
-                id:3,
-                title:'企业账户',
-                path:'/home/system/account'
-            }
-        ];
+        // menuList = [
+        //     {
+        //         id:1,
+        //         title:'停车券管理',
+        //         path:'/home/ticketlist'
+        //     },{
+        //         id:2,
+        //         title:'停车券发放记录',
+        //         path:'/home/ticketgive'
+        //     },
+        //     {
+        //         id:3,
+        //         title:'企业账户',
+        //         path:'/home/system/account'
+        //     }
+        // ];
         sessionStorage.setItem('USER_MENU_LIST',JSON.stringify(menuList || []));
         yield put({ type: 'USER_MENU_LIST', payload:menuList });
     }catch (e) {

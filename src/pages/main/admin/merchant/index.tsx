@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useHistory } from "react-router-dom";
 
 import {Form, Input, Button, Modal, Table, Tag, Popover, message, Cascader, Popconfirm} from 'antd';
-import { whiteList, equityConfigList, grantValid, getRevocable, confirmRevokeEquity, revokeEquitySubmit, validRevokeAvailable } from '@/api/industryUser/white-api'
+import { merchantUserList, merchantUserDelete, merchantUserReset, merchantUserOff } from '@/api/admin/merchant-api'
 
 import region from '@/json/region'
 const options = region;
@@ -90,7 +90,7 @@ function MerchantManage() {
                     <div className="table-button">
                         <Popconfirm
                                 title="确定禁用该用户账号吗"
-                                onConfirm={ () => handleDisabled(row) }
+                                onConfirm={ () => handleOff(row) }
                                 okText="确定"
                                 cancelText="取消"
                         >
@@ -113,11 +113,11 @@ function MerchantManage() {
         // setFormLayout(layout);
     };
 
-    const handleDisabled = (row:any)=>{
+    const handleOff = (row:any)=>{
         let _data = {
             ids:selectedRow
         }
-        validRevokeAvailable(_data).then(data => {
+        merchantUserOff(_data).then(data => {
 
         })
     }
@@ -125,7 +125,7 @@ function MerchantManage() {
         let _data = {
             ids:selectedRow
         }
-        validRevokeAvailable(_data).then(data => {
+        merchantUserDelete(_data).then(data => {
 
         })
     }
@@ -133,7 +133,7 @@ function MerchantManage() {
         let _data = {
             ids:selectedRow
         }
-        validRevokeAvailable(_data).then(data => {
+        merchantUserReset(_data).then(data => {
 
         })
     }
@@ -154,16 +154,17 @@ function MerchantManage() {
     };
     const handleSearch = (values:any) => {
         console.log(page)
-        let { couponNo,plateNo,couponStatus,equityLevel,equityGrantTime,equityStatus } = values,
-                [startTime,endTime] = equityGrantTime || [];
-
+        let { name,username,address,contact,phone,region } = values,
+                [province, city, county]= region || [];
         list({
-            couponNo,
-            plateNo,
-            couponStatus,
-            equityConfigId:equityLevel,
-            equityStatus,
-            current:1
+            name,
+            username,
+            province,
+            city,
+            county,
+            address,
+            contact,
+            phone
         })
     }
     const pagesChange = (current:number,pageSize:any) => {
@@ -193,7 +194,7 @@ function MerchantManage() {
             ...args
         };
         setLoading(true)
-        whiteList(_data).then((data:any) => {
+        merchantUserList(_data).then((data:any) => {
             setTableData(data.data.customerEquityList.list);
             setPage({
                 ...page,
@@ -212,7 +213,7 @@ function MerchantManage() {
     return (
             <div className="merchant-manage-container">
                 <div className="breadcrumb-container left-border line">
-                    商户管理
+                    商家管理
                     <span>
                         <Button type="primary" onClick={ () => handleLink(0) }>添加商家</Button>
                     </span>
@@ -224,10 +225,10 @@ function MerchantManage() {
                                 onValuesChange={ onFormLayoutChange }
                                 form = { form }
                                 onFinish={ handleSearch }>
-                            <Form.Item label="商户名称" name="couponNo">
+                            <Form.Item label="商户名称" name="name">
                                 <Input placeholder="请输入商户名称" maxLength={ 18 } />
                             </Form.Item>
-                            <Form.Item label="账号名" name="plateNo">
+                            <Form.Item label="账号名" name="username">
                                 <Input placeholder="请输入账号名" maxLength={ 8 }/>
                             </Form.Item>
                             <Form.Item label="省市区" name="region">
@@ -236,10 +237,10 @@ function MerchantManage() {
                             <Form.Item  label="详细地址" name="address">
                                 <Input placeholder="请输入详细地址" maxLength={ 18 } />
                             </Form.Item>
-                            <Form.Item label="联系人" name="couponNo">
+                            <Form.Item label="联系人" name="contact">
                                 <Input placeholder="请输入联系人" maxLength={ 18 } />
                             </Form.Item>
-                            <Form.Item label="联系电话" name="plateNo">
+                            <Form.Item label="联系电话" name="phone">
                                 <Input placeholder="请输入联系电话" maxLength={ 8 }/>
                             </Form.Item>
                             <Form.Item>

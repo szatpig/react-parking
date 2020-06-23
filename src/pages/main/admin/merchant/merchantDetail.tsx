@@ -7,8 +7,7 @@ import { LeftOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { Form, Input, Select, Button,Radio, DatePicker, Table, Checkbox, Cascader, Upload, Modal, message, Row, Col } from 'antd';
 
 import site from '@/utils/config'
-import { getParkingDetailByBusinessId } from '@/api/common-api'
-import {equityConfigList, grantConfirmData , grantEquity, parseWhitelist, importEquity} from '@/api/industryUser/white-api'
+import {getMerchantUser, merchantUserUpdate , merchantUserAdd} from '@/api/admin/merchant-api'
 
 import region from '@/json/region'
 
@@ -48,125 +47,31 @@ function StoreDetail(props:Props) {
     const{ userToken } = props
 
     const onFinish = (values:any) => {
-        let { plateNo,plateColor,equityConfigId,whitelistUri,expirationTime,parkIdList } =  values,
-                parkIdListSearch = !Array.isArray(parkIdList)? parkIdList:{};
-
-        parkIdList = Array.isArray(parkIdList)?parkIdList.join(','):''
+        let { plateNo,plateColor,equityConfigId,whitelistUri,expirationTime,parkIdList } =  values
         if(params.id === 0){
             let _data ={
                 plateNo,
                 equityConfigId
             }
-            grantConfirmData(_data).then((data:any) => {
-                const { industryUserName, equityBalance, currentAvailableCount, equityUserCount, grandCount, newCount, totalAmount } = data.data
-                modal.confirm({
-                    icon:<ExclamationCircleOutlined />,
-                    title: '发放确认',
-                    className:'import-dialog-container',
-                    okText:'确认发放',
-                    cancelText:'取消',
-                    content: (
-                            <div className="import-dialog-wrapper">
-                                <div className="import-cell">
-                                    <p>行业信息</p>
-                                    <div className="import-content">
-                                        <p><span>行业用户名称：</span>{ industryUserName }</p>
-                                        <p><span>权益余额：</span>{ equityBalance }元</p>
-                                        <p><span>当前有效白名单：</span>{ currentAvailableCount } 个</p>
-                                        <p><span>白名单上限：</span>{ equityUserCount } 个</p>
-                                    </div>
-                                </div>
-                                <div className="import-cell">
-                                    <p>发放信息</p>
-                                    <div className="import-content">
-                                        <p><span>共计：</span>{ grandCount } 笔</p>
-                                        <p><span>其中新增白名单：</span>{ newCount }个</p>
-                                        <p><span>权益金额总计：</span>{ totalAmount }元</p>
-                                    </div>
-                                </div>
-                            </div>
-                    ),
-                    onOk: () => {
-                        handleDialogSingleConfirm({
-                            plateNo,
-                            plateColor,
-                            equityConfigId,
-                            parkIdList,
-                            parkIdListSearch
-                        })//确认按钮的回调方法，在下面
-                    },
-                    onCancel() {
-                        console.log('Cancel');
-                    },
-                });
+            merchantUserUpdate(_data).then((data:any) => {
+                message.success('编辑成功');
+                history.replace('/home/merchant')
             })
         }else{
             let _data ={
                 whitelistUri,
                 equityConfigId
             }
-            parseWhitelist(_data).then((data:any) => {
-                const { industryUserName, equityBalance, currentAvailableCount, equityUserCount, importCount, newCount, totalAmount } = data.data
-                modal.confirm({
-                    icon:<ExclamationCircleOutlined />,
-                    title: '导入确认',
-                    className:'import-dialog-container',
-                    okText:'确认导入',
-                    cancelText:'取消',
-                    content: (
-                            <div className="import-dialog-wrapper">
-                                <div className="import-cell">
-                                    <p>行业信息</p>
-                                    <div className="import-content">
-                                        <p><span>行业用户名称：</span>{ industryUserName }</p>
-                                        <p><span>权益余额：</span>{ equityBalance }元</p>
-                                        <p><span>当前有效白名单：</span>{ currentAvailableCount }个</p>
-                                        <p><span>白名单上限：</span>{ equityUserCount }个</p>
-                                    </div>
-                                </div>
-                                <div className="import-cell">
-                                    <p>导入信息</p>
-                                    <div className="import-content">
-                                        <p><span>共计：</span>{ importCount } 笔</p>
-                                        <p><span>其中新增白名单：</span>{ newCount }个</p>
-                                        <p><span>权益余额总计：</span>{ totalAmount }元</p>
-                                    </div>
-                                </div>
-                            </div>
-                    ),
-                    onOk: () => {
-                        handleDialogConfirm({
-                            equityConfigId,
-                            whitelistUri,
-                            parkIdList,
-                            parkIdListSearch
-                        })//确认按钮的回调方法，在下面
-                    },
-                    onCancel() {
-                        console.log('Cancel');
-                    },
-                });
+            merchantUserAdd(_data).then((data:any) => {
+                message.success('添加成功');
+                history.replace('/home/merchant')
             })
         }
     };
 
-    const handleDialogSingleConfirm = (_data:any) => {
-        grantEquity(_data).then((data:any) => {
-            message.success('发放成功');
-            history.replace('/home/white')
-        })
-    }
-
-    const handleDialogConfirm = (_data:any) => {
-        importEquity(_data).then((data:any) => {
-            message.success('导入成功');
-            history.replace('/home/white')
-        })
-    }
-
-    const getEquityList = () => {
+    const getMerchantUserInfo = () => {
         let _data ={}
-        equityConfigList(_data).then((data:any) => {
+        getMerchantUser(_data).then((data:any) => {
             setEquityList(data.data.map((item:any) => ({
                 value:item.id,
                 label:item.equityLevel
@@ -175,7 +80,7 @@ function StoreDetail(props:Props) {
     }
 
     useEffect(() => {
-        getEquityList()
+        getMerchantUserInfo()
     },[]);
 
     return (
@@ -186,11 +91,21 @@ function StoreDetail(props:Props) {
                         <div>{ params.id === 0 ? '添加商家':'编辑商家' }</div>
                     </div>
                 </div>
-                <Form form={ submitForm }  className="form-container" name="nest-messages" onFinish={ onFinish } validateMessages={validateMessages}>
+                <Form form={ submitForm }
+                      className="form-container"
+                      name="nest-messages"
+                      onFinish={ onFinish }
+                      validateMessages={validateMessages}
+                      initialValues={{
+                          merchantType:1,
+                          legalPersonIdType:1,
+                          
+
+                      }}>
                     <p className="form-title">基本信息</p>
                     <Row className="form-grid" justify="start" gutter={[60, 0]}>
                         <Col span={ 8 }>
-                            <Form.Item name="plateNo" { ...layout } label="商户名称" rules={[
+                            <Form.Item name="name" { ...layout } label="商户名称" rules={[
                                 { required: true,whitespace: true },
                                 { pattern:/^[\w\u4e00-\u9fa5()（）]{3,20}$/, message: '请输入3-20位字符'}
                              ]}>
@@ -206,15 +121,13 @@ function StoreDetail(props:Props) {
                         </Col>
                         <Col span={ 8 } />
                         <Col span={8}>
-                            <Form.Item label="商户类型" { ...layout } name="couponStatus">
+                            <Form.Item label="商户类型" { ...layout } name="merchantType">
                                 <Select
                                         placeholder="请选择类型"
                                         allowClear>
-                                    <Option value="0">未领取</Option>
-                                    <Option value="1">已领取</Option>
-                                    <Option value="2">已核销</Option>
-                                    <Option value="3">已过期</Option>
-                                    <Option value="4">已撤销</Option>
+                                    <Option value="1">企业</Option>
+                                    <Option value="2">自然人</Option>
+                                    <Option value="3">个体工商户</Option>
                                 </Select>
                             </Form.Item>
                         </Col>
@@ -227,57 +140,58 @@ function StoreDetail(props:Props) {
                         </Col>
                         <Col span={ 8 } />
                         <Col span={8}>
-                            <Form.Item label="法定代表人/负责人证件编号" { ...layoutMore } name="plateNo">
+                            <Form.Item label="法定代表人/负责人证件编号" { ...layoutMore } name="legalPersonIdNo" rules={[
+                                { required: true, whitespace: true }
+                            ]}>
                                 <Input placeholder="请输入" maxLength={ 8 }/>
                             </Form.Item>
                         </Col>
                         <Col span={8}>
-                            <Form.Item label="法定代表人/负责人名称" { ...layoutMore } name="plateNo">
+                            <Form.Item label="法定代表人/负责人名称" { ...layoutMore } name="legalPerson" rules={[
+                                { required: true, whitespace: true }
+                            ]}>
                                 <Input placeholder="请输入" maxLength={ 8 }/>
                             </Form.Item>
                         </Col>
                         <Col span={ 8 } />
                         <Col span={8}>
-                            <Form.Item label="法定代表人/负责人名称" { ...layoutMore } name="plateNo">
+                            <Form.Item label="企业证件编号" { ...layoutMore } name="enterpriseIdNo">
                                 <Input placeholder="请输入" maxLength={ 8 }/>
                             </Form.Item>
                         </Col>
                         <Col span={8}>
-                            <Form.Item label="法定代表人/负责人证件类型" { ...layoutMore } name="couponStatus">
+                            <Form.Item label="法定代表人/负责人证件类型" { ...layoutMore } name="legalPersonIdType">
                                 <Select
                                         placeholder="请选择类型"
                                         allowClear>
-                                    <Option value="0">未领取</Option>
-                                    <Option value="1">已领取</Option>
-                                    <Option value="2">已核销</Option>
-                                    <Option value="3">已过期</Option>
-                                    <Option value="4">已撤销</Option>
+                                    <Option value="1">身份证</Option>
+                                    <Option value="2">护照</Option>
+                                    <Option value="3">军官证</Option>
+                                    <Option value="4">其他证件</Option>
                                 </Select>
                             </Form.Item>
                         </Col>
                         <Col span={ 8 } />
                         <Col span={8}>
-                            <Form.Item name="plateNo" label="联系人" { ...layout }  rules={[{ required: true,whitespace: true }]}>
+                            <Form.Item name="contact" label="联系人" { ...layout }  rules={[{ required: true,whitespace: true }]}>
                                 <Input maxLength={ 20 } placeholder="请输入联系人" />
                             </Form.Item>
                         </Col>
 
                         <Col span={8}>
-                            <Form.Item label="企业证件类型" { ...layoutMore } name="couponStatus">
+                            <Form.Item label="企业证件类型" { ...layoutMore } name="enterpriseIdType">
                                 <Select
                                         placeholder="请选择类型"
                                         allowClear>
-                                    <Option value="0">未领取</Option>
-                                    <Option value="1">已领取</Option>
-                                    <Option value="2">已核销</Option>
-                                    <Option value="3">已过期</Option>
-                                    <Option value="4">已撤销</Option>
+                                    <Option value="1">营业执照</Option>
+                                    <Option value="2">组织机构代码证</Option>
+                                    <Option value="3">统一社会信用代码</Option>
                                 </Select>
                             </Form.Item>
                         </Col>
                         <Col span={ 8 } />
                         <Col span={8}>
-                            <Form.Item name="plateNo" { ...layout } label="联系电话" rules={[
+                            <Form.Item name="phone" { ...layout } label="联系电话" rules={[
                                 { required: true,whitespace: true },
                                 { pattern: /^(((\d{2}-)?0\d{2,3}-?\d{7,8})|((\d{2}-)?(\d{2,3}-)?([1][3-9][0-9]\d{8})))$/g}
                             ]}>
@@ -288,7 +202,7 @@ function StoreDetail(props:Props) {
                     <p className="form-title">账号信息</p>
                     <Row className="form-grid" justify="start" gutter={[60, 0]}>
                         <Col span={ 8 }>
-                            <Form.Item name="storeAccount"  { ...layout }label="商家账号名" rules={[
+                            <Form.Item name="username"  { ...layout }label="商家账号名" rules={[
                                 { required: true,whitespace: true,pattern:/^[a-zA-Z]+[\w]{2,19}$/, message: '请输入以字母开头3-20位，可包含数字、字母、下划线' },
                             ]}>
                                 <Input maxLength={ 20 } placeholder="请输入以字母开头3-20位，可包含数字、字母、下划线" />

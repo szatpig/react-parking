@@ -13,7 +13,6 @@ export const humanVerify= (data:any) => fetch(site.base + '/humanVerify/verify' 
     data
 });
 
-
 export const merchantDiscountList= (data:any) => fetch(site.base + '/merchantDiscountInfo/list' ,{
     type: 'post',
     data
@@ -37,3 +36,43 @@ export const merchantDiscountUpdate= (data:any) => fetch(site.base + '/merchantD
     type: 'post',
     data
 });
+
+//
+
+export const merchantUserList= (data:any) => fetch(site.base + '/merchantUser/searchWithPage' ,{
+    type: 'post',
+    data
+});
+
+export const merchantUserDelete= (data:any) => fetch(site.base + `/merchantUser/deleteMerchantUser/${data.id}` ,{
+    type: 'post',
+    data
+});
+
+export const merchantUserReset= (data:any) => fetch(site.base + `/industryLoginUser/resetPwd` ,{
+    type: 'post',
+    data
+});
+
+export const merchantUserOff= (data:any) => fetch(site.base + `/industryLoginUser/updataStatus` ,{
+    type: 'post',
+    data
+});
+
+export const getMerchantUser= (data:any) => fetch(site.base + `/merchantUser/getMerchantUser/${data.id}` ,{
+    type: 'post',
+    data
+});
+
+export const merchantUserUpdate= (data:any) => fetch(site.base + `/merchantUser/updateMerchantUser` ,{
+    type: 'post',
+    data
+});
+
+
+export const merchantUserAdd= (data:any) => fetch(site.base + `/merchantUser/insert` ,{
+    type: 'post',
+    data
+});
+
+
