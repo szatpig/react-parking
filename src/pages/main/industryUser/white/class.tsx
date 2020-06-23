@@ -198,7 +198,7 @@ function EquityClass() {
                         <Form.Item name="equityAmount" label="权益等级金额" wrapperCol={{ span:8 }} rules={ [
                             { required: true, type: 'number', min: 0, max: 999999999, message: '请输入金额0-999999999' }
                         ] }>
-                            <InputNumber min={1} max={ 999999999 } step={ 1 } parser={(value:any) => parseInt(value) } maxLength={ 9 } placeholder="请输入" />
+                            <InputNumber min={1} max={ 999999999 } step={ 1 } parser={(value:any) => parseInt(value) || 0 } maxLength={ 9 } placeholder="请输入" />
                         </Form.Item>
                         <Form.Item name="remark" label="描述" rules={ [
                             { message: '请输入内容' }

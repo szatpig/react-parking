@@ -5,11 +5,11 @@ import { useHistory } from "react-router-dom";
 import moment from 'moment';
 
 import {Form, Input, Button, Modal, DatePicker, Select, Table, Tag, Radio, message, Tree, InputNumber, Popconfirm} from 'antd';
-import { couponList, confirmRevokeCoupon, verifyRevokeAvailable, revokeCouponBatch } from '@/api/coupon-api'
+import { couponList, confirmRevokeCoupon, verifyRevokeAvailable, revokeCouponBatch } from '@/api/industryUser/coupon-api'
 
 import { ExclamationCircleFilled } from '@ant-design/icons';
 
-import {validRevokeAvailable} from "@/api/white-api";
+import {validRevokeAvailable} from "@/api/industryUser/white-api";
 
 
 const layout = {

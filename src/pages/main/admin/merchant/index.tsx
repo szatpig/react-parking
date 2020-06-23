@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useHistory } from "react-router-dom";
 
 import {Form, Input, Button, Modal, Table, Tag, Popover, message, Cascader, Popconfirm} from 'antd';
-import { whiteList, equityConfigList, grantValid, getRevocable, confirmRevokeEquity, revokeEquitySubmit, validRevokeAvailable } from '@/api/white-api'
+import { whiteList, equityConfigList, grantValid, getRevocable, confirmRevokeEquity, revokeEquitySubmit, validRevokeAvailable } from '@/api/industryUser/white-api'
 
 import region from '@/json/region'
 const options = region;
@@ -137,8 +137,8 @@ function MerchantManage() {
 
         })
     }
-    const handleSale =  (id:number) => {
-        history.push('merchant/sale?id='+id);
+    const handleSale =  (row:any) => {
+        history.push('merchant/sale?merchantUserId='+ row.id);
     };
     const handleLink = (id:number) => {
         history.push('merchant/detail?id='+id);

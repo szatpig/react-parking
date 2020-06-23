@@ -1,6 +1,15 @@
 // Created by szatpig at 2020/6/20.
 import React, {useState, useEffect, useRef, useImperativeHandle, forwardRef} from 'react';
-import { Drawer, Button, Input, Empty,Form } from 'antd';
+import {Drawer, Button, Input, Empty, Form, message} from 'antd';
+
+import { humanVerifyList, humanVerify} from "@/api/admin/merchant-api";
+
+const couponTypeList:any = {
+    FIX_DEDUCT:'固定抵扣金额券',
+    DISCOUNT_DEDUCT:'按比例折扣',
+    TIME_DEDUCT:'次数抵扣',
+}
+
 
 const { Search } = Input;
 
@@ -11,23 +20,34 @@ const layout = {
 
 const VerificationForm = (props:any) =>{
 
-    const { type } = props
+    const { type,amount,couponNo } = props
 
     const onFinish = (values:any) => {
         console.log('Success:', values);
+        let _data ={
+            couponId:'',
+            ...values
+        }
+        humanVerify(_data).then(data => {
+            message.success('核销成功');
+        })
     };
 
     return(
         <Form
             {...layout}
             name="verifictionForm"
+            initialValues={{
+                parkingAmount:0,
+                couponNo:couponNo
+            }}
             onFinish={ onFinish }>
             {
-                type > 1 &&
+                type !== 'FIX_DEDUCT' &&
                     <>
                         <Form.Item label="停车总额">
                             <Form.Item
-                                    name="username"
+                                    name="parkingAmount"
                                     noStyle
                                     rules={[{ required: true, message: '请输入金额' }]}
                             >
@@ -35,10 +55,14 @@ const VerificationForm = (props:any) =>{
                             </Form.Item> &nbsp;&nbsp;元
                         </Form.Item>
                         <Form.Item label="核销金额" >
-                            { 8 } 元
+                            { amount } 元
                         </Form.Item>
-                        <Form.Item label="还需支付">
-                            { 0 } 元
+                        <Form.Item label="还需支付" shouldUpdate={(prevValues, currentValues) => prevValues.parkingAmount !== currentValues.parkingAmount }>
+                            {
+                                ({ getFieldValue }) => {
+                                    return getFieldValue('parkingAmount') - amount >0 ? getFieldValue('parkingAmount') : 0
+                               }
+                            } 元
                         </Form.Item>
 
                     </>
@@ -75,13 +99,17 @@ const Verification = forwardRef((props:any,ref:any) => { //react hooks 通过 fo
     const onSearch = (value:string) => {
         list(value)
     };
-    const list = (value:string) => {
-
+    const list = (plateNo:string) => {
+        let _data={
+            plateNo
+        };
+        humanVerifyList(_data).then((data:any) => {
+            setTableData(data.data)
+        })
     };
 
     useEffect(() => {
         //do something
-        console.log(drawerRef.current)
     });
 
     return (
@@ -105,68 +133,52 @@ const Verification = forwardRef((props:any,ref:any) => { //react hooks 通过 fo
                             {
                                 tableData.length ?
                                         <>
-                                            <div className={`ticket-wrap ${index == 1 ? 'selected' : null}`} onClick={ ()=> handleSelect(1) }>
-                                                <p className="ticket-title">金额券 <i>（{ 12 } 元）</i></p>
-                                                <p className="flex between">
-                                                    <span>车牌号：苏E123511（蓝牌）</span>
-                                                    <span>券码：CPU12252222000220202</span>
-                                                </p>
-                                                <p className="flex between">
-                                                    <span>金额：10元</span>
-                                                    <span>截止时间：2020–02–21 19:22:09</span>
-                                                </p>
-                                                <p className="flex ticket-parking">
-                                                    <span>可用停车场：</span><span>可用停车场：苏州纳米大学停车场，苏州高新区停车场，苏州纳米大学停车场，苏州高新区停车场</span>
-                                                </p>
-                                                {
-                                                    index === 1 &&
-                                                    <div className="collapsed active noborder">
-                                                        <VerificationForm type={ 1 } />
-                                                    </div>
-                                                }
+                                            {
+                                                tableData.map((item:any) => {
+                                                       return(
+                                                           <div key={ item.id } className={`ticket-wrap ${ index == item.id ? 'selected' : null}`} onClick={ ()=> handleSelect(item.id) }>
+                                                               <p className="ticket-title">couponTypeList[item.couponType]
+                                                                   { item.couponType === 'FIX_DEDUCT' && <i>（{ item.couponAmount } 元）</i> }
+                                                                   { item.couponType === 'DISCOUNT_DEDUCT' && <i>（上限{ item.couponAmount } 元）</i> }
+                                                                   { item.couponType === 'TIME_DEDUCT' && <i>（上限{ item.couponAmount } 元）</i> }
+                                                               </p>
+                                                               <p className="flex between">
+                                                                   <span>车牌号：{ item.plateNo }（蓝牌）</span>
+                                                                   <span>券码：{ item.couponNo }</span>
+                                                               </p>
+                                                               {
+                                                                   item.couponType === 'TIME_DEDUCT' ?
+                                                                       <>
+                                                                           <p className="flex between">
+                                                                               <span>上限金额：{ item.couponAmount }元</span>
+                                                                               <span>折扣：{ item.discount }</span>
+                                                                           </p>
+                                                                           <p>截止时间：{ item.expirationTime }</p>
+                                                                       </>:
+                                                                       <p className="flex between">
+                                                                           <span>{`${ item.couponType === 'DISCOUNT_DEDUCT' ? '上限':'' }金额`}：{ item.couponAmount }元</span>
+                                                                           <span>截止时间：{ item.expirationTime }</span>
+                                                                       </p>
+                                                               }
 
-                                            </div>
-                                            <div className={`ticket-wrap ${index == 3 ? 'selected' : null}`} onClick={ ()=> handleSelect(3) }>
-                                                <p className="ticket-title">次数券 <i>（上限{ 12 } 元）</i></p>
-                                                <p className="flex between">
-                                                    <span>车牌号：苏E123511（蓝牌）</span>
-                                                    <span>券码：CPU12252222000220202</span>
-                                                </p>
-                                                <p className="flex between">
-                                                    <span>金额：10元</span>
-                                                    <span>截止时间：2020–02–21 19:22:09</span>
-                                                </p>
-                                                <p className="flex ticket-parking">
-                                                    <span>可用停车场：</span><span>可用停车场：苏州纳米大学停车场，苏州高新区停车场，苏州纳米大学停车场，苏州高新区停车场</span>
-                                                </p>
-                                                {
-                                                    index === 3 &&
-                                                    <div className="collapsed active">
-                                                        <VerificationForm type={ 3 } />
-                                                    </div>
-                                                }
-                                            </div>
-                                            <div className={`ticket-wrap ${index == 2 ? 'selected' : null}`} onClick={ ()=> handleSelect(2) }>
-                                                <p className="ticket-title">折扣券 <i>（八折，上限{ 12 } 元）</i></p>
-                                                <p className="flex between">
-                                                    <span>车牌号：苏E123511（蓝牌）</span>
-                                                    <span>券码：CPU12252222000220202</span>
-                                                </p>
-                                                <p className="flex between">
-                                                    <span>金额：10元</span>
-                                                    <span>折折：0.8</span>
-                                                </p>
-                                                <p>截止时间：2020–02–21 19:22:09</p>
-                                                <p className="flex ticket-parking">
-                                                    <span>可用停车场：</span><span>可用停车场：苏州纳米大学停车场，苏州高新区停车场，苏州纳米大学停车场，苏州高新区停车场</span>
-                                                </p>
-                                                {
-                                                    index === 2 &&
-                                                    <div className="collapsed active">
-                                                        <VerificationForm type={ 2 } />
-                                                    </div>
-                                                }
-                                            </div>
+                                                               <p className="flex ticket-parking">
+                                                                   <span>可用停车场：</span><span>{ item.parkingNames }</span>
+                                                               </p>
+                                                               {
+                                                                   index === item.id &&
+                                                                   <div className={ `collapsed active ${ item.couponType == 'FIX_DEDUCT' ? 'noborder' :'' }` }>
+                                                                       <VerificationForm key={ item.id } couponNo={ item.couponNo } amount={ item.couponAmount } type={ item.couponType } />
+                                                                   </div>
+                                                               }
+                                                           </div>
+                                                       )
+                                                })
+                                            }
+
+
+
+
+
                                         </>:
                                         <Empty />
                             }

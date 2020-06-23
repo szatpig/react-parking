@@ -5,12 +5,35 @@ import { useHistory } from "react-router-dom";
 import moment from 'moment';
 
 import {Form, Input, Button, Modal, DatePicker, Select, Table, Tag, Popover, message, Checkbox, InputNumber} from 'antd';
-import { couponList, confirmRevokeCoupon, verifyRevokeAvailable, revokeCouponBatch } from '@/api/coupon-api'
+import { merchantUserCouponList,  provideCustomerCoupon } from '@/api/merchant/coupon-api'
 
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import Dayjs from 'dayjs';
 
+const couponTypeList:any = [
+    {
+        label:'固定抵扣金额券',
+        value:'FIX_DEDUCT'
+    },
+    {
+        label:'按比例折扣',
+        value:'DISCOUNT_DEDUCT'
+    },
+    {
+        label:'次数抵扣',
+        value:'TIME_DEDUCT'
+    }
+];
+
+const couponTypeText:any = {
+    FIX_DEDUCT:'固定抵扣金额券',
+    DISCOUNT_DEDUCT:'按比例折扣',
+    TIME_DEDUCT:'次数抵扣',
+}
+
 const colorList:any = ['蓝色','黄色','黑色','白色','渐变绿色','黄绿双拼色','蓝白渐变色']
+
+
 const layout = {
     labelCol: { span: 6 },
     wrapperCol: { span: 17 },
@@ -29,51 +52,58 @@ function CouponList() {
         total:0
     });
     const [show, setShow] = useState(false);
+    const [merchantInfo, setMerchantInfo] = useState<any>([]);
     const [confirmLoading, setConfirmLoading] = useState(false);
 
     const columns = [
         {
             title: '停车券类型',
-            dataIndex: 'couponNo',
-            width: 200,
-            ellipsis:true,
-            fixed:true
+            dataIndex: 'couponType',
+            render: (cell:number,row:any) => (
+                    <span>
+                     { couponTypeText[cell] }
+                </span>
+            )
         },
         {
             title: '折扣',
-            dataIndex: 'plateNo'
+            dataIndex: 'discount'
         },
         {
             title: '上限金额/元',
-            dataIndex: 'plateColor',
+            dataIndex: 'limitAmount',
             width: 120
         },
         {
             title: '库存数/张',
-            dataIndex: 'couponAmount'
+            dataIndex: 'inventory'
         },
         {
             title: '总金额/元',
-            dataIndex: 'couponGrantTime'
+            dataIndex: 'totalAmount'
         },
         {
             title: '停车场',
-            dataIndex: 'expirationTime',
-            width: 200,
-            ellipsis:true
+            dataIndex: 'parkingNames',
+            ellipsis:true,
+            render:(cell:string) => (
+                    <span title={ cell }>{ cell || '--' }</span>
+            )
         },
         {
             title: '发放时间',
-            dataIndex: 'verifyTime'
+            dataIndex: 'couponGrantTime',
+            width: 160
         },
         {
             title: '截止时间',
-            dataIndex: 'verifyTime'
+            dataIndex: 'expirationTime',
+            width: 160
         },
         {
             title: '操作',
             key: 'action',
-            width: 245,
+            className:'tableActionCell',
             render: (cell:number,row:any) => (
                     <div className="table-button">
                         <Button type="link" onClick={ () =>handleShow(row) }>发放</Button>
@@ -94,12 +124,13 @@ function CouponList() {
     const handleSubmit = () => {
         setConfirmLoading(true);
         modalForm.validateFields().then((values:any) => {
+            const { id:commercialUserCouponId } = merchantInfo;
             let _data ={
-                ids:selectedRow,
+                commercialUserCouponId,
                 ...values
             }
-            revokeCouponBatch(_data).then((data:any) => {
-                message.success('批量处理成功');
+            provideCustomerCoupon(_data).then((data:any) => {
+                message.success('发放成功');
                 setShow(false);
                 setConfirmLoading(false);
                 form.submit();
@@ -109,29 +140,17 @@ function CouponList() {
             console.log('Validate Failed:', info);
         });
     };
-
     const handleShow = (row:any) => {
-        console.log('Clicked cancel button');
-        setShow(false)
+        setMerchantInfo(row)
+        modalForm.resetFields();
+        setShow(true)
     };
-
     const handleCancel = () => {
         console.log('Clicked cancel button');
         setShow(false)
     };
 
-    const handleSearch = (values:any) => {
-        console.log(values)
-        let { couponNo,plateNo,couponStatus,equityGrantTime } = values,
-                [startTime,endTime] = equityGrantTime || [];
-
-        list({
-            couponNo,plateNo,couponStatus,
-            startTime:startTime && Dayjs(startTime).format('YYYY-MM-DD HH:mm:ss'),
-            endTime:endTime && Dayjs(endTime).format('YYYY-MM-DD HH:mm:ss')
-        })
-    }
-
+    //list
     const handleQuery = () => {
         setPage({
             ...page,
@@ -140,7 +159,17 @@ function CouponList() {
         setSelectedRow([]);
         form.submit();
     };
+    const handleSearch = (values:any) => {
+        console.log(values)
+        let { couponType,limitAmount,parkingName,equityGrantTime } = values,
+                [startTime,endTime] = equityGrantTime || [];
 
+        list({
+            couponType,limitAmount,parkingName,
+            startTime:startTime && Dayjs(startTime).format('YYYY-MM-DD HH:mm:ss'),
+            endTime:endTime && Dayjs(endTime).format('YYYY-MM-DD HH:mm:ss')
+        })
+    }
     const pagesChange = (current:number,pageSize:any) => {
         setPage({
             ...page,
@@ -149,7 +178,6 @@ function CouponList() {
         });
         form.submit();
     };
-
     const pageSizeChange= (current:number,pageSize:any) => {
         setPage({
             ...page,
@@ -158,11 +186,9 @@ function CouponList() {
         });
         form.submit();
     };
-
     const showTotal = (total:number) => {
         return `总共 ${total} 条`
     }
-
     const list = (args?:object) => {
         let { current,pageSize } = page
         let _data={
@@ -171,7 +197,7 @@ function CouponList() {
             ...args
         };
         setLoading(true)
-        couponList(_data).then((data:any) => {
+        merchantUserCouponList(_data).then((data:any) => {
             setTableData(data.data.list);
             setPage({
                 ...page,
@@ -200,24 +226,24 @@ function CouponList() {
                                 onValuesChange={ onFormLayoutChange }
                                 form = { form }
                                 onFinish={ handleSearch }>
-                            <Form.Item label="停车券类型" name="couponStatus">
+                            <Form.Item label="停车券类型" name="couponType">
                                 <Select
                                         placeholder="请选择类型"
                                         allowClear>
                                     {
-                                        colorList.map((item:any,index:number) => {
-                                            return  <Option value={ index } key={ index }>{ item }</Option>
+                                        couponTypeList.map((item:any) => {
+                                            return  <Option key={ item.value } value={ item.value }>{ item.label }</Option>
                                         })
                                     }
                                 </Select>
                             </Form.Item>
-                            <Form.Item label="上限金额" name="couponNo">
+                            <Form.Item label="上限金额" name="limitAmount">
                                 <Input placeholder="请输入上限金额" maxLength={ 18 } />
                             </Form.Item>
                             <Form.Item  label="发放时间" name="equityGrantTime">
                                 <RangePicker ranges={{}} showTime format="YYYY-MM-DD HH:mm:ss" />
                             </Form.Item>
-                            <Form.Item label="停车场名称" name="plateNo">
+                            <Form.Item label="停车场名称" name="parkingName">
                                 <Input placeholder="请输入停车场名称" maxLength={ 8 }/>
                             </Form.Item>
                             <Form.Item>
@@ -244,33 +270,51 @@ function CouponList() {
                         confirmLoading={ confirmLoading }
                         onCancel={ handleCancel }>
                     <Form {...layout} form={ modalForm }>
-                        <Form.Item label="车牌颜色" name="storeName">
+                        <Form.Item label="车牌颜色" name="plateColor" rules={ [
+                            { required: true, message: '请选择车牌颜色' }
+                        ] }>
                             <Select
                                     placeholder="请选择车牌颜色"
                                     allowClear>
-                                <Option value="0">未领取</Option>
-                                <Option value="1">已领取</Option>
-                                <Option value="2">已核销</Option>
-                                <Option value="3">已过期</Option>
-                                <Option value="4">已撤销</Option>
+                                {
+                                    colorList.map((item:any,index:number) => {
+                                        return  <Option value={ index } key={ index }>{ item }</Option>
+                                    })
+                                }
                             </Select>
                         </Form.Item>
-                        <Form.Item label="车牌号" name="plateNo">
+                        <Form.Item label="车牌号" name="plateNo" rules={[{ required: true,whitespace: true }]}>
                             <Input placeholder="请输入车牌号" maxLength={ 8 }/>
                         </Form.Item>
-                        <Form.Item name="equityAmount" label="发放数量/张" wrapperCol={{ span:8 }} rules={ [
-                            { required: true, type: 'number', min: 0, max: 999999999, message: '请输入金额0-999999999' }
-                        ] }>
-                            <InputNumber min={1} max={ 999999999 } step={ 1 } parser={(value:any) => parseInt(value) } maxLength={ 9 } placeholder="请输入" />
+
+                        <Form.Item label="发放数量" required>
+                            <Form.Item name="provideCount" noStyle wrapperCol={{ span:8 }} rules={ [
+                                { required: true, message: `请输入数量0-${ merchantInfo.inventory }` },
+                                { type: 'number', min: 0, max: merchantInfo.inventory, message: `库存不足` }
+                            ] }>
+                                <InputNumber min={1} max={ merchantInfo.inventory } step={ 1 } parser={(value:any) => parseInt(value) || 0 } maxLength={ 9 } placeholder={`请输入数量`} />
+                            </Form.Item>
+                            &nbsp;&nbsp;张
                         </Form.Item>
                         <div className="ticket-wrap">
-                            <p className="ticket-title">折扣券 <i>（库存量：{ 12 } 张）</i></p>
-                            <p className="flex between">
-                                <span>折扣：{ 0.8 }</span>
-                                <span>上限金额：{ 10 } 元</span>
-                            </p>
-                            <p>截止时间：{ '2020–02–21 19:22:09' }</p>
-                            <p className="flex ticket-parking"><span>可用停车场：</span><span>可用停车场：苏州纳米大学停车场，苏州高新区停车场，苏州纳米大学停车场，苏州高新区停车场</span>
+                            <p className="ticket-title">{ couponTypeText[merchantInfo.couponType] } <i>（库存量：{ merchantInfo.inventory } 张）</i></p>
+                            {
+                                merchantInfo.couponType === 'TIME_DEDUCT' ?
+                                        <>
+                                            <p className="flex between">
+                                                <span>上限金额：{ merchantInfo.limitAmount }元</span>
+                                                <span>折扣：{ merchantInfo.discount }</span>
+                                            </p>
+                                            <p>截止时间：{ merchantInfo.expirationTime }</p>
+                                        </>:
+                                        <p className="flex between">
+                                            <span>上限金额：{ merchantInfo.limitAmount }元</span>
+                                            <span>截止时间：{ merchantInfo.expirationTime }</span>
+                                        </p>
+                            }
+                            <p className="flex ticket-parking">
+                                <span>可用停车场：</span>
+                                <span>{ merchantInfo.parkingNames || '--' }</span>
                             </p>
                         </div>
                     </Form>

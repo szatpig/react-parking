@@ -20,7 +20,7 @@ let base='',
 switch (hostname){
     case '10':
     case 'localhost':
-        base = 'http://192.168.88.51:8085';
+        base = 'http://192.168.88.23:8082';
         admin = "http://192.168.88.51:8080"
         exeUrl = 'http://192.168.88.54'
         break;

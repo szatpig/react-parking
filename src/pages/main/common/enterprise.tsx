@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 import {Form, Input, Button, Modal, Row, Col, message } from 'antd';
 
-import { getAccountDetails, uploadLogo, updateIndustryLoginUserPwd } from "@/api/account-api";
+import { getAccountDetails, uploadLogo, updateIndustryLoginUserPwd } from "@/api/industryUser/account-api";
 
 
 import site from '@/utils/config'
