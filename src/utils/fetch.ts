@@ -99,13 +99,11 @@ export default function fetch (url:string, options:Options) {
                 switch (response.data.status) {
                     case 1001:
                     case 8001:
-                        if(Number(sessionStorage.getItem('code_2001'))){
-                            reject(response.data);
-                        }else{
-                            sessionStorage.setItem('code_2001','1');
-                            message.error(response.data.msg || '账号已在其他设备登录').then(()=>{
-                                sessionStorage.setItem('code_2001','0');
-                            },()=>{})
+                        if(document.getElementsByClassName('global-message').length === 0){
+                            message.error({
+                               content:response.data.msg || '账号已在其他设备登录',
+                                className:'global-message'
+                            })
                             store.dispatch({type:'USER_LOGIN_OUT'});
                             history.push('/etc-verification/login')
                         }
