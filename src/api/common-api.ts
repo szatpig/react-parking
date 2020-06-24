@@ -22,3 +22,8 @@ export const getCommercialUser= (data:any) => fetch(site.base + '/commercialUser
     type: 'post',
     data
 });
+
+export const getMerchantUser= (data:any) => fetch(site.base + '/merchantUser/getMerchantUser' ,{
+    type: 'post',
+    data
+});

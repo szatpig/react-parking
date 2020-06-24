@@ -6,24 +6,38 @@ import {Form, Input, Button, Modal, Row, Col, message } from 'antd';
 
 import site from '@/utils/config'
 import { userLoginOutAction } from "@/store/actions/user";
-import { updateIndustryLoginUserPwd,getCommercialUser } from "@/api/common-api";
+import { updateIndustryLoginUserPwd,getCommercialUser,getMerchantUser } from "@/api/common-api";
 
 const layout = {
     labelCol: { span: 7 },
     wrapperCol: { span: 17 },
 };
 
+const merchantTypeArr:string[] = ['--','企业','自然人','个体工商户'];
+const legalPersonIdTypeArr:string[] = ['--','身份证','护照','军官证','其他证件'];
+const enterpriseIdTypeArr:string[] = ['--','营业执照','组织机构代码证','统一社会信用代码'];
+
 function EnterpriseAccount(props:Props) {
     const [userInfo, setUserInfo] = useState({
+        username:'--',
         name:'--',
-        certTypeName:'--',
-        certNo:'--',
-        certValidity:'--',
-        contractTerm:'--',
-        equityTotalAmount:0,
-        availableEquityAmount:0,
-        usedEquityAmount:0,
-        freezeEquityAmount:0
+        completeAddress:'--',
+
+        contact:'--',
+        phone:'--',
+        pictures:[],
+        certificateList:[],
+        permitList:[],
+        invoiced:'',
+
+        //
+        merchantType:0,
+        legalPerson:'',
+        legalPersonIdType:0,
+        legalPersonIdNo:'',
+        enterpriseIdType:0,
+        enterpriseIdNo:''
+
     });
     const [Img, setImg] = useState({
         logo:'',
@@ -63,9 +77,16 @@ function EnterpriseAccount(props:Props) {
 
     const getUserInfo = () => {
         let _data ={}
-        getCommercialUser(_data).then((data:any) => {
-            setUserInfo(data.data)
-        })
+        if(currentAuthority==='admin'){
+            getCommercialUser(_data).then((data:any) => {
+                setUserInfo(data.data)
+            })
+        }else{
+            getMerchantUser(_data).then((data:any) => {
+                setUserInfo(data.data)
+            })
+        }
+
     }
 
     const handleView = (src:any) => {
@@ -104,65 +125,83 @@ function EnterpriseAccount(props:Props) {
                         <div className="cell-content">
                             <Row>
                                 <Col { ...spanStyle }>账号名</Col>
-                                <Col flex="auto">{ userInfo.name }</Col>
+                                <Col flex="auto">{ userInfo.username }</Col>
                             </Row>
                             <Row>
                                 <Col { ...spanStyle }>商户名称</Col>
-                                <Col flex="auto">{ userInfo.certTypeName }</Col>
+                                <Col flex="auto">{ userInfo.name }</Col>
                             </Row>
                             <Row>
                                 <Col { ...spanStyle }>商户地址</Col>
-                                <Col flex="auto">{ userInfo.certNo }</Col>
+                                <Col flex="auto">{ userInfo.completeAddress }</Col>
                             </Row>
                             { currentAuthority==='admin'?
                                     <>
                                         <Row>
                                             <Col { ...spanStyle }>联系人</Col>
-                                            <Col flex="auto">{ userInfo.certValidity }</Col>
+                                            <Col flex="auto">{ userInfo.contact }</Col>
                                         </Row>
                                         <Row>
                                             <Col { ...spanStyle }>联系电话</Col>
-                                            <Col flex="auto">{ userInfo.contractTerm }</Col>
+                                            <Col flex="auto">{ userInfo.phone }</Col>
                                         </Row>
                                         <Row className="upload-container">
                                             <Col { ...spanStyle }>商户图片</Col>
                                             <Col flex="auto">
-                                                <p><img onClick={ () => handleView(Img.code) } src={ Img.code } alt=""/></p>
+                                                <p>
+                                                    {
+                                                        userInfo.pictures.map((item:any) => (
+                                                                <img onClick={ () => handleView(item) } src={ Img.code } alt="商户图片"/>
+                                                        ))
+                                                    }
+                                                </p>
                                             </Col>
                                         </Row>
                                         <Row className="upload-container">
                                             <Col { ...spanStyle }>营业执照</Col>
                                             <Col flex="auto">
-                                                <p><img onClick={ () => handleView(Img.code) } src={ Img.code } alt=""/></p>
+                                                <p>
+                                                    {
+                                                        userInfo.certificateList.map((item:any) => (
+                                                                <img onClick={ () => handleView(item) } src={ Img.code } alt="营业执照"/>
+                                                        ))
+                                                    }
+                                                </p>
                                             </Col>
                                         </Row>
                                         <Row className="upload-container">
                                             <Col { ...spanStyle }>开户许可证</Col>
                                             <Col flex="auto">
-                                                <p><img onClick={ () => handleView(Img.code) } src={ Img.code } alt=""/></p>
+                                                <p>
+                                                    {
+                                                        userInfo.permitList.map((item:any) => (
+                                                                <img onClick={ () => handleView(item) } src={ Img.code } alt="开户许可证"/>
+                                                        ))
+                                                    }
+                                                </p>
                                             </Col>
                                         </Row>
                                     </> :
                                     <>
                                         <Row>
                                             <Col { ...spanStyle }>商家类型</Col>
-                                            <Col flex="auto">{ userInfo.certValidity }</Col>
+                                            <Col flex="auto">{ merchantTypeArr[userInfo.merchantType] }</Col>
                                         </Row>
                                         <Row>
                                             <Col { ...spanStyle }>法定代表人/负责人证件类型</Col>
-                                            <Col flex="auto">{ userInfo.certValidity }</Col>
+                                            <Col flex="auto">{ legalPersonIdTypeArr[userInfo.legalPersonIdType] }</Col>
                                         </Row>
                                         <Row>
                                             <Col { ...spanStyle }>法定代表人/负责人证件编号</Col>
-                                            <Col flex="auto">{ userInfo.certValidity }</Col>
+                                            <Col flex="auto">{ userInfo.legalPersonIdNo }</Col>
                                         </Row>
                                         <Row>
                                             <Col { ...spanStyle }>企业证件类型</Col>
-                                            <Col flex="auto">{ userInfo.certValidity }</Col>
+                                            <Col flex="auto">{ enterpriseIdTypeArr[userInfo.enterpriseIdType] }</Col>
                                         </Row>
                                         <Row>
                                             <Col { ...spanStyle }>企业证件编号</Col>
-                                            <Col flex="auto">{ userInfo.certValidity }</Col>
+                                            <Col flex="auto">{ userInfo.enterpriseIdNo }</Col>
                                         </Row>
                                     </>
                             }
@@ -202,6 +241,7 @@ function EnterpriseAccount(props:Props) {
                         </div>
                     </div>
                 </div>
+                { contextHolder }
             </div>
     );
 }
