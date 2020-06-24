@@ -62,7 +62,10 @@ function Store() {
             title: '开具发票',
             dataIndex: 'invoiced',
             ellipsis:true,
-            width: 120
+            render: (cell:number,row:any) => (
+                    cell === 1 ?
+                            '是' : '否'
+            )
         },
         {
             title: '状态',

@@ -3,9 +3,9 @@
 import fetch from '@/utils/fetch'
 import site from '@/utils/config'
 
-export const commercialUserList= (data:any) => fetch(site.base + '/commercialUser/searchWithPage' ,{
-    type: 'post',
-    data
+export const commercialUserList= (params:any) => fetch(site.base + '/commercialUser/searchWithPage' ,{
+    type: 'get',
+    params
 });
 
 export const getQrCodeImage= (params:any) => fetch(site.base + '/businessAccount/getQrCodeImage' ,{
@@ -14,17 +14,17 @@ export const getQrCodeImage= (params:any) => fetch(site.base + '/businessAccount
 });
 
 
-export const commercialUserId= (data:any) => fetch(site.base + '/commercialUser/searchWithPage' ,{
+export const getCommercialUserById= (data:any) => fetch(site.base +`/commercialUser/getCommercialUser/${data.id}` ,{
     type: 'post',
     data
 });
 
-export const commercialUserAdd= (data:any) => fetch(site.base + '/commercialUser/searchWithPage' ,{
+export const commercialUserAdd= (data:any) => fetch(site.base + '/commercialUser/insert' ,{
     type: 'post',
     data
 });
 
-export const commercialUserEdit= (data:any) => fetch(site.base + '/commercialUser/searchWithPage' ,{
+export const commercialUserEdit= (data:any) => fetch(site.base + '/commercialUser/updateCommercialUser' ,{
     type: 'post',
     data
 });
@@ -34,7 +34,7 @@ export const commercialUserOff= (data:any) => fetch(site.base + '/commercialUser
     data
 });
 
-export const commercialUserDelete= (data:any) => fetch(site.base + '/commercialUser/searchWithPage' ,{
+export const commercialUserDelete= (data:any) => fetch(site.base + `commercialUser/deleteCommercialUser/${ data.id }` ,{
     type: 'post',
     data
 });
