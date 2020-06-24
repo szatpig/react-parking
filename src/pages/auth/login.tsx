@@ -94,7 +94,7 @@ class Login extends Component<UserFormProps, State> {
                                     />
                                 </Form.Item>
                                 {
-                                    (this.props.error === 5010 || this.props.error === 5013) &&
+                                    (this.props.error === 5010 || this.props.error === 5013 || this.props.error === 3001) &&
                                     <Form.Item
                                         className="identify-wrap"
                                         shouldUpdate={(prevValues, currentValues) => prevValues.account !== currentValues.account}>
