@@ -91,7 +91,7 @@ const columns = [
     },
     {
         title: '余额/元',
-        dataIndex: 'equityAmount',
+        dataIndex: 'equityBalance',
     },
     {
         title: '最后使用时间',
