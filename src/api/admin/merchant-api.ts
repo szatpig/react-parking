@@ -39,9 +39,9 @@ export const merchantDiscountUpdate= (data:any) => fetch(site.base + '/merchantD
 
 //
 
-export const merchantUserList= (data:any) => fetch(site.base + '/merchantUser/searchWithPage' ,{
-    type: 'post',
-    data
+export const merchantUserList= (params:any) => fetch(site.base + '/merchantUser/searchWithPage' ,{
+    type: 'get',
+    params
 });
 
 export const merchantUserDelete= (data:any) => fetch(site.base + `/merchantUser/deleteMerchantUser/${data.id}` ,{

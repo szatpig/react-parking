@@ -5,7 +5,16 @@ import { useHistory } from "react-router-dom";
 import moment from 'moment';
 
 import {Form, Input, Button, Modal, DatePicker, Select, Table, Tag, Radio, message, Tree, InputNumber, Popconfirm} from 'antd';
-import { couponList, confirmRevokeCoupon, verifyRevokeAvailable, revokeCouponBatch } from '@/api/industryUser/coupon-api'
+import {
+    roleList,
+    roleAdd,
+    roleUpdate,
+    roleDelete,
+    roleGet,
+    getRoleMenu,
+    userAdd,
+    userUpdate, userDelete, userOff, userReset
+} from '@/api/admin/system-api'
 
 import { ExclamationCircleFilled } from '@ant-design/icons';
 
@@ -73,18 +82,18 @@ function RoleManage() {
     const columns = [
         {
             title: '角色名称',
-            dataIndex: 'couponNo',
+            dataIndex: 'roleName',
             width: 200,
             ellipsis:true,
             fixed:true
         },
         {
             title: '备注',
-            dataIndex: 'plateNo'
+            dataIndex: 'roleDesc'
         },
         {
             title: '权限',
-            dataIndex: 'plateColor',
+            dataIndex: 'permission',
             ellipsis:true,
         },
         {
@@ -94,31 +103,25 @@ function RoleManage() {
             width: 245,
             render: (cell:number,row:any) => (
                     <div className="table-button">
-                        <Button type="link" onClick={ () =>handleLink(row) }>编辑</Button>
+                        <Button type="link" onClick={ () =>handleShow(row) }>编辑</Button>
                         <Button type="link" onClick={ () =>handleDelete(row) }>删除</Button>
                     </div>
             ),
         },
-
     ];
 
     const [ form ] = Form.useForm();
     const [ modalForm ] = Form.useForm();
 
-    const history = useHistory()
-
     const onFormLayoutChange = ({  }) => {
         // setFormLayout(layout);
     };
 
-    const handleLink = (id:number)=>{
-        history.push('sale/detail?id='+id)
-    }
     const handleDelete = (row:any)=>{
         let _data = {
             ids:selectedRow
         }
-        validRevokeAvailable(_data).then(data => {
+        userDelete(_data).then((data:any) => {
 
         })
     }
@@ -136,49 +139,46 @@ function RoleManage() {
         form.resetFields()
     };
 
-
     //modal
-    //tree
-
+    //----tree
     const onCheck = (checkedKeys:any) => {
         console.log('onCheck', checkedKeys);
         setCheckedKeys(checkedKeys);
     };
-
-
+    const handleCancel = () => {
+        console.log('Clicked cancel button');
+        setShow(false)
+    };
     const handleSubmit = () => {
         setConfirmLoading(true);
         modalForm.validateFields().then((values:any) => {
             let _data ={
-                ids:selectedRow,
                 ...values
             }
-            revokeCouponBatch(_data).then((data:any) => {
-                message.success('批量处理成功');
-                setShow(false);
-                setConfirmLoading(false);
-                form.submit();
-            })
+            if(!!!id){
+                roleAdd(_data).then((data:any) => {
+                    message.success('保存成功');
+                    setShow(false);
+                    setConfirmLoading(false);
+                    form.submit();
+                })
+            }else{
+                roleUpdate({
+                    id,
+                    _data
+                }).then((data:any) => {
+                    message.success('编辑成功');
+                    setShow(false);
+                    setConfirmLoading(false);
+                    form.submit();
+                })
+            }
         }).catch(info => {
             setConfirmLoading(false);
             console.log('Validate Failed:', info);
         });
     };
 
-    const handleCancel = () => {
-        console.log('Clicked cancel button');
-        setShow(false)
-    };
-
-    const handleSearch = (values:any) => {
-        console.log(values)
-        let { couponNo,plateNo,couponStatus,equityGrantTime } = values,
-                [startTime,endTime] = equityGrantTime || [];
-
-        list({
-            couponNo,plateNo,couponStatus
-        })
-    }
 
     const handleQuery = () => {
         setPage({
@@ -188,7 +188,15 @@ function RoleManage() {
         setSelectedRow([]);
         form.submit();
     };
+    const handleSearch = (values:any) => {
+        console.log(values)
+        let { couponNo,plateNo,couponStatus,equityGrantTime } = values,
+                [startTime,endTime] = equityGrantTime || [];
 
+        list({
+            couponNo,plateNo,couponStatus
+        })
+    }
     const pagesChange = (current:number,pageSize:any) => {
         setPage({
             ...page,
@@ -197,7 +205,6 @@ function RoleManage() {
         });
         form.submit();
     };
-
     const pageSizeChange= (current:number,pageSize:any) => {
         setPage({
             ...page,
@@ -206,11 +213,9 @@ function RoleManage() {
         });
         form.submit();
     };
-
     const showTotal = (total:number) => {
         return `总共 ${total} 条`
     }
-
     const list = (args?:object) => {
         let { current,pageSize } = page
         let _data={
@@ -219,7 +224,7 @@ function RoleManage() {
             ...args
         };
         setLoading(true)
-        couponList(_data).then((data:any) => {
+        roleList(_data).then((data:any) => {
             setTableData(data.data.list);
             setPage({
                 ...page,
@@ -231,10 +236,19 @@ function RoleManage() {
         })
     };
 
+    const getRoleMenuList = (args?:object) => {
+        let _data={
+        };
+        getRoleMenu(_data).then((data:any) => {
+            setTreeData(data.data.list);
+        })
+    };
+
     useEffect(() => {
         //do something
         list();
-    },[1]);
+        getRoleMenuList();
+    },[]);
 
     return (
             <div className="role-manage-container">
@@ -251,7 +265,7 @@ function RoleManage() {
                                 onValuesChange={ onFormLayoutChange }
                                 form = { form }
                                 onFinish={ handleSearch }>
-                            <Form.Item label="角色名称" name="couponNo">
+                            <Form.Item label="角色名称" name="roleName">
                                 <Input placeholder="请输入角色名称" maxLength={ 18 } />
                             </Form.Item>
                             <Form.Item>
@@ -262,13 +276,6 @@ function RoleManage() {
                 </div>
                 <div className="table-container">
                     <Table
-                            onRow={ (row:any) => {
-                                return {
-                                    onClick: event => {
-                                        handleLink(row.id)
-                                    }, // 点击行
-                                };
-                            }}
                             rowKey="id"
                             bordered
                             columns={ columns }
@@ -286,15 +293,15 @@ function RoleManage() {
                         confirmLoading={ confirmLoading }
                         onCancel={ handleCancel }>
                     <Form {...layout} form={ modalForm }>
-                        <Form.Item name="plateNo" label="角色名称"  rules={[{ required: true,whitespace: true,pattern:/^[a-zA-Z]+[\w]{2,19}$/, message: '请输入以字母开头3-20位，可包含数字、字母、下划线' },]}>
+                        <Form.Item name="roleName" label="角色名称"  rules={[{ required: true,whitespace: true,pattern:/^[a-zA-Z]+[\w]{2,19}$/, message: '请输入以字母开头3-20位，可包含数字、字母、下划线' },]}>
                             <Input maxLength={ 20 } disabled={ !!id } placeholder="请输入以字母开头3-20位，可包含数字、字母、下划线" />
                         </Form.Item>
-                        <Form.Item name="remark" label="备注" rules={ [
-                            { required: true, message: '请输入非空内容' }
+                        <Form.Item name="roleDesc" label="备注" rules={ [
+                            { required: true, whitespace: true, message: '请输入非空内容' }
                         ] }>
                             <Input.TextArea rows={ 3 } maxLength={ 100 } />
                         </Form.Item>
-                        <Form.Item name="authority" required label="权限" valuePropName="checkedKeys">
+                        <Form.Item name="permissionIds" required label="权限" valuePropName="checkedKeys">
                             <Tree
                                     checkable
                                     checkStrictly={true}

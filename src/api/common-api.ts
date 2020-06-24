@@ -12,3 +12,13 @@ export const getPublicKey= (params:any) => fetch(site.base + '/permission/getPub
     type: 'get',
     params
 });
+
+export const updateIndustryLoginUserPwd= (data:any) => fetch(site.base + '/businessAccount/updateIndustryLoginUserPwd' ,{
+    type: 'post',
+    data
+});
+
+export const getCommercialUser= (data:any) => fetch(site.base + '/commercialUser/getCommercialUser' ,{
+    type: 'post',
+    data
+});

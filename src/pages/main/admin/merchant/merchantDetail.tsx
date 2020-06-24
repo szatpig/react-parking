@@ -38,7 +38,7 @@ const validateMessages = {
 
 function StoreDetail(props:Props) {
     const history = useHistory();
-    const params:any = useParams();
+    const { id } = useParams();
     const [ submitForm ] = Form.useForm();
     const [modal, contextHolder] = Modal.useModal();
     const [equityList, setEquityList] = useState([]);
@@ -48,7 +48,7 @@ function StoreDetail(props:Props) {
 
     const onFinish = (values:any) => {
         let { plateNo,plateColor,equityConfigId,whitelistUri,expirationTime,parkIdList } =  values
-        if(params.id === 0){
+        if(id === 0){
             let _data ={
                 plateNo,
                 equityConfigId
@@ -69,8 +69,11 @@ function StoreDetail(props:Props) {
         }
     };
 
-    const getMerchantUserInfo = () => {
-        let _data ={}
+    const getMerchantUserInfo = (id:number) => {
+        if(!id) return false;
+        let _data ={
+            id
+        }
         getMerchantUser(_data).then((data:any) => {
             setEquityList(data.data.map((item:any) => ({
                 value:item.id,
@@ -80,7 +83,7 @@ function StoreDetail(props:Props) {
     }
 
     useEffect(() => {
-        getMerchantUserInfo()
+        getMerchantUserInfo(id)
     },[]);
 
     return (
@@ -88,7 +91,7 @@ function StoreDetail(props:Props) {
                 <div className="breadcrumb-container line">
                     <div className="breadcrumb-cell">
                         <div onClick={ () => history.go(-1) }><LeftOutlined />返回</div>
-                        <div>{ params.id === 0 ? '添加商家':'编辑商家' }</div>
+                        <div>{ !!!id ? '添加商家':'编辑商家' }</div>
                     </div>
                 </div>
                 <Form form={ submitForm }
@@ -97,10 +100,8 @@ function StoreDetail(props:Props) {
                       onFinish={ onFinish }
                       validateMessages={validateMessages}
                       initialValues={{
-                          merchantType:1,
-                          legalPersonIdType:1,
-                          
-
+                          merchantType:'1',
+                          legalPersonIdType:'1',
                       }}>
                     <p className="form-title">基本信息</p>
                     <Row className="form-grid" justify="start" gutter={[60, 0]}>

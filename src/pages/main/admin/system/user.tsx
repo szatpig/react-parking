@@ -2,26 +2,17 @@
 import React, {useState, useEffect} from 'react';
 import { useHistory } from "react-router-dom";
 
-import moment from 'moment';
-
-import {Form, Input, Button, Modal, DatePicker, Select, Table, Tag, Radio, message, Checkbox, InputNumber, Popconfirm} from 'antd';
-import { couponList, confirmRevokeCoupon, verifyRevokeAvailable, revokeCouponBatch } from '@/api/industryUser/coupon-api'
+import {Form, Input, Button, Modal, Select, Table, Tag, Radio, message, Popconfirm} from 'antd';
+import { userList, userDelete, userAdd, userUpdate, userOff, userReset, userGetRoleList } from '@/api/admin/system-api'
 
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import Dayjs from 'dayjs';
 
-
-
-import region from '@/json/region'
-import {validRevokeAvailable} from "@/api/industryUser/white-api";
-const options = region;
-
 const layout = {
-    labelCol: { span: 6 },
+    labelCol: { span: 5 },
     wrapperCol: { span: 17 },
 };
 
-const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 const equityStatusList:any = {
@@ -57,41 +48,42 @@ function UserManage() {
     });
     const [show, setShow] = useState(false);
     const [id,setId] = useState('');
+    const [roleList,setRoleList] = useState([]);
     const [confirmLoading, setConfirmLoading] = useState(false);
 
     const columns = [
         {
             title: '账号',
-            dataIndex: 'couponNo',
+            dataIndex: 'userName',
             width: 200,
             ellipsis:true,
             fixed:true
         },
         {
             title: '姓名',
-            dataIndex: 'plateNo'
+            dataIndex: 'name'
         },
         {
             title: '性别',
-            dataIndex: 'plateColor',
+            dataIndex: 'sax',
             width: 120
         },
         {
             title: '联系电话',
-            dataIndex: 'couponAmount'
+            dataIndex: 'phone'
         },
         {
             title: '角色',
-            dataIndex: 'parkingNames'
+            dataIndex: 'roleName'
         },
         {
             title: '状态',
-            dataIndex: 'equityStatus',
+            dataIndex: 'status',
             width: 140,
-            render: (cell:number,row:any) => (
+            render: (cell:number,row:any) => ( //状态(0：正常；1：禁用；2：锁定；)
                     cell === 4 ?
-                            <Tag color={ equityStatusList[cell].color }>{ equityStatusList[cell].label }</Tag> :
-                            <Tag color={ equityStatusList[cell].color }>{ equityStatusList[cell].label }</Tag>
+                        <Tag color={ equityStatusList[cell].color }>{ equityStatusList[cell].label }</Tag> :
+                        <Tag color={ equityStatusList[cell].color }>{ equityStatusList[cell].label }</Tag>
             )
         },
         {
@@ -103,13 +95,13 @@ function UserManage() {
                     <div className="table-button">
                         <Popconfirm
                                 title="确定禁用该用户账号吗"
-                                onConfirm={ () => handleDisabled(row) }
+                                onConfirm={ () => handleOff(row) }
                                 okText="确定"
                                 cancelText="取消"
                         >
                             <Button type="link">禁用</Button>
                         </Popconfirm>
-                        <Button type="link" onClick={ () =>handleLink(row) }>编辑</Button>
+                        <Button type="link" onClick={ () =>handleShow(row) }>编辑</Button>
                         <Button type="link" onClick={ () =>handleDelete(row) }>删除</Button>
                         <Button type="link" onClick={ () =>handleReset(row) }>重置密码</Button>
                     </div>
@@ -127,15 +119,11 @@ function UserManage() {
         // setFormLayout(layout);
     };
 
-    const handleLink = (id:number)=>{
-        history.push('sale/detail?id='+id)
-    }
-
-    const handleDisabled = (row:any)=>{
+    const handleOff = (row:any)=>{
         let _data = {
             ids:selectedRow
         }
-        validRevokeAvailable(_data).then(data => {
+        userOff(_data).then((data:any) => {
 
         })
     }
@@ -143,7 +131,7 @@ function UserManage() {
         let _data = {
             ids:selectedRow
         }
-        validRevokeAvailable(_data).then(data => {
+        userDelete(_data).then((data:any) => {
 
         })
     }
@@ -151,10 +139,14 @@ function UserManage() {
         let _data = {
             ids:selectedRow
         }
-        validRevokeAvailable(_data).then(data => {
+        userReset(_data).then((data:any) => {
 
         })
     }
+
+
+
+    //modal
     const handleShow =  (id:number) => {
         setShow(true)
         if(id){
@@ -162,37 +154,51 @@ function UserManage() {
         }else{
             setId('');
         }
-
         form.resetFields()
     };
-
-
-    //modal
-
     const handleSubmit = () => {
         setConfirmLoading(true);
         modalForm.validateFields().then((values:any) => {
             let _data ={
-                ids:selectedRow,
                 ...values
             }
-            revokeCouponBatch(_data).then((data:any) => {
-                message.success('批量处理成功');
-                setShow(false);
-                setConfirmLoading(false);
-                form.submit();
-            })
+            if(!!!id){
+                userAdd(_data).then((data:any) => {
+                    message.success('保存成功');
+                    setShow(false);
+                    setConfirmLoading(false);
+                    form.submit();
+                })
+            }else{
+                userUpdate({
+                    id,
+                    _data
+                }).then((data:any) => {
+                    message.success('编辑成功');
+                    setShow(false);
+                    setConfirmLoading(false);
+                    form.submit();
+                })
+            }
+
         }).catch(info => {
             setConfirmLoading(false);
             console.log('Validate Failed:', info);
         });
     };
-
     const handleCancel = () => {
         console.log('Clicked cancel button');
         setShow(false)
     };
 
+    const handleQuery = () => {
+        setPage({
+            ...page,
+            current:1
+        });
+        setSelectedRow([]);
+        form.submit();
+    };
     const handleSearch = (values:any) => {
         console.log(values)
         let { couponNo,plateNo,couponStatus,equityGrantTime } = values,
@@ -204,16 +210,6 @@ function UserManage() {
             endTime:endTime && Dayjs(endTime).format('YYYY-MM-DD HH:mm:ss')
         })
     }
-
-    const handleQuery = () => {
-        setPage({
-            ...page,
-            current:1
-        });
-        setSelectedRow([]);
-        form.submit();
-    };
-
     const pagesChange = (current:number,pageSize:any) => {
         setPage({
             ...page,
@@ -222,7 +218,6 @@ function UserManage() {
         });
         form.submit();
     };
-
     const pageSizeChange= (current:number,pageSize:any) => {
         setPage({
             ...page,
@@ -231,11 +226,9 @@ function UserManage() {
         });
         form.submit();
     };
-
     const showTotal = (total:number) => {
         return `总共 ${total} 条`
     }
-
     const list = (args?:object) => {
         let { current,pageSize } = page
         let _data={
@@ -244,7 +237,7 @@ function UserManage() {
             ...args
         };
         setLoading(true)
-        couponList(_data).then((data:any) => {
+        userList(_data).then((data:any) => {
             setTableData(data.data.list);
             setPage({
                 ...page,
@@ -255,11 +248,18 @@ function UserManage() {
             setLoading(false)
         })
     };
+    const getRolelist = (args?:object) => {
+        let _data ={
 
+        }
+        userList(_data).then((data:any) => {
+            setRoleList(data.data.list)
+        })
+    };
     useEffect(() => {
         //do something
         list();
-    },[1]);
+    },[]);
 
 
     return (
@@ -277,11 +277,8 @@ function UserManage() {
                                 onValuesChange={ onFormLayoutChange }
                                 form = { form }
                                 onFinish={ handleSearch }>
-                            <Form.Item label="账号" name="couponNo">
-                                <Input placeholder="请输入账号" maxLength={ 18 } />
-                            </Form.Item>
-                            <Form.Item label="姓名" name="plateNo">
-                                <Input placeholder="请输入姓名" maxLength={ 8 }/>
+                            <Form.Item label="账号/姓名" name="name">
+                                <Input placeholder="请输入账号/姓名" maxLength={ 18 } />
                             </Form.Item>
                             <Form.Item>
                                 <Button type="primary" htmlType="button" onClick={ handleQuery }>查询</Button>
@@ -291,13 +288,6 @@ function UserManage() {
                 </div>
                 <div className="table-container">
                     <Table
-                            onRow={ (row:any) => {
-                                return {
-                                    onClick: event => {
-                                        handleLink(row.id)
-                                    }, // 点击行
-                                };
-                            }}
                             rowKey="id"
                             bordered
                             columns={ columns }
@@ -306,44 +296,45 @@ function UserManage() {
                             pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,showSizeChanger:true,...page, showTotal: showTotal }}/>
                 </div>
                 <Modal
-                        title={ id ? '编辑折扣':'添加折扣'}
+                        title={ id ? '编辑用户':'添加用户'}
                         visible={ show }
                         className="common-dialog"
                         onOk={ handleSubmit }
-                        okText={"确定"}
                         maskClosable={ false }
                         confirmLoading={ confirmLoading }
                         onCancel={ handleCancel }>
-                    <Form {...layout} form={ modalForm }>
-                        <Form.Item name="plateNo" label="账号"  rules={[{ required: true,whitespace: true }]}>
+                    <Form {...layout} form={ modalForm } initialValues={{
+                        sax:0
+                    }}>
+                        <Form.Item name="userName" label="账号"  rules={[{ required: true,whitespace: true }]}>
                             <Input maxLength={ 20 } disabled={ !!id } placeholder="请输入账号" />
                         </Form.Item>
-                        <Form.Item name="plateNo" label="姓名"  rules={[{ required: true,whitespace: true }]}>
+                        <Form.Item name="name" label="姓名"  rules={[{ required: true,whitespace: true }]}>
                             <Input maxLength={ 20 } placeholder="请输入姓名" />
                         </Form.Item>
-                        <Form.Item name="commissionInvoice" required label="性别">
+                        <Form.Item name="sax" required label="性别">
                             <Radio.Group>
-                                <Radio value="1">男</Radio>
-                                <Radio value="0">女</Radio>
+                                <Radio value={ 0 }>男</Radio>
+                                <Radio value={ 1 }>女</Radio>
                             </Radio.Group>
                         </Form.Item>
-                        <Form.Item name="plateNo" label="联系方式" rules={[
+                        <Form.Item name="phone" label="联系方式" rules={[
                             { required: true,whitespace: true },
                             { pattern: /^(((\d{2}-)?0\d{2,3}-?\d{7,8})|((\d{2}-)?(\d{2,3}-)?([1][3-9][0-9]\d{8})))$/g}
                         ]}>
                             <Input maxLength={ 15 } placeholder="请输入联系方式" />
                         </Form.Item>
-                        <Form.Item label="角色" name="storeName" rules={[
+                        <Form.Item label="角色" name="roleId" rules={[
                             { required: true,whitespace: true,message:"请选择角色" }
                         ]}>
                             <Select
                                     placeholder="请选择角色"
                                     allowClear>
-                                <Option value="0">未领取</Option>
-                                <Option value="1">已领取</Option>
-                                <Option value="2">已核销</Option>
-                                <Option value="3">已过期</Option>
-                                <Option value="4">已撤销</Option>
+                                {
+                                    roleList.map((item:any) => (
+                                            <Option key={ item.id } value={ item.id }>{ item.roleName }</Option>
+                                    ))
+                                }
                             </Select>
                         </Form.Item>
                     </Form>

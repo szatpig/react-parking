@@ -1,14 +1,12 @@
 // Created by szatpig at 2020/6/16.
 import React, { useState, useEffect } from 'react';
+import { connect } from "react-redux";
 
 import {Form, Input, Button, Modal, Row, Col, message } from 'antd';
 
-import { getAccountDetails, uploadLogo, updateIndustryLoginUserPwd } from "@/api/industryUser/account-api";
-
-
 import site from '@/utils/config'
-import { connect } from "react-redux";
 import { userLoginOutAction } from "@/store/actions/user";
+import { updateIndustryLoginUserPwd,getCommercialUser } from "@/api/common-api";
 
 const layout = {
     labelCol: { span: 7 },
@@ -41,7 +39,6 @@ function EnterpriseAccount(props:Props) {
         flex: currentAuthority ==='admin' ? '100px' : '220px'
     }
     const handleSubmit = () => {
-
         passwordForm.validateFields().then(values => {
             let _data = {
                 ...values
@@ -55,7 +52,6 @@ function EnterpriseAccount(props:Props) {
 
             })
         }).catch(info => {
-
             console.log('Validate Failed:', info);
         });
     };
@@ -67,7 +63,7 @@ function EnterpriseAccount(props:Props) {
 
     const getUserInfo = () => {
         let _data ={}
-        getAccountDetails(_data).then((data:any) => {
+        getCommercialUser(_data).then((data:any) => {
             setUserInfo(data.data)
         })
     }
