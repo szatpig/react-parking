@@ -8,6 +8,7 @@ import { FormInstance } from 'antd/lib/form';
 import md5 from "md5"
 
 import { userLoginRequestAction, userLoginOutAction } from '@/store/actions/user'
+import { fetchErrorAction } from '@/store/actions/common'
 import EnhanceIdentifyCode from '@/components/IdentifyCode'
 
 import { getPublicKey } from '@/api/login-api'
@@ -100,7 +101,7 @@ class Login extends Component<UserFormProps, State> {
                                         shouldUpdate={(prevValues, currentValues) => prevValues.account !== currentValues.account}>
                                         {
                                             ({ getFieldValue }) => {
-                                                return <EnhanceIdentifyCode { ...{ error:this.props.error || 1,username:getFieldValue('account'),handleEmitCode:this.handleEmitCode } } />
+                                                return <EnhanceIdentifyCode { ...{ error:this.props.error || 1,username:getFieldValue('account'),handleEmitCode:this.handleEmitCode,fetchError:this.props.fetchErrorAction } } />
                                             }
                                         }
                                     </Form.Item>
@@ -123,7 +124,8 @@ interface UserFormProps{
     password: string;
     userToken:string;
     userLoginRequestAction?: any;
-    userLoginOutAction:()=>void
+    userLoginOutAction:()=>void,
+    fetchErrorAction:() =>void
     history:any,
     error?:number
 }
@@ -140,7 +142,8 @@ const mapStateToProps = (state:any) => ({
 
 const mapDispatchToProps = {
     userLoginRequestAction,
-    userLoginOutAction
+    userLoginOutAction,
+    fetchErrorAction
 }
 
 export default connect(mapStateToProps,mapDispatchToProps)(Login)

@@ -28,6 +28,7 @@ class IdentifyCode extends Component<Props, State> {
     componentWillUnmount() {
     }
 
+
     componentDidUpdate(prevProps:Props, prevState:State) {
         console.log('prevProps:',this.props.error !== prevProps.error);
         if (this.props.error !== prevProps.error) {
@@ -89,6 +90,7 @@ class IdentifyCode extends Component<Props, State> {
         }),()=>{
             if (this.state.number === 3) {
                 this.checkOutTree();
+                this.props.fetchError();
                 this.props.handleEmitCode(this.state.codeArray)
             }
         });
@@ -166,7 +168,8 @@ interface State {
 interface Props {
     username:string,
     error:number,
-    handleEmitCode:any
+    handleEmitCode:any,
+    fetchError:()=>void
 }
 
 
