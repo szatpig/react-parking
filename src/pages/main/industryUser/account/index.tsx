@@ -233,7 +233,8 @@ function Account(props:Props) {
             owner,
             province,
             city,
-            county
+            county,
+            beforeEndDate:true
         };
         getParkingDetailByBusinessId(_data).then((data:any) => {
             setTableData(data.data.list);
