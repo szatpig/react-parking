@@ -91,12 +91,13 @@ function StoreDetail(props:Props) {
         }
         return true ;
     };
-    const onFileChange= ({ file,fileList,event }:any) => {
-        // setFileList(fileList);
-        console.log(file);
-        if(file.status === 'done'){
 
-        }
+    const onFileChange= ({ file,fileList,event }:any) => {
+
+        console.log(file);
+        // if(file.status === 'done'){
+        //
+        // }
     };
     const normFile = ({ file,fileList,event }:any) => {
         if(file.status === 'uploading') return false;
@@ -199,7 +200,6 @@ function StoreDetail(props:Props) {
                                 onChange={ onFileChange }>
                             <Button>上传图片</Button>
                         </Upload>
-                        <p><img src='' alt=""/></p>
                     </Form.Item>
                     <Form.Item name="permitList"
                                label="开业许可证"

@@ -63,7 +63,7 @@ export const roleGet= (params:any) => fetch(site.base + `/industryLoginRole/getR
     params
 });
 
-export const getRoleMenu= (data:any) => fetch(site.base + `/industryLoginRole/getRoleMenu` ,{
-    type: 'post',
-    data
+export const getRoleMenu= (params:any) => fetch(site.base + `/industryLoginRole/getRoleMenu` ,{
+    type: 'get',
+    params
 });
