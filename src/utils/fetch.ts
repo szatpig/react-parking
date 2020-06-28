@@ -104,9 +104,9 @@ export default function fetch (url:string, options:Options) {
                                content:response.data.msg || '账号已在其他设备登录',
                                 className:'global-message'
                             })
-                            store.dispatch({type:'USER_LOGIN_OUT'});
-                            history.push('/etc-verification/login')
                         }
+                        store.dispatch({type:'USER_LOGIN_OUT'});
+                        history.push('/etc-verification/login');
                         reject(response.data);
                         break;
                     default:

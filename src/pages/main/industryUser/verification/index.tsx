@@ -48,8 +48,7 @@ const columns = [
     },
     {
         title: '停车总额/元',
-        dataIndex: 'equityAmount',
-        key:'equityAmount',
+        dataIndex: 'parkingAmount'
     },
     {
         title: '核销金额/元',
