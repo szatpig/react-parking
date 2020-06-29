@@ -29,17 +29,17 @@ export const commercialUserEdit= (data:any) => fetch(site.base + '/commercialUse
     data
 });
 
-export const commercialUserOff= (data:any) => fetch(site.base + '/commercialUser/searchWithPage' ,{
+export const commercialUserOff= (data:any) => fetch(site.base + '/industryLoginUser/updataStatus' ,{
     type: 'post',
     data
 });
 
-export const commercialUserDelete= (data:any) => fetch(site.base + `commercialUser/deleteCommercialUser/${ data.id }` ,{
+export const commercialUserDelete= (data:any) => fetch(site.base + `/commercialUser/deleteCommercialUser/${ data.id }` ,{
     type: 'post',
     data
 });
 
-export const commercialUserReset= (data:any) => fetch(site.base + '/commercialUser/searchWithPage' ,{
+export const commercialUserReset= (data:any) => fetch(site.base + '/industryLoginUser/resetPwd' ,{
     type: 'post',
     data
 });

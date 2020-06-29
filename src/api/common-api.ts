@@ -18,12 +18,12 @@ export const updateCommonUserPwd = (data:any) => fetch(site.base + '/businessAcc
     data
 });
 
-export const getCommonCommercialUser= (data:any) => fetch(site.base + '/commercialUser/getCommercialUser' ,{
-    type: 'post',
-    data
+export const getCommonCommercialUser= (params:any) => fetch(site.base + '/commercialUser/getCommercialUser' ,{
+    type: 'get',
+    params
 });
 
-export const getCommonMerchantUser= (data:any) => fetch(site.base + '/merchantUser/getMerchantUser' ,{
-    type: 'post',
-    data
+export const getCommonMerchantUser= (params:any) => fetch(site.base + '/merchantUser/getMerchantUser' ,{
+    type: 'get',
+    params
 });

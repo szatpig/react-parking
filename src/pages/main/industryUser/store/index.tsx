@@ -2,13 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from "react-router-dom";
 
-import { Form, Input, Button,  Table, Tag, Cascader, Popconfirm } from 'antd';
+import {Form, Input, Button, Table, Tag, Cascader, Popconfirm, message, Modal} from 'antd';
+import { ExclamationCircleFilled,ExclamationCircleOutlined } from '@ant-design/icons';
 import { commercialUserList, commercialUserOff, commercialUserDelete, commercialUserReset } from '@/api/industryUser/store-api'
 
 import region from '@/json/region'
 const options = region;
 
-const equityStatusList:any = {
+const statusList:any = {
     0:{
         label:'正常',
         color:'blue',
@@ -26,7 +27,7 @@ const equityStatusList:any = {
 
 function Store() {
     const [loading, setLoading] = useState(false);
-    const [selectedRow, setSelectedRow] = useState([]);
+    const [modal, contextHolder] = Modal.useModal();
     const [tableData,setTableData] = useState<object[]>([])
     const [page,setPage] = useState({
         current:1,
@@ -50,7 +51,7 @@ function Store() {
         },
         {
             title: '商户地址',
-            dataIndex: 'address',
+            dataIndex: 'completeAddress',
             ellipsis:true
         },
         {
@@ -69,29 +70,29 @@ function Store() {
         },
         {
             title: '状态',
-            dataIndex: 'equityStatus',
+            dataIndex: 'status',
             width: 140,
-            render: (cell:number,row:any) => (
-                    cell === 4 ?
-                        <Tag color={ equityStatusList[cell].color }>{ equityStatusList[cell].label }</Tag> :
-                        <Tag color={ equityStatusList[cell].color }>{ equityStatusList[cell].label }</Tag>
-            )
+            render: (cell:number,row:any) => {
+                let _index = cell == null ? 0 : cell
+                return <Tag color={ statusList[_index].color }>{ statusList[_index].label }</Tag>
+            }
         },
         {
             title: '操作',
             key: 'action',
+            className:'tableActionCell',
             width: 245,
             render: (cell:number,row:any) => (
                     <div className="table-button">
                         <Popconfirm
-                                title="确定禁用该用户账号吗"
+                                title={`确定${ row.status == 0 ? '禁用': row.status == 1 ? '启用' : '解锁' }该用户账号吗`}
                                 onConfirm={ () => handleOff(row) }
                                 okText="确定"
                                 cancelText="取消"
                         >
-                            <Button type="link">禁用</Button>
+                            <Button type="link">{ row.status == 0 ? '禁用': row.status == 1 ? '启用' : '解锁' }</Button>
                         </Popconfirm>
-                        <Button type="link" onClick={ () =>handleLink(row) }>编辑</Button>
+                        <Button type="link" onClick={ () =>handleLink(row.id) }>编辑</Button>
                         <Button type="link" onClick={ () =>handleDelete(row) }>删除</Button>
                         <Button type="link" onClick={ () =>handleReset(row) }>重置密码</Button>
                     </div>
@@ -110,47 +111,87 @@ function Store() {
 
     const handleOff = (row:any)=>{
         let _data = {
-            ids:selectedRow
+            id:row.loginUserId,
+            status:row.status == 0 ? 1: row.status == 1 ? 0 : 2
         }
         commercialUserOff(_data).then((data:any) => {
-
+            message.success(`${ row.status == 0 ? '禁用': row.status == 1 ? '启用' : '解锁' }成功`);
+            handleQuery();
         })
     }
 
     const handleDelete = (row:any)=>{
         let _data = {
-            ids:selectedRow
+            id:row.id
         }
-        commercialUserDelete(_data).then((data:any) => {
-
-        })
+        modal.confirm({
+            icon:<ExclamationCircleOutlined />,
+            title: '删除确认',
+            content: `确认要删除商户【${ row.name }】吗`,
+            onOk: () => {
+                commercialUserDelete(_data).then((data:any) => {
+                    message.success('删除成功');
+                    handleQuery();
+                })
+            },
+            onCancel() {
+                console.log('Cancel');
+            },
+        });
     }
 
     const handleReset = (row:any)=>{
         let _data = {
-            ids:selectedRow
+            id:row.loginUserId
         }
-        commercialUserReset(_data).then((data:any) => {
+        modal.confirm({
+            title: '重置密码确认',
+            content: `确认要重置商户【${ row.name }】密码吗`,
+            onOk: () => {
+                commercialUserReset(_data).then((data:any) => {
+                    message.success('重置成功');
+                    modal.success({
+                        title: '用户密码已重置',
+                        className:'import-dialog-container',
+                        content: (
+                                <div className="import-dialog-wrapper password-dialog-wrapper">
+                                    <div className="import-cell">
+                                        <p>请使用下方账号和默认密码登录系统</p>
+                                        <div className="import-content">
+                                            <p><span>登录地址：</span> <a target="_blank" href={ data.data.loginUserAddress }>{ data.data.loginUserAddress }</a></p>
+                                            <p><span>用户账号：</span>{ data.data.userName }</p>
+                                            <p><span>默认密码：</span>{ data.data.password }</p>
+                                        </div>
+                                    </div>
+                                </div>
+                        ),
+                        onOk: () => {
 
-        })
+                        },
+                        onCancel() {
+                            console.log('Cancel');
+                        },
+                    });
+                })
+            },
+            onCancel() {
+                console.log('Cancel');
+            },
+        });
     }
 
     const handleLink = (id:number) => {
-        history.push('/home/store/detail?id='+id);
+        history.push('/home/store/detail/'+id);
     };
 
     const handleSearch = (values:any) => {
         console.log(page)
-        let { couponNo,plateNo,couponStatus,equityLevel,equityGrantTime,equityStatus } = values,
-                [startTime,endTime] = equityGrantTime || [];
+        let { region, ...others } = values,
+             [province, city, area]= region || [];
 
         list({
-            couponNo,
-            plateNo,
-            couponStatus,
-            equityConfigId:equityLevel,
-            equityStatus,
-            current:1
+            province, city, area,
+            ...others
         })
     }
     const handleQuery = () => {
@@ -158,7 +199,6 @@ function Store() {
             ...page,
             current:1
         });
-        setSelectedRow([]);
         form.submit();
     };
     const pagesChange = (current:number,pageSize:any) => {
@@ -191,10 +231,10 @@ function Store() {
         };
         setLoading(true)
         commercialUserList(_data).then((data:any) => {
-            setTableData(data.data.customerEquityList.list);
+            setTableData(data.data.list);
             setPage({
                 ...page,
-                total:data.data.customerEquityList.total
+                total:data.data.total
             })
             setLoading(false)
         }).catch(err => {
@@ -254,6 +294,7 @@ function Store() {
                             dataSource={ tableData }
                             pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,...page, showTotal: showTotal }} />
                 </div>
+                { contextHolder }
             </div>
     );
 }

@@ -54,7 +54,7 @@ export default [
         }
     },
     {
-        path:'/store/detail',
+        path:'/store/detail/:id(\\d+)',
         component:StoreDetail,
         authority:["user"],
         meta:{

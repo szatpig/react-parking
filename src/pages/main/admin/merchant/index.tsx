@@ -37,35 +37,35 @@ function MerchantManage() {
     const columns = [
         {
             title: '商户名称',
-            dataIndex: 'couponNo',
+            dataIndex: 'name',
             ellipsis:true,
             width: 160,
             fixed:true
         },
         {
             title: '商户账号名',
-            dataIndex: 'plateNo',
+            dataIndex: 'username',
             ellipsis:true,
             width: 120
         },
         {
             title: '商户地址',
-            dataIndex: 'plateNo',
+            dataIndex: 'completeAddress',
             ellipsis:true
         },
         {
             title: '联系人',
-            dataIndex: 'plateNo',
+            dataIndex: 'contact',
             ellipsis:true
         },
         {
             title: '联系电话',
-            dataIndex: 'plateNo',
+            dataIndex: 'phone',
             width: 120
         },
         {
             title: '状态',
-            dataIndex: 'equityStatus',
+            dataIndex: 'status',
             width: 140,
             render: (cell:number,row:any) => (
                      <Tag color={ statusList[cell].color }>{ statusList[cell].label }</Tag>
@@ -86,7 +86,7 @@ function MerchantManage() {
                         >
                             <Button type="link">{ row.status == 0 ? '禁用': row.status == 1 ? '启用' : '解锁' }</Button>
                         </Popconfirm>
-                        <Button type="link" onClick={ () =>handleLink(row) }>编辑</Button>
+                        <Button type="link" onClick={ () =>handleLink(row.id) }>编辑</Button>
                         <Button type="link" onClick={ () =>handleDelete(row) }>删除</Button>
                         <Button type="link" onClick={ () =>handleReset(row) }>重置密码</Button>
                         <Button type="link" onClick={ () =>handleSale(row) }>销售折扣</Button>
@@ -105,7 +105,7 @@ function MerchantManage() {
 
     const handleOff = (row:any)=>{
         let _data = {
-            id:row.id,
+            id:row.loginUserId,
             status:row.status == 0 ? 1: row.status == 1 ? 0 : 2
         }
         merchantUserOff(_data).then((data:any) => {
@@ -120,7 +120,7 @@ function MerchantManage() {
         modal.confirm({
             icon:<ExclamationCircleOutlined />,
             title: '删除确认',
-            content: `确认要删除商户【${ row.plateNo }】吗`,
+            content: `确认要删除商户【${ row.name }】吗`,
             onOk: () => {
                 merchantUserDelete(_data).then((data:any) => {
                     message.success('删除成功');
@@ -134,11 +134,11 @@ function MerchantManage() {
     }
     const handleReset = (row:any)=>{
         let _data = {
-            id:row.id
+            id:row.loginUserId
         }
         modal.confirm({
             title: '重置密码确认',
-            content: `确认要重置商户【${ row.plateNo }】密码吗`,
+            content: `确认要重置商户【${ row.name }】密码吗`,
             onOk: () => {
                 merchantUserReset(_data).then((data:any) => {
                     message.success('重置成功');
@@ -150,7 +150,7 @@ function MerchantManage() {
                                     <div className="import-cell">
                                         <p>请使用下方账号和默认密码登录系统</p>
                                         <div className="import-content">
-                                            <p><span>登录地址：</span>{ data.data.loginUserAddress }</p>
+                                            <p><span>登录地址：</span> <a target="_blank" href={ data.data.loginUserAddress }>{ data.data.loginUserAddress }</a></p>
                                             <p><span>用户账号：</span>{ data.data.userName }</p>
                                             <p><span>默认密码：</span>{ data.data.password }</p>
                                         </div>
@@ -172,10 +172,10 @@ function MerchantManage() {
         });
     }
     const handleSale =  (row:any) => {
-        history.push('merchant/sale?merchantUserId='+ row.id);
+        history.push('merchant/sale/'+ row.id);
     };
     const handleLink = (id:number) => {
-        history.push('merchant/detail?id='+id);
+        history.push(`merchant/detail/${ id }`);
     };
 
     const handleQuery = () => {
@@ -187,17 +187,11 @@ function MerchantManage() {
     };
     const handleSearch = (values:any) => {
         console.log(page)
-        let { name,username,address,contact,phone,region } = values,
+        let { region, ...others } = values,
                 [province, city, area]= region || [];
         list({
-            name,
-            username,
-            province,
-            city,
-            area,
-            address,
-            contact,
-            phone
+            province, city, area,
+            ...others
         })
     }
     const pagesChange = (current:number,pageSize:any) => {
@@ -228,10 +222,10 @@ function MerchantManage() {
         };
         setLoading(true)
         merchantUserList(_data).then((data:any) => {
-            setTableData(data.data.customerEquityList.list);
+            setTableData(data.data.list);
             setPage({
                 ...page,
-                total:data.data.customerEquityList.total
+                total:data.data.total
             })
             setLoading(false)
         }).catch(err => {

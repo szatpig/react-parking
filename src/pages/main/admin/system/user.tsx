@@ -159,7 +159,7 @@ function UserManage() {
                                     <div className="import-cell">
                                         <p>请使用下方账号和默认密码登录系统</p>
                                         <div className="import-content">
-                                            <p><span>登录地址：</span>{ data.data.loginUserAddress }</p>
+                                            <p><span>登录地址：</span><a target="_blank" href={ data.data.loginUserAddress }>{ data.data.loginUserAddress }</a></p>
                                             <p><span>用户账号：</span>{ data.data.userName }</p>
                                             <p><span>默认密码：</span>{ data.data.password }</p>
                                         </div>
@@ -204,18 +204,17 @@ function UserManage() {
             }
             if(!!!id){
                 userAdd(_data).then((data:any) => {
-                    message.success('保存成功');
                     setShow(false);
                     setConfirmLoading(false);
                     modal.success({
-                        title: '用户密码已重置',
+                        title: '用户添加成功',
                         className:'import-dialog-container',
                         content: (
                                 <div className="import-dialog-wrapper password-dialog-wrapper">
                                     <div className="import-cell">
                                         <p>请使用下方账号和默认密码登录系统</p>
                                         <div className="import-content">
-                                            <p><span>登录地址：</span>{ data.data.loginUserAddress }</p>
+                                            <p><span>登录地址：</span><a target="_blank" href={ data.data.loginUserAddress }>{ data.data.loginUserAddress }</a></p>
                                             <p><span>用户账号：</span>{ data.data.userName }</p>
                                             <p><span>默认密码：</span>{ data.data.password }</p>
                                         </div>

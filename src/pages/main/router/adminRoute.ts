@@ -55,7 +55,7 @@ export default [
         }
     },
     {
-        path:'/merchant/detail',
+        path:'/merchant/detail/:id(\\d+)',
         component:MerchantDetail,
         authority:["admin"],
         meta:{
@@ -65,7 +65,7 @@ export default [
         }
     },
     {
-        path:'/merchant/sale',
+        path:'/merchant/sale/:merchantUserId(\\d+)',
         component:MerchantSale,
         authority:["admin"],
         meta:{

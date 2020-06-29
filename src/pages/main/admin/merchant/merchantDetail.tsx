@@ -1,12 +1,11 @@
 // Created by szatpig at 2020/6/18.
 import React, {useState, useEffect} from 'react';
-import { useParams, useHistory, RouteComponentProps } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { connect } from 'react-redux'
 
 import { LeftOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { Form, Input, Select, Button,Radio, DatePicker, Table, Checkbox, Cascader, Upload, Modal, message, Row, Col } from 'antd';
+import { Form, Input, Select, Button, Cascader, Modal, message, Row, Col } from 'antd';
 
-import site from '@/utils/config'
 import {getMerchantUser, merchantUserUpdate , merchantUserAdd} from '@/api/admin/merchant-api'
 
 import region from '@/json/region'
@@ -41,17 +40,14 @@ function StoreDetail(props:Props) {
     const { id } = useParams();
     const [ submitForm ] = Form.useForm();
     const [modal, contextHolder] = Modal.useModal();
-    const [equityList, setEquityList] = useState([]);
-    const [fileList, setFileList] = useState<any[]>([]);
 
-    const{ userToken } = props
-
+    console.log(useParams())
     const onFinish = (values:any) => {
-        let { region,...others } =  values,
+        let { region,username,...others } =  values,
         [province, city, area]= region || [];
-        if(id === 0){
+        if(!!id){
             let _data ={
-                commercialUserId:id,
+                id,
                 ...others,
                 province, city, area
             }
@@ -62,25 +58,46 @@ function StoreDetail(props:Props) {
         }else{
             let _data ={
                 ...others,
+                username,
                 province, city, area
             }
             merchantUserAdd(_data).then((data:any) => {
-                message.success('添加成功');
-                history.replace('/home/merchant')
+                modal.success({
+                    title: '用户添加成功',
+                    className:'import-dialog-container',
+                    content: (
+                            <div className="import-dialog-wrapper password-dialog-wrapper">
+                                <div className="import-cell">
+                                    <p>请使用下方账号和默认密码登录系统</p>
+                                    <div className="import-content">
+                                        <p><span>登录地址：</span><a target="_blank" href={ data.data.loginUserAddress }>{ data.data.loginUserAddress }</a></p>
+                                        <p><span>用户账号：</span>{ data.data.userName }</p>
+                                        <p><span>默认密码：</span>{ data.data.password }</p>
+                                    </div>
+                                </div>
+                            </div>
+                    ),
+                    onOk: () => {
+                        history.replace('/home/merchant')
+                    }
+                });
             })
         }
     };
 
     const getMerchantUserInfo = (id:number) => {
+        console.log(id);
         if(!id) return false;
         let _data ={
             id
         }
         getMerchantUser(_data).then((data:any) => {
-            setEquityList(data.data.map((item:any) => ({
-                value:item.id,
-                label:item.equityLevel
-            })))
+            let { province, city, area,...others } = data.data,
+                    region = [province, city, area] || [];
+            submitForm.setFieldsValue({
+                ...others,
+                region
+            })
         })
     }
 
@@ -208,7 +225,7 @@ function StoreDetail(props:Props) {
                             <Form.Item name="username"  { ...layout }label="商家账号名" rules={[
                                 { required: true,whitespace: true,pattern:/^[a-zA-Z]+[\w]{2,19}$/, message: '请输入以字母开头3-20位，可包含数字、字母、下划线' },
                             ]}>
-                                <Input maxLength={ 20 } placeholder="请输入以字母开头3-20位，可包含数字、字母、下划线" />
+                                <Input disabled={ !!id } maxLength={ 20 } placeholder="请输入以字母开头3-20位，可包含数字、字母、下划线" />
                             </Form.Item>
                         </Col>
                         <Col span={ 24 }>
@@ -220,6 +237,7 @@ function StoreDetail(props:Props) {
                         </Col>
                     </Row>
                 </Form>
+                { contextHolder }
             </div>
     );
 }

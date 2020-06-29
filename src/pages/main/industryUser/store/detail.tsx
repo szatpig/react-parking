@@ -6,11 +6,11 @@ import { connect } from 'react-redux'
 import { LeftOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { Form, Input, Select, Button,Radio, Cascader, Upload, Modal, message } from 'antd';
 
-import site from '@/utils/config'
 import {commercialUserEdit, commercialUserAdd , getCommercialUserById} from '@/api/industryUser/store-api'
 
 import region from '@/json/region'
-import XLSX from "xlsx";
+
+import site from '@/utils/config'
 
 const options = region;
 
@@ -35,50 +35,90 @@ const validateMessages = {
 function StoreDetail(props:Props) {
     const history = useHistory();
     const { id } = useParams();
+    const [modal, contextHolder] = Modal.useModal();
     const [ submitForm ] = Form.useForm();
-    const [userInfo, setUserInfo] = useState([]);
-    const [fileList, setFileList] = useState<any[]>([]);
+    const [picturesLists, setPicturesLists] = useState([]);
+    const [certificateLists, setCertificateLists] = useState([]);
+    const [permitLists, setPermitLists] = useState([]);
 
     const{ userToken } = props
 
     const onFinish = (values:any) => {
-        let { name,username,address,contact,phone,region,invoiced,pictures,certificateList,permitList } = values,
+        let { region,...others } = values,
                 [province, city, area]= region || [],
                 _data ={
-                    name,username,address,contact,phone,
-                    province, city, area,pictures,certificateList,permitList
+                    ...others,
+                    province, city, area
                 }
-        if(!!!id){
-            commercialUserAdd(_data).then((data:any) => {
-                message.success('发放成功');
-                history.replace('/home/white')
-            })
-        }else{
+                console.log(values)
+        return false;
+        if(id > 0){
             commercialUserEdit({
                 id,
                 ..._data
             }).then((data:any) => {
-                message.success('发放成功');
-                history.replace('/home/white')
+                message.success('编辑成功');
+                history.replace('/home/store')
+            })
+        }else{
+            commercialUserAdd(_data).then((data:any) => {
+                modal.success({
+                    title: '用户添加成功',
+                    className:'import-dialog-container',
+                    content: (
+                            <div className="import-dialog-wrapper password-dialog-wrapper">
+                                <div className="import-cell">
+                                    <p>请使用下方账号和默认密码登录系统</p>
+                                    <div className="import-content">
+                                        <p><span>登录地址：</span><a target="_blank" href={ data.data.loginUserAddress }>{ data.data.loginUserAddress }</a></p>
+                                        <p><span>用户账号：</span>{ data.data.userName }</p>
+                                        <p><span>默认密码：</span>{ data.data.password }</p>
+                                    </div>
+                                </div>
+                            </div>
+                    ),
+                    onOk: () => {
+                        history.replace('/home/store')
+                    }
+                });
             })
         }
     };
 
     const getUserInfo = () => {
-        if(!!!id) return false;
+        if(id < 1) return false;
         let _data ={
             id
         }
         getCommercialUserById(_data).then((data:any) => {
-            setUserInfo(data.data)
+            let { province, city, area,pictures,certificateList,permitList,...others } = data.data,
+            region = [province, city, area] || [];
+            pictures = pictures.map((item:any) => ({
+                uid:item.id,
+                url:site.exeUrl + item.image
+            }));
+            certificateList = certificateList.map((item:any) => ({
+                uid:item.id,
+                url:site.exeUrl + item.image
+            }))
+            permitList = permitList.map((item:any) => ({
+                uid:item.id,
+                url:site.exeUrl + item.image
+            }))
+            // setPicturesLists(pictures)
+            // setCertificateLists(certificateList)
+            // setPermitLists(permitList)
+            submitForm.setFieldsValue({
+                ...others,
+                pictures,
+                certificateList,
+                permitList,
+                region,
+            })
         })
     }
 
-    const handleRemove= ({ file,fileList,event }:any) => {
-        setFileList([]);
-    };
-
-    const handleBeforeUpload =(file:any,_fileList:any)=>{
+    const handleBeforeUpload =(file:any,fileList:any)=>{
         const isLt2M = file.size / 1024 / 1024 < 1;
         if (!isLt2M) {
             message.error( '超过1M限制，不允许上传');
@@ -94,18 +134,23 @@ function StoreDetail(props:Props) {
 
     const onFileChange= ({ file,fileList,event }:any) => {
 
-        console.log(file);
+        // console.log('onFileChange',fileList,file);
         // if(file.status === 'done'){
+        //     const { response } = file;
+        //     if(response.status === 1000){
+        //         setPicturesLists(fileList.map((item:any) => item.response.data))
+        //     }
         //
         // }
     };
     const normFile = ({ file,fileList,event }:any) => {
+        console.log(1111,file)
         if(file.status === 'uploading') return false;
-        if(file.status === 'removed') return ;
         const { response } = file;
+        console.log('normFile',fileList);
         if(response){
             if(response.status === 1000){
-                return response.data.filePath
+                return fileList.map((item:any) => item.response.data);
             }
         }
         return ;
@@ -120,7 +165,7 @@ function StoreDetail(props:Props) {
                 <div className="breadcrumb-container line">
                     <div className="breadcrumb-cell">
                         <div onClick={ () => history.go(-1) }><LeftOutlined />返回</div>
-                        <div>{ !!!id ? '添加商户':'编辑商户' }</div>
+                        <div>{ id > 0 ? '编辑商户':'添加商户' }</div>
                     </div>
                 </div>
                 <Form form={ submitForm }
@@ -172,14 +217,15 @@ function StoreDetail(props:Props) {
                     <Form.Item name="pictures"
                                label="商户图片"
                                getValueFromEvent={ normFile }
-                               className="upload-container"
+                               className="upload-container upload-multiple-container"
                                wrapperCol={{ span:18 }}>
-                        <Upload name="logo"
+                        <Upload name="file"
                                 className="upload-wrapper"
                                 accept=".jpeg, .jpg, .png, gif, .bmp"
                                 action={ site.upload + "/commercialUser/uploadEntryFile"}
                                 headers = {{ token:userToken }}
-                                showUploadList={ false }
+                                showUploadList={ true }
+                                listType="picture-card"
                                 beforeUpload = { handleBeforeUpload }
                                 onChange={ onFileChange }>
                             <Button>上传图片</Button>
@@ -188,14 +234,16 @@ function StoreDetail(props:Props) {
                     <Form.Item name="certificateList"
                                label="营业执照"
                                getValueFromEvent={ normFile }
-                               className="upload-container"
+                               className="upload-container  upload-multiple-container"
                                wrapperCol={{ span:18 }}>
-                        <Upload name="logo"
+                        <Upload name="file"
                                 className="upload-wrapper"
                                 accept=".jpeg, .jpg, .png, gif, .bmp"
                                 action={ site.upload + "/commercialUser/uploadEntryFile"}
                                 headers = {{ token:userToken }}
-                                showUploadList={ false }
+                                showUploadList={ true }
+                                fileList={ certificateLists }
+                                listType="picture-card"
                                 beforeUpload = { handleBeforeUpload }
                                 onChange={ onFileChange }>
                             <Button>上传图片</Button>
@@ -204,14 +252,16 @@ function StoreDetail(props:Props) {
                     <Form.Item name="permitList"
                                label="开业许可证"
                                getValueFromEvent={ normFile }
-                               className="upload-container"
+                               className="upload-container upload-multiple-container"
                                wrapperCol={{ span:18 }}>
-                        <Upload name="logo"
+                        <Upload name="file"
                                 className="upload-wrapper"
                                 accept=".jpeg, .jpg, .png, gif, .bmp"
                                 action={ site.upload + "/commercialUser/uploadEntryFile"}
                                 headers = {{ token:userToken }}
-                                showUploadList={ false }
+                                showUploadList={ true }
+                                fileList={ permitLists }
+                                listType="picture-card"
                                 beforeUpload = { handleBeforeUpload }
                                 onChange={ onFileChange }>
                             <Button>上传图片</Button>
@@ -221,7 +271,7 @@ function StoreDetail(props:Props) {
                     <Form.Item name="username" label="账号名" rules={[
                         { required: true,whitespace: true,pattern:/^[a-zA-Z]+[\w]{2,19}$/, message: '请输入以字母开头3-20位，可包含数字、字母、下划线' },
                     ]}>
-                        <Input maxLength={ 20 } placeholder="请输入以字母开头3-20位，可包含数字、字母、下划线" />
+                        <Input disabled={ id > 0 } maxLength={ 20 } placeholder="请输入以字母开头3-20位，可包含数字、字母、下划线" />
                     </Form.Item>
 
                     <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 2 }}>
@@ -230,6 +280,7 @@ function StoreDetail(props:Props) {
                         </Button>
                     </Form.Item>
                 </Form>
+                { contextHolder }
             </div>
     );
 }

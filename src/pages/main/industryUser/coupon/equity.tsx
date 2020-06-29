@@ -512,9 +512,9 @@ function Equity(props:Props) {
                      params.type === 'single' &&
                      <Form.Item label="发放数量" required>
                          <Form.Item name="provideCount" noStyle wrapperCol={{span: 8}} rules={[
-                             {required: true, type: 'number', min: 0, max: 99999999, message: '请输入数量'}
+                             {required: true, type: 'number', min: 0, max: 9999, message: '请输入数量'}
                          ]}>
-                             <InputNumber maxLength={8} placeholder="请输入"/>
+                             <InputNumber maxLength={4} placeholder="请输入"/>
                          </Form.Item>
                          &nbsp;&nbsp;张
                      </Form.Item>

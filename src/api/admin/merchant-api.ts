@@ -59,9 +59,8 @@ export const merchantUserOff= (data:any) => fetch(site.base + `/industryLoginUse
     data
 });
 
-export const getMerchantUser= (data:any) => fetch(site.base + `/merchantUser/getMerchantUser/${data.id}` ,{
-    type: 'post',
-    data
+export const getMerchantUser= (params:any) => fetch(site.base + `/merchantUser/getMerchantUser/${ params.id }` ,{
+    type: 'get'
 });
 
 export const merchantUserUpdate= (data:any) => fetch(site.base + `/merchantUser/updateMerchantUser` ,{

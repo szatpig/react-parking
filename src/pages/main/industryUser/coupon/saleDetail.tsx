@@ -312,11 +312,11 @@ function SaleDetail() {
     const onFinish = (values:any) => {
         console.log(values);
         let { commercialUserId,couponType,amount,number,discount,deadlineTime,parkingIds } =  values,
-                parkingSelectOptions = !Array.isArray(parkingIds)? parkingIds:'';
+                parkingSelectOptions = !Array.isArray(parkingIds)? parkingIds:{};
                 parkingIds = Array.isArray(parkingIds)?parkingIds.join(','):''
         let _data ={
-            commercialUserId,couponType,amount,number,discount,deadlineTime,parkingIds,parkingSelectOptions,
-            expirationTime:Dayjs(deadlineTime).format('YYYY-MM-DD 23:59:59')
+            commercialUserId,couponType,amount,number,discount,parkingIds,parkingSelectOptions,
+            deadlineTime:Dayjs(deadlineTime).format('YYYY-MM-DD 23:59:59')
         }
         commercialUserCouponSave(_data).then((data:any) => {
             message.success('添加成功');
@@ -375,9 +375,9 @@ function SaleDetail() {
                  </Form.Item>
                  <Form.Item label="销售数" required>
                      <Form.Item name="number" noStyle wrapperCol={{ span:8 }} rules={ [
-                         { required: true, type: 'number', min: 0, max: 99999999, message: '请输入0-9999999数值' }
+                         { required: true, type: 'number', min: 0, max: 9999, message: '请输入0-9999999数值' }
                      ]}>
-                         <InputNumber  maxLength={ 8 } min={ 0 } max={ 99999999 } placeholder="请输入" />
+                         <InputNumber  maxLength={ 4 } min={ 0 } max={ 9999 } placeholder="请输入" />
                      </Form.Item>
                      &nbsp;&nbsp;张
                  </Form.Item>
