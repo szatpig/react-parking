@@ -21,7 +21,7 @@ const layout = {
 
 const { Option } = Select;
 
-const equityStatusList:any = {
+const statusList:any = {
     0:{
         label:'正常',
         color:'green',
@@ -79,9 +79,7 @@ function UserManage() {
             dataIndex: 'status',
             width: 140,
             render: (cell:number,row:any) => ( //状态(0：正常；1：禁用；2：锁定；)
-                    cell === 4 ?
-                        <Tag color={ equityStatusList[cell].color }>{ equityStatusList[cell].label }</Tag> :
-                        <Tag color={ equityStatusList[cell].color }>{ equityStatusList[cell].label }</Tag>
+                    <Tag color={ statusList[cell].color }>{ statusList[cell].label }</Tag>
             )
         },
         {

@@ -120,9 +120,9 @@ function RoleManage() {
 
     //modal
     //----tree
-    const onCheck = (checkedKeys:any) => {
-        console.log('onCheck', checkedKeys);
-        setCheckedKeys(checkedKeys.checked);
+    const onCheck = (checkedKeys:any,e:any) => {
+        console.log('onCheck', checkedKeys,e);
+        setCheckedKeys(checkedKeys);
     };
     const handleCancel = () => {
         console.log('Clicked cancel button');
@@ -305,7 +305,7 @@ function RoleManage() {
                         <Form.Item name="permissionIds" required label="权限">
                             <Tree
                                     checkable
-                                    checkStrictly={true}
+                                    showLine={ true }
                                     defaultExpandAll={ true }
                                     onCheck={ onCheck }
                                     checkedKeys={ checkedKeys }

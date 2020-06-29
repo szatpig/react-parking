@@ -4,37 +4,29 @@ import { useHistory } from "react-router-dom";
 
 import {Form, Input, Button, Modal, Table, Tag, Popover, message, Cascader, Popconfirm} from 'antd';
 import { merchantUserList, merchantUserDelete, merchantUserReset, merchantUserOff } from '@/api/admin/merchant-api'
-
+import { ExclamationCircleFilled,ExclamationCircleOutlined } from '@ant-design/icons';
 import region from '@/json/region'
 const options = region;
 
-const equityStatusList:any = {
+const statusList:any = {
     0:{
-        label:'未使用',
-        color:'blue',
-    },
-    1:{
-        label:'已领取',
+        label:'正常',
         color:'green',
     },
+    1:{
+        label:'禁用',
+        color:'warning',
+    },
     2:{
-        label:'核销完成',
-        color:'default',
-    },
-    3:{
-        label:'已过期',
-        color:'default',
-    },
-    4:{
-        label:'已撤销',
+        label:'锁定',
         color:'default',
     }
 }
 
 
 function MerchantManage() {
+    const [modal, contextHolder] = Modal.useModal();
     const [loading, setLoading] = useState(false);
-    const [selectedRow, setSelectedRow] = useState([]);
     const [tableData,setTableData] = useState<object[]>([])
     const [page,setPage] = useState({
         current:1,
@@ -76,9 +68,7 @@ function MerchantManage() {
             dataIndex: 'equityStatus',
             width: 140,
             render: (cell:number,row:any) => (
-                    cell === 4 ?
-                            <Tag color={ equityStatusList[cell].color }>{ equityStatusList[cell].label }</Tag> :
-                            <Tag color={ equityStatusList[cell].color }>{ equityStatusList[cell].label }</Tag>
+                     <Tag color={ statusList[cell].color }>{ statusList[cell].label }</Tag>
             )
         },
         {
@@ -89,12 +79,12 @@ function MerchantManage() {
             render: (cell:number,row:any) => (
                     <div className="table-button">
                         <Popconfirm
-                                title="确定禁用该用户账号吗"
+                                title={`确定${ row.status == 0 ? '禁用': row.status == 1 ? '启用' : '解锁' }该用户账号吗`}
                                 onConfirm={ () => handleOff(row) }
                                 okText="确定"
                                 cancelText="取消"
                         >
-                            <Button type="link">禁用</Button>
+                            <Button type="link">{ row.status == 0 ? '禁用': row.status == 1 ? '启用' : '解锁' }</Button>
                         </Popconfirm>
                         <Button type="link" onClick={ () =>handleLink(row) }>编辑</Button>
                         <Button type="link" onClick={ () =>handleDelete(row) }>删除</Button>
@@ -115,27 +105,71 @@ function MerchantManage() {
 
     const handleOff = (row:any)=>{
         let _data = {
-            ids:selectedRow
+            id:row.id,
+            status:row.status == 0 ? 1: row.status == 1 ? 0 : 2
         }
-        merchantUserOff(_data).then(data => {
-
+        merchantUserOff(_data).then((data:any) => {
+            message.success(`${ row.status == 0 ? '禁用': row.status == 1 ? '启用' : '解锁' }成功`);
+            handleQuery();
         })
     }
     const handleDelete = (row:any)=>{
         let _data = {
-            ids:selectedRow
+            id:row.id
         }
-        merchantUserDelete(_data).then(data => {
-
-        })
+        modal.confirm({
+            icon:<ExclamationCircleOutlined />,
+            title: '删除确认',
+            content: `确认要删除商户【${ row.plateNo }】吗`,
+            onOk: () => {
+                merchantUserDelete(_data).then((data:any) => {
+                    message.success('删除成功');
+                    handleQuery();
+                })
+            },
+            onCancel() {
+                console.log('Cancel');
+            },
+        });
     }
     const handleReset = (row:any)=>{
         let _data = {
-            ids:selectedRow
+            id:row.id
         }
-        merchantUserReset(_data).then(data => {
+        modal.confirm({
+            title: '重置密码确认',
+            content: `确认要重置商户【${ row.plateNo }】密码吗`,
+            onOk: () => {
+                merchantUserReset(_data).then((data:any) => {
+                    message.success('重置成功');
+                    modal.success({
+                        title: '用户密码已重置',
+                        className:'import-dialog-container',
+                        content: (
+                                <div className="import-dialog-wrapper password-dialog-wrapper">
+                                    <div className="import-cell">
+                                        <p>请使用下方账号和默认密码登录系统</p>
+                                        <div className="import-content">
+                                            <p><span>登录地址：</span>{ data.data.loginUserAddress }</p>
+                                            <p><span>用户账号：</span>{ data.data.userName }</p>
+                                            <p><span>默认密码：</span>{ data.data.password }</p>
+                                        </div>
+                                    </div>
+                                </div>
+                        ),
+                        onOk: () => {
 
-        })
+                        },
+                        onCancel() {
+                            console.log('Cancel');
+                        },
+                    });
+                })
+            },
+            onCancel() {
+                console.log('Cancel');
+            },
+        });
     }
     const handleSale =  (row:any) => {
         history.push('merchant/sale?merchantUserId='+ row.id);
@@ -149,19 +183,18 @@ function MerchantManage() {
             ...page,
             current:1
         });
-        setSelectedRow([]);
         form.submit();
     };
     const handleSearch = (values:any) => {
         console.log(page)
         let { name,username,address,contact,phone,region } = values,
-                [province, city, county]= region || [];
+                [province, city, area]= region || [];
         list({
             name,
             username,
             province,
             city,
-            county,
+            area,
             address,
             contact,
             phone
@@ -258,6 +291,7 @@ function MerchantManage() {
                             dataSource={ tableData }
                             pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,...page, showTotal: showTotal }} />
                 </div>
+                { contextHolder }
             </div>
     );
 }
