@@ -43,9 +43,9 @@ export const roleList= (params:any) => fetch(site.base + '/industryLoginRole/lis
     params
 });
 
-export const roleAdd= (params:any) => fetch(site.base + '/industryLoginRole/insert' ,{
-    type: 'get',
-    params
+export const roleAdd= (data:any) => fetch(site.base + '/industryLoginRole/insert' ,{
+    type: 'post',
+    data
 });
 
 export const roleUpdate= (data:any) => fetch(site.base + `/industryLoginRole/updateRole` ,{
@@ -54,13 +54,11 @@ export const roleUpdate= (data:any) => fetch(site.base + `/industryLoginRole/upd
 });
 
 export const roleDelete= (data:any) => fetch(site.base + `/industryLoginRole/deleteRole/${data.id}` ,{
-    type: 'post',
-    data
+    type: 'post'
 });
 
-export const roleGet= (params:any) => fetch(site.base + `/industryLoginRole/getRole/${params.id}` ,{
-    type: 'get',
-    params
+export const roleGet= (data:any) => fetch(site.base + `/industryLoginRole/getRole/${data.id}` ,{
+    type: 'get'
 });
 
 export const getRoleMenu= (params:any) => fetch(site.base + `/industryLoginRole/getRoleMenu` ,{

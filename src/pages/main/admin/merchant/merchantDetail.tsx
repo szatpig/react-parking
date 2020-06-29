@@ -47,11 +47,13 @@ function StoreDetail(props:Props) {
     const{ userToken } = props
 
     const onFinish = (values:any) => {
-        let { plateNo,plateColor,equityConfigId,whitelistUri,expirationTime,parkIdList } =  values
+        let { region,...others } =  values,
+        [province, city, area]= region || [];
         if(id === 0){
             let _data ={
-                plateNo,
-                equityConfigId
+                commercialUserId:id,
+                ...others,
+                province, city, area
             }
             merchantUserUpdate(_data).then((data:any) => {
                 message.success('编辑成功');
@@ -59,8 +61,8 @@ function StoreDetail(props:Props) {
             })
         }else{
             let _data ={
-                whitelistUri,
-                equityConfigId
+                ...others,
+                province, city, area
             }
             merchantUserAdd(_data).then((data:any) => {
                 message.success('添加成功');
@@ -194,7 +196,7 @@ function StoreDetail(props:Props) {
                         <Col span={8}>
                             <Form.Item name="phone" { ...layout } label="联系电话" rules={[
                                 { required: true,whitespace: true },
-                                { pattern: /^(((\d{2}-)?0\d{2,3}-?\d{7,8})|((\d{2}-)?(\d{2,3}-)?([1][3-9][0-9]\d{8})))$/g}
+                                { pattern: /^(((\d{2}-)?0\d{2,3}-?\d{7,8})|((\d{2}-)?(\d{2,3}-)?([1][3-9][0-9]\d{8})))$/g,message:'请输入联系电话'}
                             ]}>
                                 <Input maxLength={ 15 } placeholder="请输入联系电话" />
                             </Form.Item>

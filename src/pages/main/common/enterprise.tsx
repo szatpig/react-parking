@@ -6,7 +6,7 @@ import {Form, Input, Button, Modal, Row, Col, message } from 'antd';
 
 import site from '@/utils/config'
 import { userLoginOutAction } from "@/store/actions/user";
-import { updateIndustryLoginUserPwd,getCommercialUser,getMerchantUser } from "@/api/common-api";
+import { updateCommonUserPwd, getCommonCommercialUser, getCommonMerchantUser } from '@/api/common-api';
 
 const layout = {
     labelCol: { span: 7 },
@@ -52,37 +52,37 @@ function EnterpriseAccount(props:Props) {
     const spanStyle = {
         flex: currentAuthority ==='admin' ? '100px' : '220px'
     }
+
     const handleSubmit = () => {
-        passwordForm.validateFields().then(values => {
+        passwordForm.validateFields().then((values:any) => {
             let _data = {
                 ...values
             }
-            updateIndustryLoginUserPwd(_data).then((data:any) => {
-
+            updateCommonUserPwd(_data).then((data:any) => {
                 passwordForm.resetFields();
                 message.success('密码修改成功,请重新登录')
                 loginOut();
-            }).catch(err =>{
+            }).catch(() =>{
 
             })
-        }).catch(info => {
-            console.log('Validate Failed:', info);
-        });
-    };
+        }).catch(() => {
+
+        })
+    }
 
     const loginOut = () => {
         userLoginOutAction();
-        history.push('/etc-verification/login')
+        history.push('/login')
     }
 
     const getUserInfo = () => {
         let _data ={}
         if(currentAuthority==='admin'){
-            getCommercialUser(_data).then((data:any) => {
+            getCommonCommercialUser(_data).then((data:any) => {
                 setUserInfo(data.data)
             })
         }else{
-            getMerchantUser(_data).then((data:any) => {
+            getCommonMerchantUser(_data).then((data:any) => {
                 setUserInfo(data.data)
             })
         }
@@ -151,7 +151,7 @@ function EnterpriseAccount(props:Props) {
                                                 <p>
                                                     {
                                                         userInfo.pictures.map((item:any) => (
-                                                                <img onClick={ () => handleView(item) } src={ Img.code } alt="商户图片"/>
+                                                                <img onClick={ () => handleView(item) } src={ item } alt="商户图片"/>
                                                         ))
                                                     }
                                                 </p>
@@ -163,7 +163,7 @@ function EnterpriseAccount(props:Props) {
                                                 <p>
                                                     {
                                                         userInfo.certificateList.map((item:any) => (
-                                                                <img onClick={ () => handleView(item) } src={ Img.code } alt="营业执照"/>
+                                                                <img onClick={ () => handleView(item) } src={ item } alt="营业执照"/>
                                                         ))
                                                     }
                                                 </p>
@@ -175,7 +175,7 @@ function EnterpriseAccount(props:Props) {
                                                 <p>
                                                     {
                                                         userInfo.permitList.map((item:any) => (
-                                                                <img onClick={ () => handleView(item) } src={ Img.code } alt="开户许可证"/>
+                                                                <img onClick={ () => handleView(item) } src={ item } alt="开户许可证"/>
                                                         ))
                                                     }
                                                 </p>

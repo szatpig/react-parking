@@ -1,10 +1,7 @@
 // Created by szatpig at 2020/6/16.
 import React, {useState, useEffect} from 'react';
-import { useHistory } from "react-router-dom";
 
-import moment from 'moment';
-
-import {Form, Input, Button, Modal, DatePicker, Select, Table, Tag, Radio, message, Tree, InputNumber, Popconfirm} from 'antd';
+import {Form, Input, Button, Modal, Table,  message, Tree} from 'antd';
 import {
     roleList,
     roleAdd,
@@ -16,9 +13,7 @@ import {
     userUpdate, userDelete, userOff, userReset
 } from '@/api/admin/system-api'
 
-import { ExclamationCircleFilled } from '@ant-design/icons';
-
-import {validRevokeAvailable} from "@/api/industryUser/white-api";
+import { ExclamationCircleFilled,ExclamationCircleOutlined } from '@ant-design/icons';
 
 
 const layout = {
@@ -29,7 +24,7 @@ const layout = {
 
 function RoleManage() {
     const [loading, setLoading] = useState(false);
-    const [selectedRow, setSelectedRow] = useState([]);
+    const [modal, contextHolder] = Modal.useModal();
     const [tableData,setTableData] = useState<object[]>([])
     const [page,setPage] = useState({
         current:1,
@@ -40,41 +35,7 @@ function RoleManage() {
     const [id,setId] = useState('');
     const [confirmLoading, setConfirmLoading] = useState(false);
     //tree
-    const [treeData ,setTreeData ] = useState([
-        {
-            key:1,
-            title:'销售管理'
-        },{
-            key:2,
-            title:'销售记录'
-        },
-        {
-            key:3,
-            title:'商家管理'
-        },
-        {
-            key:4,
-            title:'人工核销'
-        },
-        {
-            key:5,
-            title:'系统管理',
-            children:[
-                {
-                    key:6,
-                    title:'用户管理'
-                },
-                {
-                    key:7,
-                    title:'角色管理'
-                },
-                {
-                    key:8,
-                    title:'企业账户'
-                },
-            ]
-        }
-    ]);
+    const [treeData ,setTreeData ] = useState<any[]>([]);
 
 
     const [checkedKeys, setCheckedKeys] = useState<number[]>([]);
@@ -103,7 +64,7 @@ function RoleManage() {
             width: 245,
             render: (cell:number,row:any) => (
                     <div className="table-button">
-                        <Button type="link" onClick={ () =>handleShow(row) }>编辑</Button>
+                        <Button type="link" onClick={ () =>handleShow(row.id) }>编辑</Button>
                         <Button type="link" onClick={ () =>handleDelete(row) }>删除</Button>
                     </div>
             ),
@@ -119,31 +80,49 @@ function RoleManage() {
 
     const handleDelete = (row:any)=>{
         let _data = {
-            ids:selectedRow
+            id:row.id
         }
-        userDelete(_data).then((data:any) => {
+        modal.confirm({
+            icon:<ExclamationCircleOutlined />,
+            title: '删除确认',
+            content: `确认要删除角色【${ row.roleName }】吗`,
+            onOk: () => {
+                roleDelete(_data).then((data:any) => {
+                    message.success('删除成功');
+                    handleQuery();
+                })
+            },
+            onCancel() {
+                console.log('Cancel');
+            },
+        });
 
-        })
     }
     const handleShow =  (id:number) => {
         setShow(true)
+        setCheckedKeys([])
+        modalForm.resetFields();
         if(id){
-            setId(id.toString());
+            console.log(id)
+            roleGet({
+                id:id
+            }).then((data:any) =>{
+                modalForm.setFieldsValue({
+                    ...data.data
+                })
+                setCheckedKeys(data.data.permissionIds)
+                setId(id.toString());
+            });
         }else{
             setId('');
         }
-        modalForm.setFieldsValue({
-            authority:[7]
-        })
-
-        form.resetFields()
     };
 
     //modal
     //----tree
     const onCheck = (checkedKeys:any) => {
         console.log('onCheck', checkedKeys);
-        setCheckedKeys(checkedKeys);
+        setCheckedKeys(checkedKeys.checked);
     };
     const handleCancel = () => {
         console.log('Clicked cancel button');
@@ -153,25 +132,32 @@ function RoleManage() {
         setConfirmLoading(true);
         modalForm.validateFields().then((values:any) => {
             let _data ={
-                ...values
+                ...values,
+                permissionIds:checkedKeys
             }
             if(!!!id){
                 roleAdd(_data).then((data:any) => {
                     message.success('保存成功');
                     setShow(false);
                     setConfirmLoading(false);
-                    form.submit();
-                })
+                    setId('');
+                    handleQuery();
+                }).catch(() => {
+                    setConfirmLoading(false);
+                });
             }else{
                 roleUpdate({
                     id,
-                    _data
+                    ..._data
                 }).then((data:any) => {
                     message.success('编辑成功');
                     setShow(false);
                     setConfirmLoading(false);
-                    form.submit();
-                })
+                    setId('');
+                    handleQuery();
+                }).catch(() => {
+                    setConfirmLoading(false);
+                });
             }
         }).catch(info => {
             setConfirmLoading(false);
@@ -185,16 +171,12 @@ function RoleManage() {
             ...page,
             current:1
         });
-        setSelectedRow([]);
         form.submit();
     };
     const handleSearch = (values:any) => {
         console.log(values)
-        let { couponNo,plateNo,couponStatus,equityGrantTime } = values,
-                [startTime,endTime] = equityGrantTime || [];
-
         list({
-            couponNo,plateNo,couponStatus
+            ...values
         })
     }
     const pagesChange = (current:number,pageSize:any) => {
@@ -240,9 +222,28 @@ function RoleManage() {
         let _data={
         };
         getRoleMenu(_data).then((data:any) => {
-            setTreeData(data.data.list);
+            setTreeData(flat(data.data));
         })
     };
+
+    function flat(args:[]) {
+        var pathArr:any[] = []
+        args.map((item:any)=>{
+            if(item.children&&item.children.length > 0){
+                pathArr.push({
+                    key:item.id,
+                    title:item.title,
+                    children:flat(item.children)
+                })
+            }else{
+                pathArr.push({
+                    key:item.id,
+                    title:item.title
+                });
+            }
+        })
+        return pathArr
+    }
 
     useEffect(() => {
         //do something
@@ -284,7 +285,7 @@ function RoleManage() {
                             pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,showSizeChanger:true,...page, showTotal: showTotal }}/>
                 </div>
                 <Modal
-                        title={ id ? '编辑折扣':'添加折扣'}
+                        title={ id ? '编辑角色':'添加角色'}
                         visible={ show }
                         className="common-dialog"
                         onOk={ handleSubmit }
@@ -294,14 +295,14 @@ function RoleManage() {
                         onCancel={ handleCancel }>
                     <Form {...layout} form={ modalForm }>
                         <Form.Item name="roleName" label="角色名称"  rules={[{ required: true,whitespace: true,pattern:/^[a-zA-Z]+[\w]{2,19}$/, message: '请输入以字母开头3-20位，可包含数字、字母、下划线' },]}>
-                            <Input maxLength={ 20 } disabled={ !!id } placeholder="请输入以字母开头3-20位，可包含数字、字母、下划线" />
+                            <Input maxLength={ 20 } placeholder="请输入以字母开头3-20位，可包含数字、字母、下划线" />
                         </Form.Item>
                         <Form.Item name="roleDesc" label="备注" rules={ [
                             { required: true, whitespace: true, message: '请输入非空内容' }
                         ] }>
                             <Input.TextArea rows={ 3 } maxLength={ 100 } />
                         </Form.Item>
-                        <Form.Item name="permissionIds" required label="权限" valuePropName="checkedKeys">
+                        <Form.Item name="permissionIds" required label="权限">
                             <Tree
                                     checkable
                                     checkStrictly={true}
@@ -313,6 +314,7 @@ function RoleManage() {
                         </Form.Item>
                     </Form>
                 </Modal>
+                { contextHolder }
             </div>
     );
 }

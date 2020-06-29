@@ -13,17 +13,17 @@ export const getPublicKey= (params:any) => fetch(site.base + '/permission/getPub
     params
 });
 
-export const updateIndustryLoginUserPwd= (data:any) => fetch(site.base + '/businessAccount/updateIndustryLoginUserPwd' ,{
+export const updateCommonUserPwd = (data:any) => fetch(site.base + '/businessAccount/updateIndustryLoginUserPwd' ,{
     type: 'post',
     data
 });
 
-export const getCommercialUser= (data:any) => fetch(site.base + '/commercialUser/getCommercialUser' ,{
+export const getCommonCommercialUser= (data:any) => fetch(site.base + '/commercialUser/getCommercialUser' ,{
     type: 'post',
     data
 });
 
-export const getMerchantUser= (data:any) => fetch(site.base + '/merchantUser/getMerchantUser' ,{
+export const getCommonMerchantUser= (data:any) => fetch(site.base + '/merchantUser/getMerchantUser' ,{
     type: 'post',
     data
 });

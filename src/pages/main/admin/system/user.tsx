@@ -1,12 +1,18 @@
 // Created by szatpig at 2020/6/16.
 import React, {useState, useEffect} from 'react';
-import { useHistory } from "react-router-dom";
 
-import {Form, Input, Button, Modal, Select, Table, Tag, Radio, message, Popconfirm} from 'antd';
-import { userList, userDelete, userAdd, userUpdate, userOff, userReset, userGetRoleList } from '@/api/admin/system-api'
+import { Form, Input, Button, Modal, Select, Table, Tag, Radio, message, Popconfirm } from 'antd';
+import {
+    userList,
+    userDelete,
+    userAdd,
+    userUpdate,
+    userOff,
+    userReset,
+    userGetRoleList
+} from '@/api/admin/system-api'
 
 import { ExclamationCircleFilled } from '@ant-design/icons';
-import Dayjs from 'dayjs';
 
 const layout = {
     labelCol: { span: 5 },
@@ -17,29 +23,21 @@ const { Option } = Select;
 
 const equityStatusList:any = {
     0:{
-        label:'未使用',
-        color:'blue',
-    },
-    1:{
-        label:'已领取',
+        label:'正常',
         color:'green',
     },
+    1:{
+        label:'禁用',
+        color:'warning',
+    },
     2:{
-        label:'核销完成',
-        color:'default',
-    },
-    3:{
-        label:'已过期',
-        color:'default',
-    },
-    4:{
-        label:'已撤销',
+        label:'锁定',
         color:'default',
     }
 }
 function UserManage() {
     const [loading, setLoading] = useState(false);
-    const [selectedRow, setSelectedRow] = useState([]);
+    const [modal, contextHolder] = Modal.useModal();
     const [tableData,setTableData] = useState<object[]>([])
     const [page,setPage] = useState({
         current:1,
@@ -94,12 +92,12 @@ function UserManage() {
             render: (cell:number,row:any) => (
                     <div className="table-button">
                         <Popconfirm
-                                title="确定禁用该用户账号吗"
+                                title={`确定${ row.status == 0 ? '禁用': row.status == 1 ? '启用' : '解锁' }该用户账号吗`}
                                 onConfirm={ () => handleOff(row) }
                                 okText="确定"
                                 cancelText="取消"
                         >
-                            <Button type="link">禁用</Button>
+                            <Button type="link">{ row.status == 0 ? '禁用': row.status == 1 ? '启用' : '解锁' }</Button>
                         </Popconfirm>
                         <Button type="link" onClick={ () =>handleShow(row) }>编辑</Button>
                         <Button type="link" onClick={ () =>handleDelete(row) }>删除</Button>
@@ -113,48 +111,92 @@ function UserManage() {
     const [ form ] = Form.useForm();
     const [ modalForm ] = Form.useForm();
 
-    const history = useHistory()
-
     const onFormLayoutChange = ({  }) => {
         // setFormLayout(layout);
     };
 
     const handleOff = (row:any)=>{
         let _data = {
-            ids:selectedRow
+            id:row.id,
+            status:row.status == 0 ? '1': row.status == 1 ? '0' : '2'
         }
         userOff(_data).then((data:any) => {
-
+            message.success(`${ row.status == 0 ? '禁用': row.status == 1 ? '启用' : '解锁' }成功`);
+            handleQuery();
         })
     }
     const handleDelete = (row:any)=>{
         let _data = {
-            ids:selectedRow
+            id:row.id
         }
-        userDelete(_data).then((data:any) => {
-
-        })
+        modal.confirm({
+            title: '删除确认',
+            content: `确认要删除用户【${ row.userName }】吗`,
+            onOk: () => {
+                userDelete(_data).then((data:any) => {
+                    message.success('删除成功');
+                    handleQuery();
+                })
+            },
+            onCancel() {
+                console.log('Cancel');
+            },
+        });
     }
     const handleReset = (row:any)=>{
         let _data = {
-            ids:selectedRow
+            id:row.id
         }
-        userReset(_data).then((data:any) => {
+        modal.confirm({
+            title: '重置密码确认',
+            content: `确认要重置用户【${ row.userName }】密码吗`,
+            onOk: () => {
+                userReset(_data).then((data:any) => {
+                    message.success('重置成功');
+                    modal.success({
+                        title: '用户密码已重置',
+                        className:'import-dialog-container',
+                        content: (
+                                <div className="import-dialog-wrapper password-dialog-wrapper">
+                                    <div className="import-cell">
+                                        <p>请使用下方账号和默认密码登录系统</p>
+                                        <div className="import-content">
+                                            <p><span>登录地址：</span>{ data.data.loginUserAddress }</p>
+                                            <p><span>用户账号：</span>{ data.data.userName }</p>
+                                            <p><span>默认密码：</span>{ data.data.password }</p>
+                                        </div>
+                                    </div>
+                                </div>
+                        ),
+                        onOk: () => {
 
-        })
+                        },
+                        onCancel() {
+                            console.log('Cancel');
+                        },
+                    });
+                })
+            },
+            onCancel() {
+                console.log('Cancel');
+            },
+        });
     }
 
 
 
     //modal
-    const handleShow =  (id:number) => {
+    const handleShow =  (row:any) => {
         setShow(true)
-        if(id){
-            setId(id.toString());
+        modalForm.resetFields();
+        if(!!row){
+            modalForm.setFieldsValue({
+                ...row
+            })
+            setId(row.id.toString());
         }else{
             setId('');
         }
-        form.resetFields()
     };
     const handleSubmit = () => {
         setConfirmLoading(true);
@@ -167,18 +209,45 @@ function UserManage() {
                     message.success('保存成功');
                     setShow(false);
                     setConfirmLoading(false);
-                    form.submit();
-                })
+                    modal.success({
+                        title: '用户密码已重置',
+                        className:'import-dialog-container',
+                        content: (
+                                <div className="import-dialog-wrapper password-dialog-wrapper">
+                                    <div className="import-cell">
+                                        <p>请使用下方账号和默认密码登录系统</p>
+                                        <div className="import-content">
+                                            <p><span>登录地址：</span>{ data.data.loginUserAddress }</p>
+                                            <p><span>用户账号：</span>{ data.data.userName }</p>
+                                            <p><span>默认密码：</span>{ data.data.password }</p>
+                                        </div>
+                                    </div>
+                                </div>
+                        ),
+                        onOk: () => {
+
+                        },
+                        onCancel() {
+                            console.log('Cancel');
+                        },
+                    });
+                    handleQuery();
+                }).catch(() => {
+                    setConfirmLoading(false);
+                });
             }else{
                 userUpdate({
                     id,
-                    _data
+                    ..._data
                 }).then((data:any) => {
                     message.success('编辑成功');
                     setShow(false);
                     setConfirmLoading(false);
-                    form.submit();
-                })
+                    setId('');
+                    handleQuery();
+                }).catch(() => {
+                    setConfirmLoading(false);
+                });
             }
 
         }).catch(info => {
@@ -196,19 +265,11 @@ function UserManage() {
             ...page,
             current:1
         });
-        setSelectedRow([]);
         form.submit();
     };
     const handleSearch = (values:any) => {
         console.log(values)
-        let { couponNo,plateNo,couponStatus,equityGrantTime } = values,
-                [startTime,endTime] = equityGrantTime || [];
-
-        list({
-            couponNo,plateNo,couponStatus,
-            startTime:startTime && Dayjs(startTime).format('YYYY-MM-DD HH:mm:ss'),
-            endTime:endTime && Dayjs(endTime).format('YYYY-MM-DD HH:mm:ss')
-        })
+        list(values)
     }
     const pagesChange = (current:number,pageSize:any) => {
         setPage({
@@ -248,17 +309,18 @@ function UserManage() {
             setLoading(false)
         })
     };
-    const getRolelist = (args?:object) => {
+    const getRoleList = (args?:object) => {
         let _data ={
 
         }
-        userList(_data).then((data:any) => {
-            setRoleList(data.data.list)
+        userGetRoleList(_data).then((data:any) => {
+            setRoleList(data.data)
         })
     };
     useEffect(() => {
         //do something
         list();
+        getRoleList();
     },[]);
 
 
@@ -325,7 +387,7 @@ function UserManage() {
                             <Input maxLength={ 15 } placeholder="请输入联系方式" />
                         </Form.Item>
                         <Form.Item label="角色" name="roleId" rules={[
-                            { required: true,whitespace: true,message:"请选择角色" }
+                            { required: true,whitespace: true, type:'number',message:"请选择角色" }
                         ]}>
                             <Select
                                     placeholder="请选择角色"
@@ -339,6 +401,7 @@ function UserManage() {
                         </Form.Item>
                     </Form>
                 </Modal>
+                { contextHolder }
             </div>
     );
 }
