@@ -124,9 +124,9 @@ function CouponList() {
     const handleSubmit = () => {
         setConfirmLoading(true);
         modalForm.validateFields().then((values:any) => {
-            const { id:commercialUserCouponId } = merchantInfo;
+            const { id:merchantUserCouponId } = merchantInfo;
             let _data ={
-                commercialUserCouponId,
+                merchantUserCouponId,
                 ...values
             }
             provideCustomerCoupon(_data).then((data:any) => {

@@ -84,7 +84,7 @@ const Verification = forwardRef((props:any,ref:any) => { //react hooks 通过 fo
         }
     }));
     const [visible, setVisible] = useState(false);
-    const [tableData,setTableData] = useState<object[]>([{}]);
+    const [tableData,setTableData] = useState<object[]>([]);
     const [index,setIndex] = useState<number>(-1);
 
     const handleSelect = (i:number) => {
@@ -104,7 +104,7 @@ const Verification = forwardRef((props:any,ref:any) => { //react hooks 通过 fo
             plateNo
         };
         humanVerifyList(_data).then((data:any) => {
-            setTableData(data.data)
+            setTableData(data.data.list)
         })
     };
 
@@ -131,13 +131,13 @@ const Verification = forwardRef((props:any,ref:any) => { //react hooks 通过 fo
                         </div>
                         <div className="list-item">
                             {
-                                tableData.length ?
+                                tableData.length > 0 ?
                                         <>
                                             {
                                                 tableData.map((item:any) => {
                                                        return(
                                                            <div key={ item.id } className={`ticket-wrap ${ index == item.id ? 'selected' : null}`} onClick={ ()=> handleSelect(item.id) }>
-                                                               <p className="ticket-title">couponTypeList[item.couponType]
+                                                               <p className="ticket-title">{ couponTypeList[item.couponType] }
                                                                    { item.couponType === 'FIX_DEDUCT' && <i>（{ item.couponAmount } 元）</i> }
                                                                    { item.couponType === 'DISCOUNT_DEDUCT' && <i>（上限{ item.couponAmount } 元）</i> }
                                                                    { item.couponType === 'TIME_DEDUCT' && <i>（上限{ item.couponAmount } 元）</i> }
