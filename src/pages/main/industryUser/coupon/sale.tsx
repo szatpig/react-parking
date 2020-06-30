@@ -28,6 +28,11 @@ const couponTypeList:any = [
         value:'TIME_DEDUCT',
     }
 ]
+const couponTypeText:any = {
+    FIX_DEDUCT:'固定抵扣金额券',
+    DISCOUNT_DEDUCT:'按比例折扣',
+    TIME_DEDUCT:'次数抵扣',
+}
 
 const columns = [
     {
@@ -39,7 +44,12 @@ const columns = [
     },
     {
         title: '优惠券类型',
-        dataIndex: 'couponType'
+        dataIndex: 'couponType',
+        render: (cell:number,row:any) => (
+                <span>
+                    { couponTypeText[cell] }
+                </span>
+        )
     },
     {
         title: '折扣',

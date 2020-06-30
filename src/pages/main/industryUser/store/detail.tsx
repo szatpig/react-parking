@@ -105,9 +105,9 @@ function StoreDetail(props:Props) {
                 uid:item.id,
                 url:site.imagesUrl + item.image
             }))
-            // setPicturesLists(pictures)
-            // setCertificateLists(certificateList)
-            // setPermitLists(permitList)
+            setPicturesLists(pictures)
+            setCertificateLists(certificateList)
+            setPermitLists(permitList)
             submitForm.setFieldsValue({
                 ...others,
                 pictures,
@@ -134,7 +134,7 @@ function StoreDetail(props:Props) {
 
     const onFileChange= ({ file,fileList,event }:any) => {
 
-        // console.log('onFileChange',fileList,file);
+        console.log('onFileChange',fileList,event);
         // if(file.status === 'done'){
         //     const { response } = file;
         //     if(response.status === 1000){
@@ -145,22 +145,24 @@ function StoreDetail(props:Props) {
     };
     const handlePreview= (file:any) => {
         console.log(file)
-        modal.success({
+        modal.info({
             title: '图片查看',
+            width:540,
             className:'import-dialog-container',
             content: (
-                    <div className="import-dialog-wrapper password-dialog-wrapper">
-
+                    <div className="import-dialog-wrapper img-dialog-wrapper">
+                        <img src={ file.url } />
                     </div>
-            ),
-            onOk: () => {
-                history.replace('/home/store')
-            }
+            )
         });
     };
     const normFile = ({ file,fileList,event }:any) => {
-        console.log(1111,file)
+        // console.log(1111,file)
         if(file.status === 'uploading') return false;
+        if(file.status === 'removed'){
+            setPicturesLists(fileList)
+            return false;
+        }
         const { response } = file;
         console.log('normFile',fileList);
         if(response){
@@ -241,7 +243,6 @@ function StoreDetail(props:Props) {
                                 headers = {{ token:userToken }}
                                 showUploadList={ true }
                                 listType="picture-card"
-                                fileList={ certificateLists }
                                 beforeUpload = { handleBeforeUpload }
                                 onPreview={ handlePreview }
                                 onChange={ onFileChange }>
@@ -262,6 +263,7 @@ function StoreDetail(props:Props) {
                                 fileList={ certificateLists }
                                 listType="picture-card"
                                 beforeUpload = { handleBeforeUpload }
+                                onPreview={ handlePreview }
                                 onChange={ onFileChange }>
                             <Button>上传图片</Button>
                         </Upload>
@@ -280,6 +282,7 @@ function StoreDetail(props:Props) {
                                 fileList={ permitLists }
                                 listType="picture-card"
                                 beforeUpload = { handleBeforeUpload }
+                                onPreview={ handlePreview }
                                 onChange={ onFileChange }>
                             <Button>上传图片</Button>
                         </Upload>
