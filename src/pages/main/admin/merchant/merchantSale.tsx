@@ -69,13 +69,21 @@ function MerchantSale() {
         setId('');
         form.resetFields()
     }
-    const handleEdit = (data:any) => {
+    const handleEdit = (row:any) => {
         setShow(true)
-        setId(data.id);
-        form.setFieldsValue({
-            ...data
+        setId(row.id);
+        merchantDiscountGet({
+            id:row.id
+        }).then((data:any) =>{
+            const { startTime, deadlineTime, ...others } = data.data
+            form.setFieldsValue({
+                startTime:Dayjs(startTime),
+                deadlineTime:Dayjs(deadlineTime),
+                ...others
+            })
         })
-        console.log(data)
+
+        console.log(row)
     }
     const handleDelete = (row:any) => {
         let _data ={
@@ -91,7 +99,7 @@ function MerchantSale() {
         let _data ={
             id:row.id
         }
-        merchantDiscountDelete(_data).then(data =>{
+        merchantDiscountGet(_data).then(data =>{
 
         })
     }
@@ -136,12 +144,10 @@ function MerchantSale() {
             console.log('Validate Failed:', info);
         });
     };
-
     const handleCancel = () => {
         console.log('Clicked cancel button');
         setShow(false)
     };
-
     const handleQuery = () => {
         setPage({
             ...page,
@@ -191,10 +197,10 @@ function MerchantSale() {
         };
         setLoading(true)
         merchantDiscountList(_data).then((data:any) => {
-            setTableData(data.data.customerEquityList.list);
+            setTableData(data.data.list);
             setPage({
                 ...page,
-                total:data.data.customerEquityList.total
+                total:data.data.total
             })
             setLoading(false)
         }).catch(err => {
@@ -237,12 +243,7 @@ function MerchantSale() {
                         confirmLoading={ confirmLoading }
                         onCancel={ handleCancel }>
                     <Form form={ form } initialValues={{
-                        discountList:[
-                            {
-                                sales:'',
-                                discount:''
-                            }
-                        ]
+                        discountList:[{sales: 100, discount: 0.9}, {sales: 200, discount: 0.8}, {sales: 300, discount: 0.7}]
                     }}>
                         <Row className="form-grid" justify="start" gutter={[20, 0]}>
                             <Col span={ 24 }>
@@ -294,74 +295,72 @@ function MerchantSale() {
                                 <Form.List name="discountList">
                                     {(fields, { add, remove }) => {
                                         return (
-                                                <div>
-                                                    {fields.map((field, index) => (
+                                            <div>
+                                                {fields.map((field, index) => (
+                                                    <Form.Item
+                                                        label={ index === 0 ? '折扣区间' : '' }
+                                                        required
+                                                        key={ field.key + index }
+                                                        className="field-list-cell">
+                                                        <div className="flex">
                                                             <Form.Item
-                                                                    label={index === 0 ? '折扣区间' : ''}
-                                                                    required
-                                                                    key={ field.key }
-                                                                    className="field-list-cell"
+                                                                    {...field}
+                                                                    label="销售金额/元≤"
+                                                                    name={[field.name, 'sales']}
+                                                                    fieldKey={[field.fieldKey, 'sales']}
+                                                                    rules={[
+                                                                        {required: true, type: 'number', min: 0, max: 99999999, message: '请输入0-99999999值' },
+                                                                        ({ getFieldValue }) => ({
+                                                                            validator(rule, value) {
+                                                                                if (value) {
+                                                                                    if(index > 0 && getFieldValue('discountList')[index-1].sales >= value){
+                                                                                        return Promise.reject('金额需大于上一个值');
+                                                                                    }
+                                                                                    return Promise.resolve();
+                                                                                }
+                                                                                return Promise.reject('');
+                                                                            },
+                                                                        })
+                                                                    ]}
                                                             >
-                                                                <div className="flex">
-                                                                    <Form.Item
-                                                                            {...field}
-                                                                            label="销售金额/元≤"
-                                                                            name={[field.name, 'sales']}
-                                                                            fieldKey={[field.fieldKey, 'sales']}
-                                                                            rules={[
-                                                                                {required: true, type: 'number', min: 0, max: 99999999, message: '请输入0-99999999值' },
-                                                                                ({ getFieldValue }) => ({
-                                                                                    validator(rule, value) {
-                                                                                        if (value) {
-                                                                                            if(index > 0 && getFieldValue('discountList')[index-1].sales >= value){
-                                                                                                return Promise.reject('金额需大于上一个值');
-                                                                                            }
-                                                                                            return Promise.resolve();
-                                                                                        }
-                                                                                        return Promise.reject('');
-                                                                                    },
-                                                                                })
-                                                                            ]}
-                                                                    >
-                                                                        <InputNumber min={0} max={99999999} step={ 5 } parser={(value:any) => parseInt(value) || 0 } maxLength={8} placeholder="请输入"/>
-                                                                    </Form.Item>
-                                                                    <Form.Item
-                                                                            {...field}
-                                                                            label="折扣"
-                                                                            name={[field.name, 'discount']}
-                                                                            fieldKey={[field.fieldKey, 'discount']}
-                                                                            rules={[{required: true, type: 'number', min: 0, max: 1, message: '请输入0-1值' }]}
-                                                                    >
-                                                                        <InputNumber maxLength={8}
-                                                                                     min={0} max={1} step={0.01 } placeholder="请输入"/>
-                                                                    </Form.Item>
-                                                                    {fields.length-1 === index ? (
-                                                                            <PlusSquareOutlined
-                                                                                    className="dynamic-delete-button"
-                                                                                    style={{ fontSize: '22px', margin: '0  0px 0 16px', color: '#ccc' }}
-                                                                                    onClick={() => {
-                                                                                        add();
-                                                                                    }}
-                                                                            />
-                                                                    ) : null}
-                                                                {fields.length > 1 ? (
-                                                                        <MinusSquareOutlined
-                                                                                className="dynamic-delete-button"
-                                                                                style={{ fontSize: '22px', margin: '0 0px 0 16px', color: '#ccc' }}
-                                                                                onClick={() => {
-                                                                                    remove(field.name);
-                                                                                }}
-                                                                        />
-                                                                ) : null}
-                                                                </div>
+                                                                <InputNumber min={0} max={99999999} step={ 5 } parser={(value:any) => parseInt(value) || 0 } maxLength={8} placeholder="请输入"/>
                                                             </Form.Item>
-                                                    ))}
-                                                </div>
+                                                            <Form.Item
+                                                                    {...field}
+                                                                    label="折扣"
+                                                                    name={[field.name, 'discount']}
+                                                                    fieldKey={[field.fieldKey, 'discount']}
+                                                                    rules={[{required: true, type: 'number', min: 0, max: 1, message: '请输入0-1值' }]}
+                                                            >
+                                                                <InputNumber maxLength={8}
+                                                                             min={0} max={1} step={0.01 } placeholder="请输入"/>
+                                                            </Form.Item>
+                                                            {fields.length-1 === index ? (
+                                                                    <PlusSquareOutlined
+                                                                            className="dynamic-delete-button"
+                                                                            style={{ fontSize: '22px', margin: '0  0px 0 16px', color: '#ccc' }}
+                                                                            onClick={() => {
+                                                                                add();
+                                                                            }}
+                                                                    />
+                                                            ) : null}
+                                                            {fields.length > 1 ? (
+                                                                    <MinusSquareOutlined
+                                                                            className="dynamic-delete-button"
+                                                                            style={{ fontSize: '22px', margin: '0 0px 0 16px', color: '#ccc' }}
+                                                                            onClick={() => {
+                                                                                remove(field.name);
+                                                                            }}
+                                                                    />
+                                                            ) : null}
+                                                        </div>
+                                                    </Form.Item>
+                                                ))}
+                                            </div>
                                         );
                                     }}
                                 </Form.List>
                             </Col>
-
                         </Row>
                     </Form>
                 </Modal>

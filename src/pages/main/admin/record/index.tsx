@@ -40,7 +40,7 @@ const colorList:any = ['蓝色','黄色','黑色','白色','渐变绿色','黄�
 
 const columns = [
     {
-        title: '商户名称',
+        title: '商家名称',
         dataIndex: 'merchantUserName',
         width: 200,
         ellipsis:true,
@@ -205,8 +205,8 @@ function SaleRecord() {
                                 onValuesChange={ onFormLayoutChange }
                                 form = { form }
                                 onFinish={ handleSearch }>
-                            <Form.Item label="商户名称" name="merchantUserName">
-                                <Input placeholder="请输入商户名称" maxLength={ 18 } />
+                            <Form.Item label="商户家称" name="merchantUserName">
+                                <Input placeholder="请输入商家名称" maxLength={ 18 } />
                             </Form.Item>
                             <Form.Item label="停车券类型" name="couponType">
                             <Select

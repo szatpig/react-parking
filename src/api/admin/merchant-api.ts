@@ -18,11 +18,11 @@ export const merchantDiscountList= (data:any) => fetch(site.base + '/merchantDis
     data
 });
 
-export const merchantDiscountGet= (data:any) => fetch(site.base + '/merchantDiscountInfo/list' ,{
+export const merchantDiscountGet= (data:any) => fetch(site.base + '/merchantDiscountInfo/get' ,{
     type: 'post',
     data
 });
-export const merchantDiscountDelete= (data:any) => fetch(site.base + '/merchantDiscountInfo/get' ,{
+export const merchantDiscountDelete= (data:any) => fetch(site.base + '/merchantDiscountInfo/remove' ,{
     type: 'post',
     data
 });
