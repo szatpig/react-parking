@@ -45,7 +45,7 @@ function StoreDetail(props:Props) {
     const onFinish = (values:any) => {
         let { region,username,...others } =  values,
         [province, city, area]= region || [];
-        if(!!id){
+        if(id > 0){
             let _data ={
                 id,
                 ...others,
@@ -87,7 +87,7 @@ function StoreDetail(props:Props) {
 
     const getMerchantUserInfo = (id:number) => {
         console.log(id);
-        if(!id) return false;
+        if(id < 1 ) return false;
         let _data ={
             id
         }
@@ -110,7 +110,7 @@ function StoreDetail(props:Props) {
                 <div className="breadcrumb-container line">
                     <div className="breadcrumb-cell">
                         <div onClick={ () => history.go(-1) }><LeftOutlined />返回</div>
-                        <div>{ !!!id ? '添加商家':'编辑商家' }</div>
+                        <div>{ id < 1 ? '添加商家':'编辑商家' }</div>
                     </div>
                 </div>
                 <Form form={ submitForm }
@@ -160,11 +160,17 @@ function StoreDetail(props:Props) {
                         </Col>
                         <Col span={ 8 } />
                         <Col span={8}>
-                            <Form.Item label="法定代表人/负责人证件编号" { ...layoutMore } name="legalPersonIdNo" rules={[
-                                { required: true, whitespace: true }
-                            ]}>
-                                <Input placeholder="请输入" maxLength={ 8 }/>
+                            <Form.Item label="法定代表人/负责人证件类型" { ...layoutMore } name="legalPersonIdType">
+                                <Select
+                                        placeholder="请选择类型"
+                                        allowClear>
+                                    <Option value="1">身份证</Option>
+                                    <Option value="2">护照</Option>
+                                    <Option value="3">军官证</Option>
+                                    <Option value="4">其他证件</Option>
+                                </Select>
                             </Form.Item>
+
                         </Col>
                         <Col span={8}>
                             <Form.Item label="法定代表人/负责人名称" { ...layoutMore } name="legalPerson" rules={[
@@ -175,19 +181,21 @@ function StoreDetail(props:Props) {
                         </Col>
                         <Col span={ 8 } />
                         <Col span={8}>
-                            <Form.Item label="企业证件编号" { ...layoutMore } name="enterpriseIdNo">
+                            <Form.Item label="法定代表人/负责人证件编号" { ...layoutMore } name="legalPersonIdNo" rules={[
+                                { required: true, whitespace: true }
+                            ]}>
                                 <Input placeholder="请输入" maxLength={ 8 }/>
                             </Form.Item>
                         </Col>
                         <Col span={8}>
-                            <Form.Item label="法定代表人/负责人证件类型" { ...layoutMore } name="legalPersonIdType">
+
+                            <Form.Item label="企业证件类型" { ...layoutMore } name="enterpriseIdType">
                                 <Select
                                         placeholder="请选择类型"
                                         allowClear>
-                                    <Option value="1">身份证</Option>
-                                    <Option value="2">护照</Option>
-                                    <Option value="3">军官证</Option>
-                                    <Option value="4">其他证件</Option>
+                                    <Option value="1">营业执照</Option>
+                                    <Option value="2">组织机构代码证</Option>
+                                    <Option value="3">统一社会信用代码</Option>
                                 </Select>
                             </Form.Item>
                         </Col>
@@ -199,15 +207,10 @@ function StoreDetail(props:Props) {
                         </Col>
 
                         <Col span={8}>
-                            <Form.Item label="企业证件类型" { ...layoutMore } name="enterpriseIdType">
-                                <Select
-                                        placeholder="请选择类型"
-                                        allowClear>
-                                    <Option value="1">营业执照</Option>
-                                    <Option value="2">组织机构代码证</Option>
-                                    <Option value="3">统一社会信用代码</Option>
-                                </Select>
+                            <Form.Item label="企业证件编号" { ...layoutMore } name="enterpriseIdNo">
+                                <Input placeholder="请输入" maxLength={ 8 }/>
                             </Form.Item>
+
                         </Col>
                         <Col span={ 8 } />
                         <Col span={8}>
@@ -225,7 +228,7 @@ function StoreDetail(props:Props) {
                             <Form.Item name="username"  { ...layout }label="商家账号名" rules={[
                                 { required: true,whitespace: true,pattern:/^[a-zA-Z]+[\w]{2,19}$/, message: '请输入以字母开头3-20位，可包含数字、字母、下划线' },
                             ]}>
-                                <Input disabled={ !!id } maxLength={ 20 } placeholder="请输入以字母开头3-20位，可包含数字、字母、下划线" />
+                                <Input disabled={ id > 0 } maxLength={ 20 } placeholder="请输入以字母开头3-20位，可包含数字、字母、下划线" />
                             </Form.Item>
                         </Col>
                         <Col span={ 24 }>

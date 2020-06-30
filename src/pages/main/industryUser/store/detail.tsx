@@ -95,15 +95,15 @@ function StoreDetail(props:Props) {
             region = [province, city, area] || [];
             pictures = pictures.map((item:any) => ({
                 uid:item.id,
-                url:site.exeUrl + item.image
+                url:site.imagesUrl + item.image
             }));
             certificateList = certificateList.map((item:any) => ({
                 uid:item.id,
-                url:site.exeUrl + item.image
+                url:site.imagesUrl + item.image
             }))
             permitList = permitList.map((item:any) => ({
                 uid:item.id,
-                url:site.exeUrl + item.image
+                url:site.imagesUrl + item.image
             }))
             // setPicturesLists(pictures)
             // setCertificateLists(certificateList)
@@ -142,6 +142,21 @@ function StoreDetail(props:Props) {
         //     }
         //
         // }
+    };
+    const handlePreview= (file:any) => {
+        console.log(file)
+        modal.success({
+            title: '图片查看',
+            className:'import-dialog-container',
+            content: (
+                    <div className="import-dialog-wrapper password-dialog-wrapper">
+
+                    </div>
+            ),
+            onOk: () => {
+                history.replace('/home/store')
+            }
+        });
     };
     const normFile = ({ file,fileList,event }:any) => {
         console.log(1111,file)
@@ -226,7 +241,9 @@ function StoreDetail(props:Props) {
                                 headers = {{ token:userToken }}
                                 showUploadList={ true }
                                 listType="picture-card"
+                                fileList={ certificateLists }
                                 beforeUpload = { handleBeforeUpload }
+                                onPreview={ handlePreview }
                                 onChange={ onFileChange }>
                             <Button>上传图片</Button>
                         </Upload>

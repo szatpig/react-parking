@@ -48,12 +48,7 @@ const columns = [
     },
     {
         title: '停车券类型',
-        dataIndex: 'couponType',
-        render: (cell:number,row:any) => (
-                <span>
-                     { couponTypeText[cell] }
-                </span>
-        ),
+        dataIndex: 'couponType'
     },
     {
         title: '折扣',
@@ -130,7 +125,7 @@ function SaleRecord() {
             document.body.appendChild(aLink);
             aLink.style.display='none';
             aLink.target = '_blank'
-            aLink.href = site.base + data.data;
+            aLink.href = site.base + data.data.exportSellLogPath;
             aLink.click();
             document.body.removeChild(aLink);
         })

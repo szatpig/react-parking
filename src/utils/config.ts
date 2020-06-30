@@ -14,7 +14,8 @@ let base='',
     admin='', //中台请求地址
     prefix='/industryUser',
     version='202003091319',
-    exeUrl='http://192.168.88.54'
+    exeUrl='http://192.168.88.54',
+    imagesUrl='http://192.168.88.54'
 
 
 switch (hostname){
@@ -22,7 +23,8 @@ switch (hostname){
     case 'localhost':
         base = 'http://192.168.88.23:8082';
         admin = "http://192.168.88.51:8080"
-        exeUrl = 'http://192.168.88.168'
+        imagesUrl = 'http://192.168.88.168'
+        exeUrl = 'http://192.168.88.23:8082'
         break;
     default:
         base = '';
@@ -35,6 +37,7 @@ config = {
     admin: admin+ '/internal',
     download:'http://192.168.88.71',
     version,
+    imagesUrl,
     exeUrl
 }
 
@@ -44,6 +47,7 @@ interface ConfigInterface {
     upload?: string,
     download?:string,
     version?: string,
+    imagesUrl?: string,
     exeUrl?: string
 }
 

@@ -134,6 +134,8 @@ function CouponList() {
                 setShow(false);
                 setConfirmLoading(false);
                 form.submit();
+            }).catch(err =>{
+                setConfirmLoading(false);
             })
         }).catch(info => {
             setConfirmLoading(false);
