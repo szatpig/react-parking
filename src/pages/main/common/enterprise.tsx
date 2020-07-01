@@ -91,10 +91,10 @@ function EnterpriseAccount(props:Props) {
 
     const handleView = (src:any) => {
         modal.info({
-            title: '查看二维码',
-            className:'view-dialog-container',
+            title: '查看图片',
+            className:'import-dialog-container',
             content: (
-                    <div className="import-dialog-wrapper">
+                    <div className="import-dialog-wrapper img-dialog-wrapper">
                         <img src ={ src } />
                     </div>
             ),
@@ -151,7 +151,7 @@ function EnterpriseAccount(props:Props) {
                                                 <p>
                                                     {
                                                         userInfo.pictures.map((item:any) => (
-                                                                <img onClick={ () => handleView(item) } src={ item } alt="商户图片"/>
+                                                                <img onClick={ () => handleView(site.imagesUrl + item.image) } src={ site.imagesUrl + item.image } alt="商户图片"/>
                                                         ))
                                                     }
                                                 </p>
@@ -163,7 +163,7 @@ function EnterpriseAccount(props:Props) {
                                                 <p>
                                                     {
                                                         userInfo.certificateList.map((item:any) => (
-                                                                <img onClick={ () => handleView(item) } src={ item } alt="营业执照"/>
+                                                                <img onClick={ () => handleView(site.imagesUrl + item.image) } src={ site.imagesUrl + item.image } alt="营业执照"/>
                                                         ))
                                                     }
                                                 </p>
@@ -175,7 +175,7 @@ function EnterpriseAccount(props:Props) {
                                                 <p>
                                                     {
                                                         userInfo.permitList.map((item:any) => (
-                                                                <img onClick={ () => handleView(item) } src={ item } alt="开户许可证"/>
+                                                                <img onClick={ () => handleView(site.imagesUrl + item.image) } src={ site.imagesUrl + item.image } alt="开户许可证"/>
                                                         ))
                                                     }
                                                 </p>

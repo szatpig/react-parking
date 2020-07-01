@@ -23,8 +23,8 @@ switch (hostname){
     case 'localhost':
         base = 'http://192.168.88.23:8082';
         admin = "http://192.168.88.51:8080"
-        imagesUrl = 'http://192.168.88.168'
-        exeUrl = 'http://192.168.88.23:8082'
+        imagesUrl = 'http://192.168.88.54'
+        exeUrl = 'http://192.168.88.54'
         break;
     default:
         base = '';
