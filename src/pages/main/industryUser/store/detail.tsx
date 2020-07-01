@@ -41,18 +41,16 @@ function StoreDetail(props:Props) {
     const onFinish = (values:any) => {
         let { region, pictures,certificateList,permitList, ...others } = values,
                 [province, city, area]= region || [];
-        pictures = pictures.map(((item:any) => {
-            return item.url.replace(site.imagesUrl,'')
-        }))
-        permitList = permitList.map(((item:any) => item.url.replace(site.imagesUrl,'')))
-        certificateList = certificateList.map(((item:any) => item.url.replace(site.imagesUrl,'')))
+                pictures = pictures && pictures.map((item:any) => item.url.replace(site.imagesUrl,'')) || [];
+                permitList = permitList && permitList.map((item:any) => item.url.replace(site.imagesUrl,'')) || [];
+                certificateList = certificateList && certificateList.map((item:any) => item.url.replace(site.imagesUrl,'')) || [];
         let _data ={
             ...others,
-            pictures,certificateList,permitList,
+            pictures,
+            certificateList,
+            permitList,
             province, city, area
         }
-        console.log(values)
-        return false;
         if(id > 0){
             commercialUserEdit({
                 id,
