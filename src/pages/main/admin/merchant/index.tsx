@@ -36,20 +36,20 @@ function MerchantManage() {
 
     const columns = [
         {
-            title: '商户名称',
+            title: '商家名称',
             dataIndex: 'name',
             ellipsis:true,
             width: 160,
             fixed:true
         },
         {
-            title: '商户账号名',
+            title: '商家账号名',
             dataIndex: 'username',
             ellipsis:true,
             width: 120
         },
         {
-            title: '商户地址',
+            title: '商家地址',
             dataIndex: 'completeAddress',
             ellipsis:true
         },
@@ -120,7 +120,7 @@ function MerchantManage() {
         modal.confirm({
             icon:<ExclamationCircleOutlined />,
             title: '删除确认',
-            content: `确认要删除商户【${ row.name }】吗`,
+            content: `确认要删除商家【${ row.name }】吗`,
             onOk: () => {
                 merchantUserDelete(_data).then((data:any) => {
                     message.success('删除成功');
@@ -138,7 +138,7 @@ function MerchantManage() {
         }
         modal.confirm({
             title: '重置密码确认',
-            content: `确认要重置商户【${ row.name }】密码吗`,
+            content: `确认要重置商家【${ row.name }】密码吗`,
             onOk: () => {
                 merchantUserReset(_data).then((data:any) => {
                     message.success('重置成功');
@@ -252,8 +252,8 @@ function MerchantManage() {
                                 onValuesChange={ onFormLayoutChange }
                                 form = { form }
                                 onFinish={ handleSearch }>
-                            <Form.Item label="商户名称" name="name">
-                                <Input placeholder="请输入商户名称" maxLength={ 18 } />
+                            <Form.Item label="商家名称" name="name">
+                                <Input placeholder="请输入商家名称" maxLength={ 18 } />
                             </Form.Item>
                             <Form.Item label="账号名" name="username">
                                 <Input placeholder="请输入账号名" maxLength={ 8 }/>
@@ -268,7 +268,7 @@ function MerchantManage() {
                                 <Input placeholder="请输入联系人" maxLength={ 18 } />
                             </Form.Item>
                             <Form.Item label="联系电话" name="phone">
-                                <Input placeholder="请输入联系电话" maxLength={ 8 }/>
+                                <Input placeholder="请输入联系电话" maxLength={ 15 }/>
                             </Form.Item>
                             <Form.Item>
                                 <Button type="primary" htmlType="button" onClick={ handleQuery }>查询</Button>

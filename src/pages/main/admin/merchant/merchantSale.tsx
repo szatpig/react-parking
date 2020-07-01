@@ -221,7 +221,7 @@ function MerchantSale() {
                         <div>销售折扣设置</div>
                     </div>
                     <div className="breadcrumb-cell">
-                        <Button type="primary" onClick={ handleAdd }>添加</Button>
+                        <Button type="primary" onClick={ handleAdd }>添加折扣</Button>
                     </div>
                 </div>
                 <div className="table-container">

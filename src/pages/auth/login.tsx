@@ -65,7 +65,8 @@ class Login extends Component<UserFormProps, State> {
     render() {
         console.log(this.props.menuList)
         if(this.props.userToken && this.props.userInfo.currentAuthority && this.props.menuList.length){
-            this.props.history.push(this.props.menuList[0].path)
+            let path = this.props.menuList[0].children && this.props.menuList[0].children.length > 0 ? this.props.menuList[0].children[0].path :  this.props.menuList[0].path
+            this.props.history.push(path)
         }
         return (
             <div className="login-container">

@@ -12,11 +12,13 @@ const menuArray = [[
     {
         id:1,
         title:'白名单管理',
-        path:'/home/white'
+        path:'/home/white',
+        icon:'sale'
     },{
         id:9,
         title:'商户管理',
-        path:'/home/store'
+        path:'/home/store',
+        icon:'merchant'
     },{
         id:2,
         title:'停车券管理',
@@ -36,11 +38,13 @@ const menuArray = [[
     },{
         id:3,
         title:'核销记录',
+        icon:'store',
         path:'/home/verification'
     },{
         id:4,
         title:'企业账户',
         path:'/home/account',
+        icon:'account',
         children:[
             {
                 id:7,
@@ -58,21 +62,25 @@ const menuArray = [[
     {
         id:1,
         title:'销售管理',
-        path:'/home/sale'
+        path:'/home/sale',
+        icon:'sale'
     },{
         id:2,
         title:'销售记录',
-        path:'/home/record'
+        path:'/home/record',
+        icon:'record'
     },
     {
         id:3,
         title:'商家管理',
-        path:'/home/merchant'
+        path:'/home/merchant',
+        icon:'store'
     },
     {
         id:5,
         title:'系统管理',
         path:'/home/system',
+        icon:'system',
         children:[
             {
                 id:6,
@@ -95,16 +103,19 @@ const menuArray = [[
     {
         id:1,
         title:'停车券管理',
-        path:'/home/ticketlist'
+        path:'/home/ticketlist',
+        icon:'sale'
     },{
         id:2,
         title:'停车券发放记录',
-        path:'/home/ticketgive'
+        path:'/home/ticketgive',
+        icon:'record'
     },
     {
         id:3,
         title:'企业账户',
-        path:'/home/system/account'
+        path:'/home/system/account',
+        icon:'account'
     }
 ]]
 

@@ -69,8 +69,7 @@ function Store() {
             dataIndex: 'invoiced',
             ellipsis:true,
             render: (cell:number,row:any) => (
-                    cell === 1 ?
-                            '是' : '否'
+                    cell === 1 ? '是' : '否'
             )
         },
         {
@@ -282,7 +281,7 @@ function Store() {
                                 <Input placeholder="请输入联系人" maxLength={ 18 } />
                             </Form.Item>
                             <Form.Item label="联系电话" name="phone">
-                                <Input placeholder="请输入联系电话" maxLength={ 8 }/>
+                                <Input placeholder="请输入联系电话" maxLength={ 15 }/>
                             </Form.Item>
                             <Form.Item>
                                 <Button type="primary" htmlType="button" onClick={ handleQuery }>查询</Button>

@@ -37,23 +37,23 @@ class MenuLayout extends Component<Props, State> {
         this.props.history.push(item.key)
     }
 
-    iconShow = (id:number) => {
-        switch (id){
-            case 1:
+    iconShow = (icon:string) => {
+        switch (icon){
+            case 'sale':
                 return <FundProjectionScreenOutlined />;
                 break;
-            case 2:
+            case 'record':
                 return <CarOutlined />;
                 break;
-            case 3:
+            case 'store':
                 return <ProjectOutlined />;
                 break;
-            case 4:
+            case 'account':
                 return <TeamOutlined />;
                 break;
-            case 9:
+            case 'merchant':
                 return <ShopOutlined />
-            case 5:
+            case 'system':
                 return <SettingOutlined />
                 break;
         }
@@ -91,7 +91,7 @@ class MenuLayout extends Component<Props, State> {
                                 return (
                                     <SubMenu title={
                                         <span>
-                                          { this.iconShow(item.id) }
+                                          { this.iconShow(item.icon) }
                                           <span>{ item.title }</span>
                                         </span>
                                     } key={ item.path }>
@@ -107,7 +107,7 @@ class MenuLayout extends Component<Props, State> {
                             }else{
                                return (
                                     <Menu.Item key={ item.path }  onClick={ this.menuSelect }>
-                                        { this.iconShow(item.id) }
+                                        { this.iconShow(item.icon) }
                                         <span>{ item.title }</span>
                                     </Menu.Item>
                                )
