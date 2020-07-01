@@ -365,6 +365,24 @@ function SaleDetail() {
                      </Radio.Group>
                  </Form.Item>
 
+                 <Form.Item
+                         noStyle
+                         shouldUpdate={(prevValues, currentValues) => prevValues.couponType !== currentValues.couponType}
+                 >
+                     {({ getFieldValue }) => {
+                         return getFieldValue('couponType') === 'DISCOUNT_DEDUCT' ? (
+                                 <Form.Item
+                                         name="discount"
+                                         label="折扣"
+                                         rules={[{required: true, type: 'number', min: 0, max: 1, message: '请输入0-1值' }]}
+                                 >
+                                     <InputNumber maxLength={ 3 } min={ 0 } max={ 1 } step={0.01 } placeholder="请输入"/>
+                                 </Form.Item>
+                         ) : null;
+                     }}
+                 </Form.Item>
+
+
                  <Form.Item label="上限金额" required>
                      <Form.Item name="amount" noStyle wrapperCol={{ span:8 }} rules={ [
                          { required: true, type: 'number', min: 0, max: 99999999, message: '请输入0-9999999数值' }
