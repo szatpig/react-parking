@@ -503,7 +503,7 @@ function Equity(props:Props) {
                      </Form.Item>
                  }
                  <Form.Item label="截止时间" required>
-                     < Form.Item name="expirationTime" noStyle  rules={[{required: true}]}>
+                     < Form.Item name="expirationTime" noStyle  rules={[{required: true,message:'请选择截止日期'}]}>
                          <DatePicker disabledDate={ disabledDate }/>
                      </Form.Item>
                      &nbsp;&nbsp;23:59:59
@@ -514,7 +514,7 @@ function Equity(props:Props) {
                          <Form.Item name="provideCount" noStyle wrapperCol={{span: 8}} rules={[
                              {required: true, type: 'number', min: 0, max: 9999, message: '请输入数量'}
                          ]}>
-                             <InputNumber maxLength={4} placeholder="请输入"/>
+                             <InputNumber maxLength={ 4 } placeholder="请输入"/>
                          </Form.Item>
                          &nbsp;&nbsp;张
                      </Form.Item>

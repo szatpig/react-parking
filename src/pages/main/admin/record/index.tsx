@@ -102,15 +102,9 @@ function SaleRecord() {
 
     const [ form ] = Form.useForm();
 
-    const history = useHistory()
-
     const onFormLayoutChange = ({  }) => {
         // setFormLayout(layout);
     };
-
-    const handleLink = (id:number)=>{
-        history.push('sale/detail?id='+id)
-    }
 
     const handleExport = (values:object) => {
         let { merchantUserName,couponType,parkingName,equityGrantTime } = form.getFieldsValue(),
@@ -236,13 +230,6 @@ function SaleRecord() {
                 </div>
                 <div className="table-container">
                     <Table
-                            onRow={ (row:any) => {
-                                return {
-                                    onClick: event => {
-                                        handleLink(row.id)
-                                    }, // 点击行
-                                };
-                            }}
                             rowKey="id"
                             bordered
                             columns={ columns }

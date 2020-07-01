@@ -341,6 +341,7 @@ function SaleDetail() {
                    initialValues={{
                        couponType:'FIX_DEDUCT',
                        amount:0,
+                       discount:0.99,
                        number:0
                    }}>
                  <p className="form-title">基本信息</p>
@@ -374,9 +375,9 @@ function SaleDetail() {
                                  <Form.Item
                                          name="discount"
                                          label="折扣"
-                                         rules={[{required: true, type: 'number', min: 0, max: 1, message: '请输入0-1值' }]}
+                                         rules={[{required: true, type: 'number', min: 0, max: 0.99, message: '请输入0-0.99值' }]}
                                  >
-                                     <InputNumber maxLength={ 3 } min={ 0 } max={ 1 } step={0.01 } placeholder="请输入"/>
+                                     <InputNumber maxLength={ 3 } min={ 0 } max={ 0.99 } step={ 0.01 } placeholder="请输入"/>
                                  </Form.Item>
                          ) : null;
                      }}

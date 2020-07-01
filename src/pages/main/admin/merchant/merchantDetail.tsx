@@ -119,8 +119,8 @@ function StoreDetail(props:Props) {
                       onFinish={ onFinish }
                       validateMessages={validateMessages}
                       initialValues={{
-                          merchantType:'1',
-                          legalPersonIdType:'1',
+                          merchantType:1,
+                          legalPersonIdType:1
                       }}>
                     <p className="form-title">基本信息</p>
                     <Row className="form-grid" justify="start" gutter={[60, 0]}>

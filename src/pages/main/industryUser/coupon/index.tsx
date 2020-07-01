@@ -1,10 +1,10 @@
 // Created by szatpig at 2020/4/30.
 import React, {useState, useEffect} from 'react';
+import { useHistory } from "react-router-dom";
 import { connect } from "react-redux";
-import moment from 'moment';
 
-import {Form, Input, Button, Modal, DatePicker, Select, Table, Tag, Popover, message, Checkbox} from 'antd';
-import { couponList, confirmRevokeCoupon, verifyRevokeAvailable, revokeCouponBatch } from '@/api/industryUser/coupon-api'
+import {Form, Input, Button, Modal, DatePicker, Select, Table, Tag, Popover, message} from 'antd';
+import { couponList, confirmRevokeCoupon, verifyRevokeAvailable, revokeCouponBatch, grantValid } from '@/api/industryUser/coupon-api'
 
 import Dayjs from 'dayjs';
 
@@ -106,6 +106,7 @@ function Coupon(props:Props) {
     });
     const [confirmLoading, setConfirmLoading] = useState(false);
 
+    const history = useHistory();
     const [ form ] = Form.useForm();
     const [ modalForm ] = Form.useForm();
 
@@ -138,6 +139,14 @@ function Coupon(props:Props) {
 
     const checkboxChange = (e:any) => {
         console.log(`checked = ${e.target.checked}`);
+    }
+
+    const getGrantValid = (path:string) => {
+        let _data ={}
+        grantValid(_data).then((data:any) => {
+            history.push(path)
+        }).catch(err => {
+        })
     }
 
     //modal
@@ -239,8 +248,8 @@ function Coupon(props:Props) {
             <div className="breadcrumb-container left-border line">
                 停车券管理
                 <span>
-                    <Button type="primary" href={'give/single'}>发放停车券</Button>
-                    <Button type="primary" href={'give/batch'}>批量导入停车券</Button>
+                    <Button type="primary" onClick={ () => getGrantValid('give/single')}>发放停车券</Button>
+                    <Button type="primary" onClick={ () => getGrantValid('give/batch')}>批量导入停车券</Button>
                 </span>
             </div>
             <div className="search-container">

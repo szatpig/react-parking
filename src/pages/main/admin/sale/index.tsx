@@ -127,15 +127,15 @@ function SaleManage() {
     //modal
     const handleSubmit = () => {
         setConfirmLoading(true);
-        modal.confirm({
-            icon:<ExclamationCircleOutlined />,
-            title: '销售确认',
-            className:'import-dialog-container',
-            okText:'确定',
-            cancelText:'取消',
-            content:'销售后无法撤回，确认吗？',
-            onOk: () => {
-                modalForm.validateFields().then((values:any) => {
+        modalForm.validateFields().then((values:any) => {
+            modal.confirm({
+                icon:<ExclamationCircleOutlined />,
+                title: '销售确认',
+                className:'import-dialog-container',
+                okText:'确定',
+                cancelText:'取消',
+                content:'销售后无法撤回，确认吗？',
+                onOk: () => {
                     const { id:commercialUserCouponId } = merchantInfo
                     let _data ={
                         commercialUserCouponId,
@@ -146,17 +146,17 @@ function SaleManage() {
                         setShow(false);
                         setConfirmLoading(false);
                         form.submit();
+                    }).catch(() => {
+                        setConfirmLoading(false);
                     })
-                }).catch(info => {
+                },
+                onCancel() {
                     setConfirmLoading(false);
-                    console.log('Validate Failed:', info);
-                })
-            },
-            onCancel() {
-                console.log('Cancel');
-            },
-        });
-
+                },
+            });
+        }).catch(() => {
+            setConfirmLoading(false);
+        })
     };
 
     const handleShow = (row:any) => {

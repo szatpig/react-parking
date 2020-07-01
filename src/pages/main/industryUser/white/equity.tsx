@@ -553,7 +553,7 @@ function Equity(props:Props) {
                      </Form.Item>
                  }
                  <Form.Item label="截止时间" required>
-                     < Form.Item name="expirationTime" noStyle  rules={[{required: true}]}>
+                     < Form.Item name="expirationTime" noStyle  rules={[{required: true,message:'请选择截止日期'}]}>
                          <DatePicker disabledDate={ disabledDate }/>
                      </Form.Item>
                      &nbsp;&nbsp;23:59:59

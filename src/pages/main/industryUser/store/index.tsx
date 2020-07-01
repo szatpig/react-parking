@@ -56,6 +56,11 @@ function Store() {
         },
         {
             title: '联系人',
+            dataIndex: 'phone',
+            ellipsis:true
+        },
+        {
+            title: '联系方式',
             dataIndex: 'contact',
             ellipsis:true
         },

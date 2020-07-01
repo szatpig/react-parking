@@ -118,8 +118,8 @@ function* loginAsync(payload:any) {
         sessionStorage.setItem('USER_INFO', JSON.stringify(data));
         yield put({ type: 'USER_TOKEN', payload:{ token:data.token }})
         yield put({ type: 'USER_INFO', payload:data })
-        let _menuList = yield call(getRoleMenu,{})
-        let menuList = data.loginType === -1 ? _menuList : menuArray[data.loginType];
+        let { data:_menuList } = yield call(getRoleMenu,{})
+        let menuList = data.loginType === 1 ? _menuList : menuArray[data.loginType];
         sessionStorage.setItem('USER_MENU_LIST',JSON.stringify(menuList || []));
         yield put({ type: 'USER_MENU_LIST', payload:menuList });
     }catch (e) {
