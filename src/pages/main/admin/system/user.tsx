@@ -64,7 +64,10 @@ function UserManage() {
         {
             title: '性别',
             dataIndex: 'sax',
-            width: 120
+            width: 120,
+            render: (cell:number,row:any) => ( //(0：男；1：女)
+                    <span> { cell ? '女' : '男'  } </span>
+            )
         },
         {
             title: '联系电话',
@@ -379,7 +382,7 @@ function UserManage() {
                         </Form.Item>
                         <Form.Item name="phone" label="联系方式" rules={[
                             { required: true,whitespace: true },
-                            { pattern: /^(((\d{2}-)?0\d{2,3}-?\d{7,8})|((\d{2}-)?(\d{2,3}-)?([1][3-9][0-9]\d{8})))$/g}
+                            { pattern: /^(((\d{2}-)?0\d{2,3}-?\d{7,8})|((\d{2}-)?(\d{2,3}-)?([1][3-9][0-9]\d{8})))$/g,message:'请输入合法联系方式'}
                         ]}>
                             <Input maxLength={ 15 } placeholder="请输入联系方式" />
                         </Form.Item>

@@ -116,18 +116,18 @@ function StoreDetail(props:Props) {
 
 
     const handleBeforeUploadPic =(file:any)=>{
-        return handleBeforeUpload(file,submitForm.getFieldValue('pictures').length)
+        return handleBeforeUpload(file,submitForm.getFieldValue('pictures'))
     };
     const handleBeforeUploadCer =(file:any)=>{
-        return handleBeforeUpload(file,submitForm.getFieldValue('certificateList').length)
+        return handleBeforeUpload(file,submitForm.getFieldValue('certificateList'))
     };
 
     const handleBeforeUploadPer = (file:any)=>{
-        return handleBeforeUpload(file,submitForm.getFieldValue('permitList').length)
+        return handleBeforeUpload(file,submitForm.getFieldValue('permitList'))
     };
 
-    const handleBeforeUpload =(file:any,len:number)=>{
-        if(len > 2){
+    const handleBeforeUpload =(file:any,len:any)=>{
+        if(len && len.length > 2){
             message.error( '最大只能上传3张图片');
             return Promise.reject(false);
         }
