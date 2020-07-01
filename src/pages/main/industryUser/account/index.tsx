@@ -145,9 +145,9 @@ function Account(props:Props) {
             message.error( '超过1M限制，不允许上传');
             return Promise.reject(false);
         }
-        const fileType = '.jpeg, .jpg, .png, gif, .bmp';
+        const fileType = '.jpeg, .jpg, .png';
         if(fileType.indexOf(file.name.split(/\./)[1]) === -1){
-            message.error( '仅支持上传.jpeg, .jpg, .png, gif, .bmp格式');
+            message.error( '仅支持上传.jpeg, .jpg, .png格式');
             return Promise.reject(false);
         }
         return true ;
@@ -284,7 +284,7 @@ function Account(props:Props) {
                             <Col flex="auto">
                                 <Upload name="logo"
                                     className="upload-wrapper"
-                                    accept=".jpeg, .jpg, .png, gif, .bmp"
+                                    accept=".jpeg, .jpg, .png"
                                     action={ site.upload + "/businessAccount/uploadLogo"}
                                     headers = {{ token:userToken }}
                                     showUploadList={ false }

@@ -136,9 +136,9 @@ function StoreDetail(props:Props) {
             message.error( '超过1M限制，不允许上传');
             return Promise.reject(false);
         }
-        const fileType = '.jpeg, .jpg, .png, gif, .bmp';
+        const fileType = '.jpeg, .jpg, .png';
         if(fileType.indexOf(file.name.split(/\./)[1]) === -1){
-            message.error( '仅支持上传.jpeg, .jpg, .png, gif, .bmp格式');
+            message.error( '仅支持上传.jpeg, .jpg, .png格式');
             return Promise.reject(false);
         }
         return true ;
@@ -279,7 +279,7 @@ function StoreDetail(props:Props) {
                                wrapperCol={{ span:18 }}>
                         <Upload name="file"
                                 className="upload-wrapper"
-                                accept=".jpeg, .jpg, .png, gif, .bmp"
+                                accept=".jpeg, .jpg, .png"
                                 showUploadList={ true }
                                 listType="picture-card"
                                 beforeUpload = { handleBeforeUploadPic }
@@ -296,7 +296,7 @@ function StoreDetail(props:Props) {
                                wrapperCol={{ span:18 }}>
                         <Upload name="file"
                                 className="upload-wrapper"
-                                accept=".jpeg, .jpg, .png, gif, .bmp"
+                                accept=".jpeg, .jpg, .png"
                                 listType="picture-card"
                                 customRequest={ customRequest }
                                 beforeUpload = { handleBeforeUploadCer }
@@ -312,7 +312,7 @@ function StoreDetail(props:Props) {
                                wrapperCol={{ span:18 }}>
                         <Upload name="file"
                                 className="upload-wrapper"
-                                accept=".jpeg, .jpg, .png, gif, .bmp"
+                                accept=".jpeg, .jpg, .png"
                                 listType="picture-card"
                                 customRequest={ customRequest }
                                 beforeUpload = { handleBeforeUploadPer }

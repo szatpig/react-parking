@@ -3,7 +3,8 @@ import { createBrowserHistory } from 'history';
 
 import { take,  call, put  } from 'redux-saga/effects';
 
-import { userLogin,getRoleMenu } from '@/api/login-api'
+import { userLogin } from '@/api/login-api'
+import { getRoleMenu } from '@/api/admin/system-api'
 
 const history = createBrowserHistory();
 
