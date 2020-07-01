@@ -44,3 +44,7 @@ export const commercialUserReset= (data:any) => fetch(site.base + '/industryLogi
     data
 });
 
+export const commonUpload= (data:any) => fetch(site.upload + '/commercialUser/uploadEntryFile' ,{
+    type: 'post',
+    data
+});

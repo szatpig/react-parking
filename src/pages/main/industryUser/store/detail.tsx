@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import { LeftOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { Form, Input, Select, Button,Radio, Cascader, Upload, Modal, message } from 'antd';
 
-import {commercialUserEdit, commercialUserAdd , getCommercialUserById} from '@/api/industryUser/store-api'
+import {commercialUserEdit, commercialUserAdd , getCommercialUserById, commonUpload } from '@/api/industryUser/store-api'
 
 import region from '@/json/region'
 
@@ -37,20 +37,21 @@ function StoreDetail(props:Props) {
     const { id } = useParams();
     const [modal, contextHolder] = Modal.useModal();
     const [ submitForm ] = Form.useForm();
-    const [picturesLists, setPicturesLists] = useState([]);
-    const [certificateLists, setCertificateLists] = useState([]);
-    const [permitLists, setPermitLists] = useState([]);
-
-    const{ userToken } = props
 
     const onFinish = (values:any) => {
-        let { region,...others } = values,
-                [province, city, area]= region || [],
-                _data ={
-                    ...others,
-                    province, city, area
-                }
-                console.log(values)
+        let { region, pictures,certificateList,permitList, ...others } = values,
+                [province, city, area]= region || [];
+        pictures = pictures.map(((item:any) => {
+            return item.url.replace(site.imagesUrl,'')
+        }))
+        permitList = permitList.map(((item:any) => item.url.replace(site.imagesUrl,'')))
+        certificateList = certificateList.map(((item:any) => item.url.replace(site.imagesUrl,'')))
+        let _data ={
+            ...others,
+            pictures,certificateList,permitList,
+            province, city, area
+        }
+        console.log(values)
         return false;
         if(id > 0){
             commercialUserEdit({
@@ -105,9 +106,6 @@ function StoreDetail(props:Props) {
                 uid:item.id,
                 url:site.imagesUrl + item.image
             }))
-            setPicturesLists(pictures)
-            setCertificateLists(certificateList)
-            setPermitLists(permitList)
             submitForm.setFieldsValue({
                 ...others,
                 pictures,
@@ -132,17 +130,8 @@ function StoreDetail(props:Props) {
         return true ;
     };
 
-    const onFileChange= ({ file,fileList,event }:any) => {
 
-        console.log('onFileChange',fileList,event);
-        // if(file.status === 'done'){
-        //     const { response } = file;
-        //     if(response.status === 1000){
-        //         setPicturesLists(fileList.map((item:any) => item.response.data))
-        //     }
-        //
-        // }
-    };
+
     const handlePreview= (file:any) => {
         console.log(file)
         modal.info({
@@ -156,22 +145,71 @@ function StoreDetail(props:Props) {
             )
         });
     };
-    const normFile = ({ file,fileList,event }:any) => {
-        // console.log(1111,file)
-        if(file.status === 'uploading') return false;
-        if(file.status === 'removed'){
-            setPicturesLists(fileList)
-            return false;
+    const normFile = (e:any) => {
+        console.log('aa',e);
+        if (Array.isArray(e)) {
+            return e;
         }
-        const { response } = file;
-        console.log('normFile',fileList);
-        if(response){
-            if(response.status === 1000){
-                return fileList.map((item:any) => item.response.data);
-            }
+        if(e.file.status == 'done'){
+             const _list = e.fileList.map((item:any) => {
+                if(item.response){
+                    return {
+                        uid:item.uid,
+                        url:site.imagesUrl + item.response.data
+                    }
+                }
+                return item;
+            });
+             console.log(_list);
+            return _list
+        }else if(e.file.status == 'removed'){
+            return e && e.fileList
+        }else{
+            return e.fileList;
         }
-        return ;
+        // e.map((item:any) => {
+        //     if(item.response){
+        //         return {
+        //             uid:item.uid,
+        //             url:item.response.data
+        //         }
+        //     }
+        //     return item;
+        // })
     };
+
+
+
+    const clientUpload = async  (name:any, file:any) => {
+        let fd = new FormData();
+        fd.append("file", file);
+        const data = await commonUpload(fd);
+        console.log('bb',data)
+        return data
+    }
+    const customRequest = async (componentsData:any) => {
+        const { file, onSuccess, onError } = componentsData;
+
+        const fileName = `${Date.now()}/${Date.now()}.png`;
+
+        const res = await clientUpload(fileName, file);
+
+        console.log('cc',res)
+
+        if (res) {
+            onSuccess(res, file);
+        } else {
+            onError("上传失败");
+        }
+
+        return {
+            abort() {
+                console.log("upload progress is aborted.");
+            }
+        };
+    };
+
+
 
     useEffect(() => {
         getUserInfo()
@@ -233,57 +271,47 @@ function StoreDetail(props:Props) {
                     </Form.Item>
                     <Form.Item name="pictures"
                                label="商户图片"
+                               valuePropName="fileList"
                                getValueFromEvent={ normFile }
                                className="upload-container upload-multiple-container"
                                wrapperCol={{ span:18 }}>
                         <Upload name="file"
                                 className="upload-wrapper"
                                 accept=".jpeg, .jpg, .png, gif, .bmp"
-                                action={ site.upload + "/commercialUser/uploadEntryFile"}
-                                headers = {{ token:userToken }}
                                 showUploadList={ true }
                                 listType="picture-card"
-                                beforeUpload = { handleBeforeUpload }
-                                onPreview={ handlePreview }
-                                onChange={ onFileChange }>
+                                customRequest={ customRequest }
+                                onPreview={ handlePreview }>
                             <Button>上传图片</Button>
                         </Upload>
                     </Form.Item>
                     <Form.Item name="certificateList"
                                label="营业执照"
+                               valuePropName="fileList"
                                getValueFromEvent={ normFile }
                                className="upload-container  upload-multiple-container"
                                wrapperCol={{ span:18 }}>
                         <Upload name="file"
                                 className="upload-wrapper"
                                 accept=".jpeg, .jpg, .png, gif, .bmp"
-                                action={ site.upload + "/commercialUser/uploadEntryFile"}
-                                headers = {{ token:userToken }}
-                                showUploadList={ true }
-                                fileList={ certificateLists }
                                 listType="picture-card"
-                                beforeUpload = { handleBeforeUpload }
-                                onPreview={ handlePreview }
-                                onChange={ onFileChange }>
+                                customRequest={ customRequest }
+                                onPreview={ handlePreview }>
                             <Button>上传图片</Button>
                         </Upload>
                     </Form.Item>
                     <Form.Item name="permitList"
                                label="开业许可证"
+                               valuePropName="fileList"
                                getValueFromEvent={ normFile }
                                className="upload-container upload-multiple-container"
                                wrapperCol={{ span:18 }}>
                         <Upload name="file"
                                 className="upload-wrapper"
                                 accept=".jpeg, .jpg, .png, gif, .bmp"
-                                action={ site.upload + "/commercialUser/uploadEntryFile"}
-                                headers = {{ token:userToken }}
-                                showUploadList={ true }
-                                fileList={ permitLists }
                                 listType="picture-card"
-                                beforeUpload = { handleBeforeUpload }
-                                onPreview={ handlePreview }
-                                onChange={ onFileChange }>
+                                customRequest={ customRequest }
+                                beforeUpload = { handleBeforeUpload }>
                             <Button>上传图片</Button>
                         </Upload>
                     </Form.Item>
