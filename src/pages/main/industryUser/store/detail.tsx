@@ -114,7 +114,23 @@ function StoreDetail(props:Props) {
         })
     }
 
-    const handleBeforeUpload =(file:any,fileList:any)=>{
+
+    const handleBeforeUploadPic =(file:any)=>{
+        return handleBeforeUpload(file,submitForm.getFieldValue('pictures').length)
+    };
+    const handleBeforeUploadCer =(file:any)=>{
+        return handleBeforeUpload(file,submitForm.getFieldValue('certificateList').length)
+    };
+
+    const handleBeforeUploadPer = (file:any)=>{
+        return handleBeforeUpload(file,submitForm.getFieldValue('permitList').length)
+    };
+
+    const handleBeforeUpload =(file:any,len:number)=>{
+        if(len > 2){
+            message.error( '最大只能上传3张图片');
+            return Promise.reject(false);
+        }
         const isLt2M = file.size / 1024 / 1024 < 1;
         if (!isLt2M) {
             message.error( '超过1M限制，不允许上传');
@@ -127,6 +143,8 @@ function StoreDetail(props:Props) {
         }
         return true ;
     };
+
+
 
 
 
@@ -144,10 +162,6 @@ function StoreDetail(props:Props) {
         });
     };
     const normFile = (e:any) => {
-        console.log('aa',e);
-        if (Array.isArray(e)) {
-            return e;
-        }
         if(e.file.status == 'done'){
              const _list = e.fileList.map((item:any) => {
                 if(item.response){
@@ -158,22 +172,12 @@ function StoreDetail(props:Props) {
                 }
                 return item;
             });
-             console.log(_list);
             return _list
         }else if(e.file.status == 'removed'){
             return e && e.fileList
         }else{
             return e.fileList;
         }
-        // e.map((item:any) => {
-        //     if(item.response){
-        //         return {
-        //             uid:item.uid,
-        //             url:item.response.data
-        //         }
-        //     }
-        //     return item;
-        // })
     };
 
 
@@ -231,7 +235,7 @@ function StoreDetail(props:Props) {
                         invoiced:0
                       }}>
                     <p className="form-title">基本信息</p>
-                    <p className="form-tips">图片格式支持支持.jpg\.png\.jpeg 格式文件，最多3张，不超过1MB</p>
+                    <p className="form-tips">图片格式支持.jpg\.png\.jpeg 格式文件，最多3张，不超过1MB</p>
                     <Form.Item name="name" label="商户名称" rules={[
                         { required: true,whitespace: true },
                         { pattern:/^[\w\u4e00-\u9fa5()（）]{3,20}$/, message: '请输入3-20位字符'}
@@ -239,8 +243,8 @@ function StoreDetail(props:Props) {
                         <Input maxLength={ 20 } placeholder="请输入商户名称" />
                     </Form.Item>
                     <div className="address-item">
-                        <Form.Item label="商户地址" className="region-wrap" name="region" required wrapperCol={{ span: 9 }} rules={[
-                            { type:'array', whitespace: true,validateTrigger:'blur' }
+                        <Form.Item label="商户地址" className="region-wrap" name="region" wrapperCol={{ span: 9 }} rules={[
+                            { required: true, type:'array', whitespace: true,validateTrigger:'blur' }
                         ]}>
                             <Cascader options={ options } placeholder="请选择省市区" />
                         </Form.Item>
@@ -257,7 +261,7 @@ function StoreDetail(props:Props) {
 
                     <Form.Item name="phone" label="联系电话" rules={[
                         { required: true,whitespace: true },
-                        { pattern: /^(((\d{2}-)?0\d{2,3}-?\d{7,8})|((\d{2}-)?(\d{2,3}-)?([1][3-9][0-9]\d{8})))$/g}
+                        { pattern: /^(((\d{2}-)?0\d{2,3}-?\d{7,8})|((\d{2}-)?(\d{2,3}-)?([1][3-9][0-9]\d{8})))$/g, message: '请输入合法联系电话'}
                     ]}>
                         <Input maxLength={ 15 } placeholder="请输入联系电话" />
                     </Form.Item>
@@ -278,6 +282,7 @@ function StoreDetail(props:Props) {
                                 accept=".jpeg, .jpg, .png, gif, .bmp"
                                 showUploadList={ true }
                                 listType="picture-card"
+                                beforeUpload = { handleBeforeUploadPic }
                                 customRequest={ customRequest }
                                 onPreview={ handlePreview }>
                             <Button>上传图片</Button>
@@ -294,6 +299,7 @@ function StoreDetail(props:Props) {
                                 accept=".jpeg, .jpg, .png, gif, .bmp"
                                 listType="picture-card"
                                 customRequest={ customRequest }
+                                beforeUpload = { handleBeforeUploadCer }
                                 onPreview={ handlePreview }>
                             <Button>上传图片</Button>
                         </Upload>
@@ -309,7 +315,8 @@ function StoreDetail(props:Props) {
                                 accept=".jpeg, .jpg, .png, gif, .bmp"
                                 listType="picture-card"
                                 customRequest={ customRequest }
-                                beforeUpload = { handleBeforeUpload }>
+                                beforeUpload = { handleBeforeUploadPer }
+                                onPreview={ handlePreview }>
                             <Button>上传图片</Button>
                         </Upload>
                     </Form.Item>

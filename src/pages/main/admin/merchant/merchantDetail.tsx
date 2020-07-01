@@ -125,15 +125,15 @@ function StoreDetail(props:Props) {
                     <p className="form-title">基本信息</p>
                     <Row className="form-grid" justify="start" gutter={[60, 0]}>
                         <Col span={ 8 }>
-                            <Form.Item name="name" { ...layout } label="商户名称" rules={[
+                            <Form.Item name="name" { ...layout } label="商家名称" rules={[
                                 { required: true,whitespace: true },
                                 { pattern:/^[\w\u4e00-\u9fa5()（）]{3,20}$/, message: '请输入3-20位字符'}
                              ]}>
-                                <Input maxLength={ 20 } placeholder="请输入商户名称" />
+                                <Input maxLength={ 20 } placeholder="请输入商家名称" />
                             </Form.Item>
                         </Col>
                         <Col span={8}>
-                            <Form.Item label="商户地址" { ...layout } name="region"  required rules={[
+                            <Form.Item label="商家地址" { ...layout } name="region"  rules={[
                                 { required: true,  type:'array', whitespace: true,validateTrigger:'blur' }
                             ]}>
                                 <Cascader options={ options } placeholder="请选择省市区" />
@@ -141,13 +141,13 @@ function StoreDetail(props:Props) {
                         </Col>
                         <Col span={ 8 } />
                         <Col span={8}>
-                            <Form.Item label="商户类型" { ...layout } name="merchantType">
+                            <Form.Item label="商家类型" { ...layout } name="merchantType">
                                 <Select
                                         placeholder="请选择类型"
                                         allowClear>
-                                    <Option value="1">企业</Option>
-                                    <Option value="2">自然人</Option>
-                                    <Option value="3">个体工商户</Option>
+                                    <Option value={ 1 }>企业</Option>
+                                    <Option value={ 2 }>自然人</Option>
+                                    <Option value={ 3 }>个体工商户</Option>
                                 </Select>
                             </Form.Item>
                         </Col>
@@ -164,10 +164,10 @@ function StoreDetail(props:Props) {
                                 <Select
                                         placeholder="请选择类型"
                                         allowClear>
-                                    <Option value="1">身份证</Option>
-                                    <Option value="2">护照</Option>
-                                    <Option value="3">军官证</Option>
-                                    <Option value="4">其他证件</Option>
+                                    <Option value={ 1 }>身份证</Option>
+                                    <Option value={ 2 }>护照</Option>
+                                    <Option value={ 3 }>军官证</Option>
+                                    <Option value={ 4 }>其他证件</Option>
                                 </Select>
                             </Form.Item>
 
@@ -193,9 +193,9 @@ function StoreDetail(props:Props) {
                                 <Select
                                         placeholder="请选择类型"
                                         allowClear>
-                                    <Option value="1">营业执照</Option>
-                                    <Option value="2">组织机构代码证</Option>
-                                    <Option value="3">统一社会信用代码</Option>
+                                    <Option value={ 1 }>营业执照</Option>
+                                    <Option value={ 2 }>组织机构代码证</Option>
+                                    <Option value={ 3 }>统一社会信用代码</Option>
                                 </Select>
                             </Form.Item>
                         </Col>

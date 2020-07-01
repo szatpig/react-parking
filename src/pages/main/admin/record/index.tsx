@@ -125,7 +125,7 @@ function SaleRecord() {
             document.body.appendChild(aLink);
             aLink.style.display='none';
             aLink.target = '_blank'
-            aLink.href = site.base + data.data.exportSellLogPath;
+            aLink.href = site.exeUrl + data.data.exportSellLogPath;
             aLink.click();
             document.body.removeChild(aLink);
         })

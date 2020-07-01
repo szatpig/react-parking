@@ -94,7 +94,7 @@ function Verification() {
             document.body.appendChild(aLink);
             aLink.style.display='none';
             aLink.target = '_blank'
-            aLink.href = site.base + data.data;
+            aLink.href = site.exeUrl + data.data;
             aLink.click();
             document.body.removeChild(aLink);
         })
