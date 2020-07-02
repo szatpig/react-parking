@@ -1,13 +1,10 @@
 // Created by szatpig at 2020/6/16.
 import React, {useState, useEffect} from 'react';
-import { useHistory } from "react-router-dom";
-
-import moment from 'moment';
 
 import {Form, Input, Button, Modal, DatePicker, Select, Table, Tag, Popover, message, Checkbox, InputNumber} from 'antd';
 import { merchantUserCouponList,  provideCustomerCoupon } from '@/api/merchant/coupon-api'
+import { ExclamationCircleFilled, ExclamationCircleOutlined } from '@ant-design/icons';
 
-import { ExclamationCircleFilled } from '@ant-design/icons';
 import Dayjs from 'dayjs';
 
 const couponTypeList:any = [
@@ -46,6 +43,7 @@ function CouponList() {
     const [loading, setLoading] = useState(false);
     const [selectedRow, setSelectedRow] = useState([]);
     const [tableData,setTableData] = useState<object[]>([])
+    const [modal, contextHolder] = Modal.useModal();
     const [page,setPage] = useState({
         current:1,
         pageSize:20,
@@ -124,19 +122,33 @@ function CouponList() {
     const handleSubmit = () => {
         setConfirmLoading(true);
         modalForm.validateFields().then((values:any) => {
-            const { id:merchantUserCouponId } = merchantInfo;
-            let _data ={
-                merchantUserCouponId,
-                ...values
-            }
-            provideCustomerCoupon(_data).then((data:any) => {
-                message.success('发放成功');
-                setShow(false);
-                setConfirmLoading(false);
-                form.submit();
-            }).catch(err =>{
-                setConfirmLoading(false);
+            modal.confirm({
+                icon:<ExclamationCircleOutlined />,
+                title: '发放确认',
+                className:'import-dialog-container',
+                okText:'确定',
+                cancelText:'取消',
+                content:'发放后无法撤回，确认吗？',
+                onOk: () => {
+                    const { id:merchantUserCouponId } = merchantInfo;
+                    let _data ={
+                        merchantUserCouponId,
+                        ...values
+                    }
+                    provideCustomerCoupon(_data).then((data:any) => {
+                        message.success('发放成功');
+                        setShow(false);
+                        setConfirmLoading(false);
+                        form.submit();
+                    }).catch(err =>{
+                        setConfirmLoading(false);
+                    })
+                },
+                onCancel() {
+                    setConfirmLoading(false);
+                }
             })
+
         }).catch(info => {
             setConfirmLoading(false);
             console.log('Validate Failed:', info);
@@ -321,6 +333,7 @@ function CouponList() {
                         </div>
                     </Form>
                 </Modal>
+                { contextHolder }
             </div>
     );
 }
