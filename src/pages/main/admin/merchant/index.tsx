@@ -172,7 +172,7 @@ function MerchantManage() {
         });
     }
     const handleSale =  (row:any) => {
-        history.push('merchant/sale/'+ row.id);
+        history.push(`merchant/sale/${ row.id }/${ row.name }` );
     };
     const handleLink = (id:number) => {
         history.push(`merchant/detail/${ id }`);

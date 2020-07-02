@@ -20,7 +20,7 @@ const formItemLayoutWithOutLabel = {
 
 function MerchantSale() {
     const history = useHistory();
-    const { merchantUserId } = useParams();
+    const { merchantUserId,merchantName } = useParams();
     const [loading, setLoading] = useState(false);
     const [tableData,setTableData] = useState<object[]>([]);
     const [page,setPage] = useState({
@@ -219,7 +219,7 @@ function MerchantSale() {
                 <div className="breadcrumb-container line sticky">
                     <div className="breadcrumb-cell">
                         <div onClick={ () => history.go(-1) }><LeftOutlined />返回</div>
-                        <div>销售折扣设置</div>
+                        <div>{ merchantName } -- 销售折扣设置</div>
                     </div>
                     <div className="breadcrumb-cell">
                         <Button type="primary" onClick={ handleAdd }>添加折扣</Button>

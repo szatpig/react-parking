@@ -83,6 +83,7 @@ const Verification = forwardRef((props:any,ref:any) => { //react hooks 通过 fo
             showDrawer() // 这里给父组件方法不一定是用dom的方法，可以使用自己const的方法
         }
     }));
+    const [searchValue, setSearchValue] = useState('');
     const [visible, setVisible] = useState(false);
     const [tableData,setTableData] = useState<object[]>([]);
     const [index,setIndex] = useState<number>(-1);
@@ -107,10 +108,9 @@ const Verification = forwardRef((props:any,ref:any) => { //react hooks 通过 fo
             setTableData(data.data.list)
         })
     };
-
     useEffect(() => {
-        //do something
-    });
+        setSearchValue('')
+    },[visible]);
 
     return (
             <div className="drawer-component-container">
@@ -127,6 +127,7 @@ const Verification = forwardRef((props:any,ref:any) => { //react hooks 通过 fo
                             <span>车牌号</span>
                             <Search
                                 placeholder="请输入车牌号"
+                                defaultValue={ searchValue }
                                 onSearch={ onSearch } />
                         </div>
                         <div className="list-item">

@@ -60,12 +60,12 @@ export default [
         authority:["admin"],
         meta:{
             title:{
-                mainMenu:'销售折扣'
+                mainMenu:'商户详情'
             }
         }
     },
     {
-        path:'/merchant/sale/:merchantUserId(\\d+)',
+        path:'/merchant/sale/:merchantUserId(\\d+)/:merchantName',
         component:MerchantSale,
         authority:["admin"],
         meta:{

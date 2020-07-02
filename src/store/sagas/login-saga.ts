@@ -3,7 +3,7 @@ import { createBrowserHistory } from 'history';
 
 import { take,  call, put  } from 'redux-saga/effects';
 
-import { userLogin } from '@/api/login-api'
+import { userLogin,userLogout } from '@/api/login-api'
 import { getRoleMenu } from '@/api/admin/system-api'
 
 const history = createBrowserHistory();
@@ -145,6 +145,16 @@ export function* loginFlow() {
     while (true){
         const { payload } = yield take('LOGIN_REQUEST')
         yield call(loginAsync,payload);
+    }
+
+}
+
+export function* loginOutFlow() {
+
+    while (true){
+        const { payload } = yield take('LOGIN_OUT_REQUEST')
+        yield call(userLogout,payload);
+        yield put({ type: 'USER_LOGIN_OUT' })
     }
 
 }

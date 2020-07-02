@@ -100,8 +100,8 @@ export default function fetch (url:string, options:Options) {
                     case 1001:
                     case 8001:
                         if(document.getElementsByClassName('global-message').length === 0){
-                            store.dispatch({type:'USER_LOGIN_OUT'});
-                            history.push('/etc-verification/login');
+                            store.dispatch({type:'LOGIN_OUT_REQUEST'});
+                            // history.push('/etc-verification/login');
                             message.error({
                                 content:response.data.msg || '账号已在其他设备登录',
                                 className:'global-message'

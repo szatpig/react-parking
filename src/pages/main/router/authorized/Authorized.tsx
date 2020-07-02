@@ -27,7 +27,7 @@ function Authorized(props:Props) {
     if (!authority) return children;
     if (authority.includes(currentAuthority)) {
         if(currentAuthority === 'admin'){
-            _pathArr = _pathArr.concat(['/home/merchant/detail/:id(\\d+)','/home/merchant/sale/:merchantUserId(\\d+)'])
+            _pathArr = _pathArr.concat(['/home/merchant/detail/:id(\\d+)','/home/merchant/sale/:merchantUserId(\\d+)/:merchantName'])
             if(_pathArr.includes(path)){
                 return children
             }else{

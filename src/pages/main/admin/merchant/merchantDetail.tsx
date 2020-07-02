@@ -40,8 +40,12 @@ function StoreDetail(props:Props) {
     const { id } = useParams();
     const [ submitForm ] = Form.useForm();
     const [modal, contextHolder] = Modal.useModal();
+    const [required,setRequired] = useState(true)
 
-    console.log(useParams())
+    const handleSelect = (val:number) => {
+        setRequired(val === 1)
+    }
+
     const onFinish = (values:any) => {
         let { region,username,...others } =  values,
         [province, city, area]= region || [];
@@ -98,6 +102,7 @@ function StoreDetail(props:Props) {
                 ...others,
                 region
             })
+            setRequired(data.data.merchantType === 1)
         })
     }
 
@@ -141,10 +146,12 @@ function StoreDetail(props:Props) {
                         </Col>
                         <Col span={ 8 } />
                         <Col span={8}>
-                            <Form.Item label="商家类型" { ...layout } name="merchantType">
+                            <Form.Item label="商家类型" { ...layout } name="merchantType" rules={[
+                                { required: true,type:'number', whitespace: true }
+                            ]}>
                                 <Select
                                         placeholder="请选择类型"
-                                        allowClear>
+                                        allowClear onChange = { handleSelect }>
                                     <Option value={ 1 }>企业</Option>
                                     <Option value={ 2 }>自然人</Option>
                                     <Option value={ 3 }>个体工商户</Option>
@@ -160,7 +167,9 @@ function StoreDetail(props:Props) {
                         </Col>
                         <Col span={ 8 } />
                         <Col span={8}>
-                            <Form.Item label="法定代表人/负责人证件类型" { ...layoutMore } name="legalPersonIdType">
+                            <Form.Item label="法定代表人/负责人证件类型" { ...layoutMore } name="legalPersonIdType" rules={[
+                                { required: true,type:'number', whitespace: true }
+                            ]}>
                                 <Select
                                         placeholder="请选择类型"
                                         allowClear>
@@ -174,7 +183,7 @@ function StoreDetail(props:Props) {
                         </Col>
                         <Col span={8}>
                             <Form.Item label="法定代表人/负责人名称" { ...layoutMore } name="legalPerson" rules={[
-                                { required: true, whitespace: true }
+                                { required: true,  whitespace: true }
                             ]}>
                                 <Input placeholder="请输入" maxLength={ 8 }/>
                             </Form.Item>
@@ -188,8 +197,11 @@ function StoreDetail(props:Props) {
                             </Form.Item>
                         </Col>
                         <Col span={8}>
-
-                            <Form.Item label="企业证件类型" { ...layoutMore } name="enterpriseIdType">
+                            <Form.Item label="企业证件类型" { ...layoutMore } name="enterpriseIdType"
+                                  dependencies={['merchantType']}
+                                  rules={[
+                                        { required: required, whitespace: true , type:'number', message: '请选择企业证件类型' }
+                                  ]}>
                                 <Select
                                         placeholder="请选择类型"
                                         allowClear>
@@ -207,8 +219,12 @@ function StoreDetail(props:Props) {
                         </Col>
 
                         <Col span={8}>
-                            <Form.Item label="企业证件编号" { ...layoutMore } name="enterpriseIdNo">
-                                <Input placeholder="请输入" maxLength={ 8 }/>
+                            <Form.Item label="企业证件编号" { ...layoutMore } name="enterpriseIdNo"
+                                dependencies={['merchantType']}
+                                rules={[
+                                    { required: required, whitespace: true, message: '请输入企业证件编号' }
+                                ]}>
+                                <Input placeholder="请输入" maxLength={ 25 }/>
                             </Form.Item>
 
                         </Col>

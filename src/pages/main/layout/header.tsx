@@ -37,7 +37,6 @@ class HeaderLayout extends Component<Props, State> {
     }
     loginOut = () => {
         this.props.userLoginOutAction();
-        this.props.history.push('/login')
     }
 
     handleShow = () => {
