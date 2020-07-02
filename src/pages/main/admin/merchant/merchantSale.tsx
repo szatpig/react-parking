@@ -65,12 +65,13 @@ function MerchantSale() {
     ];
 
     const handleAdd = ()=>{
-        setShow(true)
+        setShow(true);
         setId('');
         form.resetFields()
     }
     const handleEdit = (row:any) => {
-        setShow(true)
+        setShow(true);
+        form.resetFields();
         setId(row.id);
         merchantDiscountGet({
             id:row.id

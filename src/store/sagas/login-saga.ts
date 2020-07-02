@@ -23,6 +23,7 @@ const menuArray = [[
         id:2,
         title:'停车券管理',
         path:'/home/coupon',
+        icon:'record',
         children:[
             {
                 id:6,
