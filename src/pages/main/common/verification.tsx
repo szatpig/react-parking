@@ -25,9 +25,10 @@ const VerificationForm = (props:any) =>{
     const onFinish = (values:any) => {
         console.log('Success:', values);
         let _data ={
-            couponId:'',
+            couponId:couponNo,
             ...values
         }
+        return false;
         humanVerify(_data).then(data => {
             message.success('核销成功');
         })
@@ -77,7 +78,7 @@ const VerificationForm = (props:any) =>{
 }
 
 const Verification = forwardRef((props:any,ref:any) => { //react hooks 通过 forwardRef 直接暴露组件
-    const drawerRef:any = useRef();
+    const InputRef:any = useRef();
     useImperativeHandle(ref, () => ({
         show: () => {
             showDrawer() // 这里给父组件方法不一定是用dom的方法，可以使用自己const的方法
@@ -105,11 +106,16 @@ const Verification = forwardRef((props:any,ref:any) => { //react hooks 通过 fo
             plateNo
         };
         humanVerifyList(_data).then((data:any) => {
-            setTableData(data.data.list)
+            setTableData(data.data.list);
+            if(data.data.list && data.data.list.length == 1){
+                handleSelect(data.data.list[0].id)
+            }
         })
     };
     useEffect(() => {
-        setSearchValue('')
+        console.log(InputRef);
+        setSearchValue('');
+        setTableData([])
     },[visible]);
 
     return (
@@ -127,7 +133,6 @@ const Verification = forwardRef((props:any,ref:any) => { //react hooks 通过 fo
                             <span>车牌号</span>
                             <Search
                                 placeholder="请输入车牌号"
-                                defaultValue={ searchValue }
                                 onSearch={ onSearch } />
                         </div>
                         <div className="list-item">
