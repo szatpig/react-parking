@@ -78,7 +78,7 @@ export const selectByIndustryUser= (data:any) => fetch(site.base + '/commercialU
     data
 });
 
-export const grantValid= (data:any) => fetch(site.base + '/customerCoupon/checkGrantData' ,{
-    type: 'post',
-    data
+export const grantValid= (params:any) => fetch(site.base + '/customerCoupon/checkGrantData' ,{
+    type: 'get',
+    params
 });

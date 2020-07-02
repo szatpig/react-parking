@@ -1,6 +1,6 @@
 // Created by szatpig at 2020/6/20.
 import React, {useState, useEffect, useRef, useImperativeHandle, forwardRef} from 'react';
-import {Drawer, Button, Input, Empty, Form, message} from 'antd';
+import {Drawer, Button, Input, Empty, Form, message, InputNumber} from 'antd';
 
 import { humanVerifyList, humanVerify} from "@/api/admin/merchant-api";
 
@@ -50,15 +50,17 @@ const VerificationForm = (props:any) =>{
                             <Form.Item
                                     name="parkingAmount"
                                     noStyle
-                                    rules={[{ required: true, message: '请输入金额' }]}
+                                    rules={[
+                                        { required: true,whitespace: true, type:'number', message: '请输入数字' }
+                                    ]}
                             >
-                                <Input style={{ width: 160 }} />
+                                <InputNumber min={0} max={ 99999999 } step={ 5 } parser={(value:any) => parseInt(value) || 0 } maxLength={8} placeholder="请输入金额" style={{ width: 160 }}/>
                             </Form.Item> &nbsp;&nbsp;元
                         </Form.Item>
                         <Form.Item label="核销金额" >
                             { amount } 元
                         </Form.Item>
-                        <Form.Item label="还需支付" shouldUpdate={(prevValues, currentValues) => prevValues.parkingAmount !== currentValues.parkingAmount }>
+                        <Form.Item label="还需支付" dependencies ={ ['parkingAmount'] }>
                             {
                                 ({ getFieldValue }) => {
                                     return getFieldValue('parkingAmount') - amount >0 ? getFieldValue('parkingAmount') : 0
@@ -153,7 +155,7 @@ const Verification = forwardRef((props:any,ref:any) => { //react hooks 通过 fo
                                                                    <span>券码：{ item.couponNo }</span>
                                                                </p>
                                                                {
-                                                                   item.couponType === 'TIME_DEDUCT' ?
+                                                                   item.couponType === 'DISCOUNT_DEDUCT' ?
                                                                        <>
                                                                            <p className="flex between">
                                                                                <span>上限金额：{ item.couponAmount }元</span>

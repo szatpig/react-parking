@@ -41,6 +41,7 @@ function StoreDetail(props:Props) {
     const [ submitForm ] = Form.useForm();
     const [modal, contextHolder] = Modal.useModal();
     const [required,setRequired] = useState(true)
+    const [loginUserIds,setLoginUserId] = useState(true)
 
     const handleSelect = (val:number) => {
         setRequired(val === 1)
@@ -52,6 +53,7 @@ function StoreDetail(props:Props) {
         if(id > 0){
             let _data ={
                 id,
+                loginUserId:loginUserIds,
                 ...others,
                 province, city, area
             }
@@ -96,12 +98,13 @@ function StoreDetail(props:Props) {
             id
         }
         getMerchantUser(_data).then((data:any) => {
-            let { province, city, area,...others } = data.data,
+            let { province, city, area, loginUserId, ...others } = data.data,
                     region = [province, city, area] || [];
             submitForm.setFieldsValue({
                 ...others,
                 region
             })
+            setLoginUserId(loginUserId)
             setRequired(data.data.merchantType === 1)
         })
     }

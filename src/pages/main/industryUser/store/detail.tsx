@@ -37,6 +37,7 @@ function StoreDetail(props:Props) {
     const { id } = useParams();
     const [modal, contextHolder] = Modal.useModal();
     const [ submitForm ] = Form.useForm();
+    const [loginUserIds,setLoginUserId] = useState(true)
 
     const onFinish = (values:any) => {
         let { region, pictures,certificateList,permitList, ...others } = values,
@@ -54,6 +55,7 @@ function StoreDetail(props:Props) {
         if(id > 0){
             commercialUserEdit({
                 id,
+                loginUserId:loginUserIds,
                 ..._data
             }).then((data:any) => {
                 message.success('编辑成功');
@@ -90,8 +92,9 @@ function StoreDetail(props:Props) {
             id
         }
         getCommercialUserById(_data).then((data:any) => {
-            let { province, city, area,pictures,certificateList,permitList,...others } = data.data,
+            let { province, city, area,pictures,certificateList,permitList,loginUserId,...others } = data.data,
             region = [province, city, area] || [];
+            setLoginUserId(loginUserId)
             pictures = pictures.map((item:any) => ({
                 uid:item.id,
                 url:site.imagesUrl + item.image
