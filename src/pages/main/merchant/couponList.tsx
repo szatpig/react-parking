@@ -294,7 +294,7 @@ function CouponList() {
                                 { required: true, message: `请输入数量0-${ merchantInfo.inventory }` },
                                 { type: 'number', min: 0, max: merchantInfo.inventory, message: `库存不足` }
                             ] }>
-                                <InputNumber min={1} max={ merchantInfo.inventory } step={ 1 } parser={(value:any) => parseInt(value) || 0 } maxLength={ 9 } placeholder={`请输入数量`} />
+                                <InputNumber style={{ width:160 }} min={1} max={ merchantInfo.inventory } step={ 1 } parser={(value:any) => parseInt(value) || 0 } maxLength={ 9 } placeholder={`请输入数量`} />
                             </Form.Item>
                             &nbsp;&nbsp;张
                         </Form.Item>

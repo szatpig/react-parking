@@ -35,7 +35,7 @@ function RoleManage() {
     const [id,setId] = useState('');
     const [confirmLoading, setConfirmLoading] = useState(false);
     //tree
-    const [treeData ,setTreeData ] = useState<any[]>([]);
+    const [treeData ,setTreeData] = useState<any[]>([]);
 
 
     const [checkedKeys, setCheckedKeys] = useState<number[]>([]);
@@ -129,6 +129,10 @@ function RoleManage() {
         setShow(false)
     };
     const handleSubmit = () => {
+        if(checkedKeys.length == 0){
+            message.error('请至少选择一项权限');
+            return false;
+        }
         setConfirmLoading(true);
         modalForm.validateFields().then((values:any) => {
             let _data ={
@@ -164,7 +168,6 @@ function RoleManage() {
             console.log('Validate Failed:', info);
         });
     };
-
 
     const handleQuery = () => {
         setPage({
@@ -294,8 +297,8 @@ function RoleManage() {
                         confirmLoading={ confirmLoading }
                         onCancel={ handleCancel }>
                     <Form {...layout} form={ modalForm }>
-                        <Form.Item name="roleName" label="角色名称"  rules={[{ required: true,whitespace: true,pattern:/^[a-zA-Z]+[\w]{2,19}$/, message: '请输入以字母开头3-20位，可包含数字、字母、下划线' },]}>
-                            <Input maxLength={ 20 } placeholder="请输入以字母开头3-20位，可包含数字、字母、下划线" />
+                        <Form.Item name="roleName" label="角色名称"  rules={[{ required: true,whitespace: true}]}>
+                            <Input maxLength={ 20 } placeholder="请输入角色名称" />
                         </Form.Item>
                         <Form.Item name="roleDesc" label="备注" rules={ [
                             { required: true, whitespace: true, message: '请输入非空内容' }

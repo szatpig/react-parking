@@ -66,7 +66,7 @@ function UserManage() {
             dataIndex: 'sax',
             width: 120,
             render: (cell:number,row:any) => ( //(0：男；1：女)
-                    <span> { cell ? '女' : '男'  } </span>
+                    <span> { cell === 1 ? '女' : '男'  } </span>
             )
         },
         {
@@ -368,7 +368,9 @@ function UserManage() {
                     <Form {...layout} form={ modalForm } initialValues={{
                         sax:0
                     }}>
-                        <Form.Item name="userName" label="账号"  rules={[{ required: true,whitespace: true }]}>
+                        <Form.Item name="userName" label="账号"  rules={[
+                            { required: true,whitespace: true , pattern:/^[a-zA-Z]+[\w]{2,19}$/, message: '请输入以字母开头3-20位，可包含数字、字母、下划线' }
+                        ]}>
                             <Input maxLength={ 20 } disabled={ !!id } placeholder="请输入账号" />
                         </Form.Item>
                         <Form.Item name="name" label="姓名"  rules={[{ required: true,whitespace: true }]}>

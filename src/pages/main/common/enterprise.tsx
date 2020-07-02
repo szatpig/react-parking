@@ -72,7 +72,6 @@ function EnterpriseAccount(props:Props) {
 
     const loginOut = () => {
         userLoginOutAction();
-        history.push('/login')
     }
 
     const getUserInfo = () => {
@@ -128,23 +127,24 @@ function EnterpriseAccount(props:Props) {
                                 <Col flex="auto">{ userInfo.username }</Col>
                             </Row>
                             <Row>
-                                <Col { ...spanStyle }>商户名称</Col>
+                                <Col { ...spanStyle }>商{ currentAuthority==='admin'? '户':'家'}名称</Col>
                                 <Col flex="auto">{ userInfo.name }</Col>
                             </Row>
                             <Row>
-                                <Col { ...spanStyle }>商户地址</Col>
+                                <Col { ...spanStyle }>商{ currentAuthority==='admin'? '户':'家'}地址</Col>
                                 <Col flex="auto">{ userInfo.completeAddress }</Col>
+                            </Row>
+                            <Row>
+                                <Col { ...spanStyle }>联系人</Col>
+                                <Col flex="auto">{ userInfo.contact }</Col>
+                            </Row>
+                            <Row>
+                                <Col { ...spanStyle }>联系电话</Col>
+                                <Col flex="auto">{ userInfo.phone }</Col>
                             </Row>
                             { currentAuthority==='admin'?
                                     <>
-                                        <Row>
-                                            <Col { ...spanStyle }>联系人</Col>
-                                            <Col flex="auto">{ userInfo.contact }</Col>
-                                        </Row>
-                                        <Row>
-                                            <Col { ...spanStyle }>联系电话</Col>
-                                            <Col flex="auto">{ userInfo.phone }</Col>
-                                        </Row>
+
                                         <Row className="upload-container">
                                             <Col { ...spanStyle }>商户图片</Col>
                                             <Col flex="auto">
@@ -186,6 +186,10 @@ function EnterpriseAccount(props:Props) {
                                         <Row>
                                             <Col { ...spanStyle }>商家类型</Col>
                                             <Col flex="auto">{ merchantTypeArr[userInfo.merchantType] }</Col>
+                                        </Row>
+                                        <Row>
+                                            <Col { ...spanStyle }>法定代表人/负责人名称</Col>
+                                            <Col flex="auto">{ userInfo.legalPerson }</Col>
                                         </Row>
                                         <Row>
                                             <Col { ...spanStyle }>法定代表人/负责人证件类型</Col>
