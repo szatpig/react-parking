@@ -231,7 +231,7 @@ function MerchantSale() {
                             bordered
                             columns={ columns }
                             dataSource={ tableData }
-                            pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,...page, showTotal: showTotal }} />
+                            pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,showSizeChanger:true,...page, showTotal: showTotal }} />
                 </div>
                 <Modal
                         title={ id ? '编辑折扣':'添加折扣'}

@@ -338,7 +338,7 @@ function SaleManage() {
                         <div className="ticket-wrap">
                             <p className="ticket-title">折扣券 <i>（库存量：{ merchantInfo.stockNumber } 张）</i></p>
                             {
-                                merchantInfo.couponType === 'TIME_DEDUCT' ?
+                                merchantInfo.couponType === 'DISCOUNT_DEDUCT' ?
                                         <>
                                             <p className="flex between">
                                                 <span>上限金额：{ merchantInfo.amount }元</span>

@@ -296,7 +296,7 @@ function Store() {
                             columns={ columns }
                             loading={ loading }
                             dataSource={ tableData }
-                            pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,...page, showTotal: showTotal }} />
+                            pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,showSizeChanger:true,...page, showTotal: showTotal }} />
                 </div>
                 { contextHolder }
             </div>

@@ -306,14 +306,14 @@ function CouponList() {
                                 { required: true, message: `请输入数量0-${ merchantInfo.inventory }` },
                                 { type: 'number', min: 0, max: merchantInfo.inventory, message: `库存不足` }
                             ] }>
-                                <InputNumber style={{ width:160 }} min={1} max={ merchantInfo.inventory } step={ 1 } parser={(value:any) => parseInt(value) || 0 } maxLength={ 9 } placeholder={`请输入数量`} />
+                                <InputNumber style={{ width:120 }} min={1} max={ merchantInfo.inventory } step={ 1 } parser={(value:any) => parseInt(value) || 0 } maxLength={ 9 } placeholder={`请输入数量`} />
                             </Form.Item>
                             &nbsp;&nbsp;张
                         </Form.Item>
                         <div className="ticket-wrap">
                             <p className="ticket-title">{ couponTypeText[merchantInfo.couponType] } <i>（库存量：{ merchantInfo.inventory } 张）</i></p>
                             {
-                                merchantInfo.couponType === 'TIME_DEDUCT' ?
+                                merchantInfo.couponType === 'DISCOUNT_DEDUCT' ?
                                         <>
                                             <p className="flex between">
                                                 <span>上限金额：{ merchantInfo.limitAmount }元</span>
