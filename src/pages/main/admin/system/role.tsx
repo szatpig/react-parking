@@ -8,9 +8,7 @@ import {
     roleUpdate,
     roleDelete,
     roleGet,
-    getRoleMenu,
-    userAdd,
-    userUpdate, userDelete, userOff, userReset
+    getRoleMenu
 } from '@/api/admin/system-api'
 
 import { ExclamationCircleFilled,ExclamationCircleOutlined } from '@ant-design/icons';
@@ -39,7 +37,7 @@ function RoleManage() {
 
 
     const [checkedKeys, setCheckedKeys] = useState<number[]>([]);
-
+    const [halfCheckedKeys, setHalfCheckedKeys] = useState<number[]>([]);
     const columns = [
         {
             title: '角色名称',
@@ -100,7 +98,8 @@ function RoleManage() {
     }
     const handleShow =  (id:number) => {
         setShow(true)
-        setCheckedKeys([])
+        setCheckedKeys([]);
+        setHalfCheckedKeys([])
         modalForm.resetFields();
         if(id){
             console.log(id)
@@ -123,6 +122,7 @@ function RoleManage() {
     const onCheck = (checkedKeys:any,e:any) => {
         console.log('onCheck', checkedKeys,e);
         setCheckedKeys(checkedKeys);
+        setHalfCheckedKeys(e.halfCheckedKeys)
     };
     const handleCancel = () => {
         console.log('Clicked cancel button');
@@ -137,7 +137,7 @@ function RoleManage() {
         modalForm.validateFields().then((values:any) => {
             let _data ={
                 ...values,
-                permissionIds:checkedKeys
+                permissionIds:checkedKeys.concat(halfCheckedKeys)
             }
             if(!!!id){
                 roleAdd(_data).then((data:any) => {
