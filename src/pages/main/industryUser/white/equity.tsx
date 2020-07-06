@@ -94,6 +94,9 @@ interface TableProps {
 
 const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
     const [selectedRow, setSelectedRow] = useState([]);
+    const [rowPages, setRowPages] = useState<object>({
+        0:[]
+    });
     const [loading, setLoading] = useState(false);
     const [tableData,setTableData] = useState<object[]>([]);
     const [tableSelect, setTableSelect] = useState(false);
@@ -115,8 +118,10 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
     };
 
     const onSelectChange = (selectedRowKeys:any,selectedRows:any) => {
-        setSelectedRow(selectedRowKeys);
-        triggerChange(selectedRowKeys)
+        setRowPages({
+            ...rowPages,
+            [page.current]:selectedRowKeys
+        })
     };
     const checkboxChange = (e:any) => {
         setTableSelect(e.target.checked);
@@ -133,7 +138,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
                     }
             triggerChange(_data)
         }else{
-            triggerChange(selectedRow)
+            triggerChange(Object.values(rowPages).reduce((current,sum) => sum.concat(current)))
         }
     }
     const onSelectAll = (row:any) => ({
@@ -178,6 +183,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
             current,
             pageSize
         });
+        setSelectedRow(Object.values(rowPages).reduce((current,sum) => sum.concat(current)));
         form.submit();
     };
     const pageSizeChange= (current:number,pageSize:any) => {
@@ -216,6 +222,14 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
     useEffect(() => {
         handleSearch({})
     },[0]);
+
+    useEffect(() => {
+        let temp = Object.values(rowPages).reduce((current,sum) => sum.concat(current))
+        setSelectedRow(temp);
+        if(temp.length > 0){
+            triggerChange(temp)
+        }
+    },[rowPages]);
 
     return(
         <>

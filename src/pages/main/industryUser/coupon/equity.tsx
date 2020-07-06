@@ -27,6 +27,7 @@ import site from '@/utils/config'
 import { getParkingDetailByBusinessId } from '@/api/common-api'
 import { getProvideConfirmData, provideCouponOne, importDataConfirm, importCouponBatch } from '@/api/industryUser/coupon-api'
 import region from '@/json/region'
+import {object} from "prop-types";
 
 const { Option } = Select;
 const options = region;
@@ -98,7 +99,10 @@ interface TableProps {
 }
 
 const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
-    const [selectedRow, setSelectedRow] = useState([]);
+    const [selectedRow, setSelectedRow] = useState<number[]>([]);
+    const [rowPages, setRowPages] = useState<object>({
+        0:[]
+    });
     const [loading, setLoading] = useState(false);
     const [tableData,setTableData] = useState<object[]>([]);
     const [tableSelect, setTableSelect] = useState(false);
@@ -119,9 +123,11 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
     };
 
     const onSelectChange = (selectedRowKeys:any,selectedRows:any) => {
-        console.log(selectedRowKeys);
-        setSelectedRow(selectedRowKeys);
-        triggerChange(selectedRowKeys)
+        // console.log(selectedRowKeys,selectedRow,selectedRows);
+        setRowPages({
+            ...rowPages,
+            [page.current]:selectedRowKeys
+        })
     };
 
     const checkboxChange = (e:any) => {
@@ -139,7 +145,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
                     }
             triggerChange(_data)
         }else{
-            triggerChange(selectedRow)
+            triggerChange(Object.values(rowPages).reduce((current,sum) => sum.concat(current)))
         }
     }
     const onSelectAll = (row:any) => ({
@@ -183,6 +189,7 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
             current,
             pageSize
         });
+        setSelectedRow(Object.values(rowPages).reduce((current,sum) => sum.concat(current)));
         form.submit();
     };
     const pageSizeChange= (current:number,pageSize:any) => {
@@ -220,6 +227,14 @@ const FormTable:React.FC<TableProps> = ({ value = {}, onChange })=>{
     useEffect(() => {
         handleSearch({})
     },[0]);
+
+    useEffect(() => {
+        let temp = Object.values(rowPages).reduce((current,sum) => sum.concat(current))
+        setSelectedRow(temp);
+        if(temp.length > 0){
+            triggerChange(temp)
+        }
+    },[rowPages]);
 
     return(
         <>

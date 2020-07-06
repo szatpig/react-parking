@@ -24,7 +24,7 @@ class ErrorBoundary extends Component<Props, State> {
     render() {
         if (this.state.hasError) {
             // 你可以自定义降级后的 UI 并渲染
-            return <h1>Something went wrong.</h1>;
+            return <h1>系统更新，请刷新重试</h1>;
         }
         return this.props.children;
     }

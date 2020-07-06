@@ -2,7 +2,7 @@
 import React, {useState, useEffect, useRef, useImperativeHandle, forwardRef} from 'react';
 import {Drawer, Button, Input, Empty, Form, message, InputNumber} from 'antd';
 
-import { humanVerifyList, humanVerify} from "@/api/admin/merchant-api";
+import { humanVerifyList, humanVerify } from "@/api/admin/merchant-api";
 
 const couponTypeList:any = {
     FIX_DEDUCT:'固定抵扣金额券',
@@ -65,7 +65,7 @@ const VerificationForm = (props:any) =>{
                             {
                                 ({ getFieldValue }) => {
                                     console.log(getFieldValue('parkingAmount'))
-                                    return (getFieldValue('parkingAmount') - amount > 0 ? getFieldValue('parkingAmount') - amount : 0) + ' 元'
+                                    return (getFieldValue('parkingAmount') - amount > 0 ? (getFieldValue('parkingAmount') - amount).toFixed(2) : 0) + ' 元'
                                }
                             }
                         </Form.Item>
