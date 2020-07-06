@@ -154,16 +154,16 @@ function AccountBill() {
                                 <Select
                                         placeholder="请选择类型"
                                         allowClear>
-                                    <Option value="0">充值</Option>
-                                    <Option value="3">发放停车券</Option>
-                                    <Option value="2">发放权益金</Option>
-                                    <Option value="7">核销停车券</Option>
-                                    <Option value="6">核销权益金</Option>
-                                    <Option value="5">停车券过期</Option>
-                                    <Option value="4">权益金过期</Option>
-                                    <Option value="9">撤销停车券</Option>
-                                    <Option value="8">撤销权益金</Option>
-                                    <Option value="1">后台修改余额</Option>
+                                    <Option value={0}>充值</Option>
+                                    <Option value={3}>发放停车券</Option>
+                                    <Option value={2}>发放权益金</Option>
+                                    <Option value={7}>核销停车券</Option>
+                                    <Option value={6}>核销权益金</Option>
+                                    <Option value={5}>停车券过期</Option>
+                                    <Option value={4}>权益金过期</Option>
+                                    <Option value={9}>撤销停车券</Option>
+                                    <Option value={8}>撤销权益金</Option>
+                                    <Option value={1}>后台修改余额</Option>
                                 </Select>
                             </Form.Item>
                             <Form.Item label="商户名称" name="commercialUserName">

@@ -28,7 +28,6 @@ const VerificationForm = (props:any) =>{
             couponId:couponNo,
             ...values
         }
-        return false;
         humanVerify(_data).then(data => {
             message.success('核销成功');
         })
@@ -54,7 +53,7 @@ const VerificationForm = (props:any) =>{
                                         { required: true,whitespace: true, type:'number', message: '请输入数字' }
                                     ]}
                             >
-                                <InputNumber min={0} max={ 99999999 } step={ 5 } parser={(value:any) => parseInt(value) || 0 } maxLength={8} placeholder="请输入金额" style={{ width: 160 }}/>
+                                <InputNumber min={0} max={ 99999999 } step={ 5.00 } maxLength={ 8 } placeholder="请输入金额" style={{ width: 160 }}/>
                             </Form.Item> &nbsp;&nbsp;元
                         </Form.Item>
                         <Form.Item label="核销金额" >

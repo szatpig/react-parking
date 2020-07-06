@@ -231,7 +231,7 @@ function MerchantSale() {
                             bordered
                             columns={ columns }
                             dataSource={ tableData }
-                            pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,showSizeChanger:true,...page, showTotal: showTotal }} />
+                            pagination={ false } />
                 </div>
                 <Modal
                         title={ id ? '编辑折扣':'添加折扣'}
@@ -244,7 +244,7 @@ function MerchantSale() {
                         confirmLoading={ confirmLoading }
                         onCancel={ handleCancel }>
                     <Form form={ form } initialValues={{
-                        discountList:[{sales: 100, discount: 0.9}, {sales: 200, discount: 0.8}, {sales: 300, discount: 0.7}]
+                        discountList:[{ sales: 0, discount: 0.99 }]
                     }}>
                         <Row className="form-grid" justify="start" gutter={[20, 0]}>
                             <Col span={ 24 }>
@@ -331,10 +331,10 @@ function MerchantSale() {
                                                                     label="折扣"
                                                                     name={[field.name, 'discount']}
                                                                     fieldKey={[field.fieldKey, 'discount']}
-                                                                    rules={[{required: true, type: 'number', min: 0, max: 1, message: '请输入0-1值' }]}
+                                                                    rules={[{required: true, type: 'number', min: 0, max: 0.99, message: '请输入0-0.99值' }]}
                                                             >
-                                                                <InputNumber maxLength={8}
-                                                                             min={0} max={1} step={0.01 } placeholder="请输入"/>
+                                                                <InputNumber maxLength={ 4 }
+                                                                             min={0} max={ 0.99 } step={0.01 } placeholder="请输入"/>
                                                             </Form.Item>
                                                             {fields.length-1 === index ? (
                                                                     <PlusSquareOutlined

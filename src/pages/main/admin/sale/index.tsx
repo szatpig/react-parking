@@ -1,8 +1,5 @@
 // Created by szatpig at 2020/6/16.
 import React, {useState, useEffect} from 'react';
-import { useHistory } from "react-router-dom";
-
-import moment from 'moment';
 
 import {Form, Input, Button, Modal, DatePicker, Select, Table, message, InputNumber} from 'antd';
 import { saleList, getMerchantUserNameList, addMerchantUserCoupon } from '@/api/admin/sale-api'
@@ -50,7 +47,10 @@ function SaleManage() {
     const [modal, contextHolder] = Modal.useModal();
     const [merchantInfo, setMerchantInfo] = useState<any>([]);
     const [merchantList, setMerchantList] = useState([]);
+    const [discountArr, setDiscountArr] = useState([]);
+    const [saleArr, setSaleArr] = useState([]);
     const [amount, setAmount] = useState(0);
+    const [discount, setDiscount] = useState(0);
     const [confirmLoading, setConfirmLoading] = useState(false);
 
     const columns = [
@@ -163,16 +163,23 @@ function SaleManage() {
         setMerchantInfo(row)
         modalForm.resetFields();
         setAmount(0)
-        setShow(true)
+        setShow(true);
+        setDiscount(0.2)
     };
     const handleCancel = () => {
         console.log('Clicked cancel button');
         setShow(false)
     };
     const handleInput= (value:any) => {
-        console.log(value)
-        setAmount(Number(value)*merchantInfo.amount)
+        setAmount( Number(value)*merchantInfo.amount )
     };
+    const handleSelect= (value:any,options:any) => {
+        setDiscountArr(options.title.map((item:any) => item.discount))
+        setSaleArr(options.title.map((item:any) => item.maxSales))
+    };
+
+    const findIndex = (val:number, arr:number[]):number => (arr.findIndex((el) => el >= val))
+
     const getMerchantList = () => {
         let _data ={
 
@@ -238,6 +245,21 @@ function SaleManage() {
             setLoading(false)
         })
     };
+
+    useEffect(() => {
+        //do something
+        console.log(discountArr);
+        if(discountArr.length > 0){
+            let _index= findIndex(amount,saleArr);
+            if(_index > -1){
+                setDiscount(discountArr[_index])
+            }else{
+                setDiscount(1)
+            }
+        }else{
+            setDiscount(1)
+        }
+    },[saleArr,amount]);
 
     useEffect(() => {
         //do something
@@ -312,10 +334,10 @@ function SaleManage() {
                         ] }>
                             <Select
                                     placeholder="请选择商家"
-                                    allowClear>
+                                    allowClear onChange={ handleSelect }>
                                 {
                                     merchantList.map((item:any) => (
-                                            <Option key={ item.id } value={ item.id }>{ item.merchantUsername }</Option>
+                                            <Option key={ item.id } title={ item.discountRangeListVO } value={ item.id }>{ item.merchantUsername }</Option>
                                     ))
                                 }
                             </Select>
@@ -333,7 +355,7 @@ function SaleManage() {
                             { amount ||  merchantInfo.amount  } 元
                         </Form.Item>
                         <Form.Item label="销售折扣">
-                            { merchantInfo.discount || 1 }
+                            { discount || 1 }
                         </Form.Item>
                         <div className="ticket-wrap">
                             <p className="ticket-title">折扣券 <i>（库存量：{ merchantInfo.stockNumber } 张）</i></p>

@@ -203,7 +203,7 @@ function CouponGive() {
     return (
             <div className="coupon-give-container">
                 <div className="breadcrumb-container left-border line">
-                    停车券发放
+                    停车券发放记录
                     <span></span>
                 </div>
                 <div className="search-container">
@@ -244,7 +244,6 @@ function CouponGive() {
                                     <Option value="1">已领取</Option>
                                     <Option value="2">已核销</Option>
                                     <Option value="3">已过期</Option>
-                                    <Option value="4">已撤销</Option>
                                 </Select>
                             </Form.Item>
                             <Form.Item>
