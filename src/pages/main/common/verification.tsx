@@ -10,6 +10,8 @@ const couponTypeList:any = {
     TIME_DEDUCT:'次数抵扣',
 }
 
+const colorList:any = ['蓝色','黄色','黑色','白色','渐变绿色','黄绿双拼色','蓝白渐变色']
+
 
 const { Search } = Input;
 
@@ -53,20 +55,20 @@ const VerificationForm = (props:any) =>{
                                         { required: true,whitespace: true, type:'number', message: '请输入数字' }
                                     ]}
                             >
-                                <InputNumber min={0} max={ 99999999 } step={ 5.00 } maxLength={ 8 } placeholder="请输入金额" style={{ width: 160 }}/>
+                                <InputNumber min={0} max={ 99999999 } step={ 5.00 }  maxLength={ 8 } placeholder="请输入金额" style={{ width: 160 }}/>
                             </Form.Item> &nbsp;&nbsp;元
                         </Form.Item>
                         <Form.Item label="核销金额" >
                             { amount } 元
                         </Form.Item>
-                        <Form.Item label="还需支付" dependencies ={ ['parkingAmount'] }>
+                        <Form.Item label="还需支付" shouldUpdate={(prevValues, currentValues) => prevValues.parkingAmount !== currentValues.parkingAmount}>
                             {
                                 ({ getFieldValue }) => {
-                                    return getFieldValue('parkingAmount') - amount >0 ? getFieldValue('parkingAmount') : 0
+                                    console.log(getFieldValue('parkingAmount'))
+                                    return (getFieldValue('parkingAmount') - amount > 0 ? getFieldValue('parkingAmount') - amount : 0) + ' 元'
                                }
-                            } 元
+                            }
                         </Form.Item>
-
                     </>
             }
             <Form.Item >
@@ -150,7 +152,7 @@ const Verification = forwardRef((props:any,ref:any) => { //react hooks 通过 fo
                                                                    { item.couponType === 'TIME_DEDUCT' && <i>（上限{ item.couponAmount } 元）</i> }
                                                                </p>
                                                                <p className="flex between">
-                                                                   <span>车牌号：{ item.plateNo }（蓝牌）</span>
+                                                                   <span>车牌号：{ item.plateNo }（{ colorList[item.plateColor] }）</span>
                                                                    <span>券码：{ item.couponNo }</span>
                                                                </p>
                                                                {
@@ -174,7 +176,7 @@ const Verification = forwardRef((props:any,ref:any) => { //react hooks 通过 fo
                                                                {
                                                                    index === item.id &&
                                                                    <div className={ `collapsed active ${ item.couponType == 'FIX_DEDUCT' ? 'noborder' :'' }` }>
-                                                                       <VerificationForm key={ item.id } couponNo={ item.couponNo } amount={ item.couponAmount } type={ item.couponType } />
+                                                                       <VerificationForm key={ item.id } couponNo={ item.id } amount={ item.couponAmount } type={ item.couponType } />
                                                                    </div>
                                                                }
                                                            </div>

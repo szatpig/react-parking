@@ -191,8 +191,13 @@ function Verification() {
                             <Select
                                     placeholder="请选择"
                                     allowClear>
-                                <Option value="0">权益金额核销</Option>
-                                <Option value="1">优惠券核销</Option>
+                                <Option value={ 0 }>白名单</Option>
+                                <Option value={ 1 }>停车券-金额券</Option>
+                                <Option value={ 2 }>停车券-折扣券</Option>
+                                <Option value={ 3 }>停车券-次数券</Option>
+                                <Option value={ 4 }>停车券-金额券(人工核销)</Option>
+                                <Option value={ 5 }>停车券-折扣券(人工核销)</Option>
+                                <Option value={ 6 }>停车券-次数券(人工核销)</Option>
                             </Select>
                         </Form.Item>
                         <Form.Item label="券码" name="couponNo">
