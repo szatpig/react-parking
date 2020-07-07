@@ -30,7 +30,6 @@ import region from '@/json/region'
 
 const { Option } = Select;
 const options = region;
-const colorList:any = ['蓝色','黄色','黑色','白色','渐变绿色','黄绿双拼色','蓝白渐变色']
 const layout = {
     labelCol: { span: 2 },
     wrapperCol: { span: 6 },

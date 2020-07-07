@@ -13,6 +13,11 @@ export const humanVerify= (data:any) => fetch(site.base + '/humanVerify/verify' 
     data
 });
 
+export const getHumanVerifyInfo= (data:any) => fetch(site.base + '/humanVerify/getHumanVerifyInfo' ,{
+    type: 'post',
+    data
+});
+
 export const merchantDiscountList= (data:any) => fetch(site.base + '/merchantDiscountInfo/list' ,{
     type: 'post',
     data

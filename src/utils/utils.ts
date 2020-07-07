@@ -18,7 +18,19 @@ const Debounce = function (fn:any, wait:number) {
     }
 }
 
+const Throttle = function(fn:any, delay:number) {
+    let prev = Date.now();
+    return function() {
+        let now = Date.now();
+        if (now - prev >= delay) {
+            fn.apply(arguments);
+            prev = Date.now();
+        }
+    }
+}
+
 export {
     Debounce,
+    Throttle,
     EncryptStr
 }

@@ -2,30 +2,35 @@
 import React, {useState, useEffect, useRef, useImperativeHandle, forwardRef} from 'react';
 import {Drawer, Button, Input, Empty, Form, message, InputNumber} from 'antd';
 
-import { humanVerifyList, humanVerify } from "@/api/admin/merchant-api";
+import { humanVerifyList, humanVerify, getHumanVerifyInfo } from "@/api/admin/merchant-api";
+
+import { Debounce, Throttle } from '@/utils/utils'
 
 const couponTypeList:any = {
     FIX_DEDUCT:'固定抵扣金额券',
     DISCOUNT_DEDUCT:'按比例折扣',
     TIME_DEDUCT:'次数抵扣',
 }
-
 const colorList:any = ['蓝色','黄色','黑色','白色','渐变绿色','黄绿双拼色','蓝白渐变色']
 
-
 const { Search } = Input;
-
 const layout = {
     labelCol: { span: 4 },
     wrapperCol: { span: 16 },
 };
 
 const VerificationForm = (props:any) =>{
+    const [amount, setAmount] = useState(0);
+    const [pay, setPay] = useState(0);
 
-    const { type,amount,couponNo } = props
+    const { type,couponNo } = props
 
     const onFinish = (values:any) => {
         console.log('Success:', values);
+        if(values.parkingAmount == 0) {
+            message.error('停车总额不能为0');
+            return;
+        }
         let _data ={
             couponId:couponNo,
             ...values
@@ -35,10 +40,30 @@ const VerificationForm = (props:any) =>{
         })
     };
 
+    const _amountFetch = (parkingAmount:any) => {
+        if(parkingAmount == 0) {
+            setAmount(0)
+            setPay(0)
+            return;
+        }
+        let _data ={
+            couponId:couponNo,
+            parkingAmount
+        }
+        getHumanVerifyInfo(_data).then((data:any) => {
+            setAmount(data.data.verifyAmount)
+            setPay(data.data.actualPaidAmount)
+        })
+    }
+
+    const handleInputNumber = (parkingAmount:any) => {
+        Debounce(_amountFetch(parkingAmount),5500);
+    };
+
     return(
         <Form
             {...layout}
-            name="verifictionForm"
+            name="verificationForm"
             initialValues={{
                 parkingAmount:0,
                 couponNo:couponNo
@@ -55,19 +80,14 @@ const VerificationForm = (props:any) =>{
                                         { required: true,whitespace: true, type:'number', message: '请输入数字' }
                                     ]}
                             >
-                                <InputNumber min={0} max={ 99999999 } step={ 5.00 }  maxLength={ 8 } placeholder="请输入金额" style={{ width: 160 }}/>
+                                <InputNumber onChange={ handleInputNumber } min={0} max={ 99999999 } step={ 5.00 } formatter={ (value:any) => value.toString().replace(/^(\-)*(\d+)\.(\d\d).*$/, '$1$2.$3') }  maxLength={ 8 } placeholder="请输入金额" style={{ width: 160 }}/>
                             </Form.Item> &nbsp;&nbsp;元
                         </Form.Item>
-                        <Form.Item label="核销金额" >
+                        <Form.Item label="核销金额">
                             { amount } 元
                         </Form.Item>
-                        <Form.Item label="还需支付" shouldUpdate={(prevValues, currentValues) => prevValues.parkingAmount !== currentValues.parkingAmount}>
-                            {
-                                ({ getFieldValue }) => {
-                                    console.log(getFieldValue('parkingAmount'))
-                                    return (getFieldValue('parkingAmount') - amount > 0 ? (getFieldValue('parkingAmount') - amount).toFixed(2) : 0) + ' 元'
-                               }
-                            }
+                        <Form.Item label="还需支付">
+                            { pay } 元
                         </Form.Item>
                     </>
             }
@@ -183,11 +203,6 @@ const Verification = forwardRef((props:any,ref:any) => { //react hooks 通过 fo
                                                        )
                                                 })
                                             }
-
-
-
-
-
                                         </>:
                                         <Empty />
                             }

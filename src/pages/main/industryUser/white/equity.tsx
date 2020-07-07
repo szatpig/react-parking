@@ -379,7 +379,7 @@ function Equity(props:Props) {
                                     <div className="import-content">
                                         <p><span>共计：</span>{ importCount } 笔</p>
                                         <p><span>其中新增白名单：</span>{ newCount }个</p>
-                                        <p><span>权益余额总计：</span>{ totalAmount }元</p>
+                                        <p><span>权益金额总计：</span>{ totalAmount }元</p>
                                     </div>
                                 </div>
                             </div>
