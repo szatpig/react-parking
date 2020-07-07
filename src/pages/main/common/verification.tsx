@@ -23,7 +23,7 @@ const VerificationForm = (props:any) =>{
     const [amount, setAmount] = useState(0);
     const [pay, setPay] = useState(0);
 
-    const { type,couponNo } = props
+    const { type, couponNo, onSearch } = props
 
     const onFinish = (values:any) => {
         console.log('Success:', values);
@@ -37,6 +37,7 @@ const VerificationForm = (props:any) =>{
         }
         humanVerify(_data).then(data => {
             message.success('核销成功');
+            onSearch();
         })
     };
 
@@ -112,6 +113,8 @@ const Verification = forwardRef((props:any,ref:any) => { //react hooks 通过 fo
     const [tableData,setTableData] = useState<object[]>([]);
     const [index,setIndex] = useState<number>(-1);
 
+    const [ searchForm ] = Form.useForm();
+
     const handleSelect = (i:number) => {
         setIndex(i);
     };
@@ -121,8 +124,11 @@ const Verification = forwardRef((props:any,ref:any) => { //react hooks 通过 fo
     const onClose = () => {
         setVisible(false);
     };
-    const onSearch = (value:string) => {
-        list(value)
+    const onSearch = () => {
+        searchForm.submit();
+    };
+    const onSubmit = ({ plateNo }:any) => {
+        list(plateNo)
     };
     const list = (plateNo:string) => {
         let _data={
@@ -136,27 +142,32 @@ const Verification = forwardRef((props:any,ref:any) => { //react hooks 通过 fo
         })
     };
     useEffect(() => {
-        console.log(InputRef);
-        setSearchValue('');
+        searchForm.resetFields()
         setTableData([])
     },[visible]);
 
     return (
             <div className="drawer-component-container">
                 <Drawer
-                        title="人工核销"
-                        placement="right"
-                        onClose={ onClose }
-                        visible={ visible }
-                        width={ 506 }
-                        className="drawer-container"
+                    title="人工核销"
+                    placement="right"
+                    onClose={ onClose }
+                    visible={ visible }
+                    width={ 506 }
+                    className="drawer-container"
                 >
                     <div className="drawer-wrap">
                         <div className="search-item flex">
-                            <span>车牌号</span>
-                            <Search
-                                placeholder="请输入车牌号"
-                                onSearch={ onSearch } />
+                            <Form
+                                layout="inline"
+                                form={ searchForm }
+                                onFinish={ onSubmit } initialValues={{
+                                    plateNo:''
+                            }}>
+                                <Form.Item label="车牌号" name="plateNo">
+                                    <Search placeholder="请输入车牌号" onSearch={ onSearch } />
+                                </Form.Item>
+                            </Form>
                         </div>
                         <div className="list-item">
                             {
@@ -196,7 +207,7 @@ const Verification = forwardRef((props:any,ref:any) => { //react hooks 通过 fo
                                                                {
                                                                    index === item.id &&
                                                                    <div className={ `collapsed active ${ item.couponType == 'FIX_DEDUCT' ? 'noborder' :'' }` }>
-                                                                       <VerificationForm key={ item.id } couponNo={ item.id } amount={ item.couponAmount } type={ item.couponType } />
+                                                                       <VerificationForm key={ item.id } couponNo={ item.id } type={ item.couponType } onSearch={ onSearch }  />
                                                                    </div>
                                                                }
                                                            </div>

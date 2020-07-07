@@ -102,6 +102,9 @@
         .search-item{
             justify-content: flex-start;
             align-items: center;
+            .ant-form,.ant-form-item{
+                width: 100%;
+            }
             &>span{
                 &:first-child{
                     flex: 0 0 60px;
@@ -111,6 +114,9 @@
                 &:before{
                    border: 0;
                 }
+            }
+            .ant-form-item-label > label::after{
+                content: '';
             }
         }
         .list-item{

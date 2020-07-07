@@ -162,7 +162,7 @@ function Store() {
                                     <div className="import-cell">
                                         <p>请使用下方账号和默认密码登录系统</p>
                                         <div className="import-content">
-                                            <p><span>登录地址：</span> <a target="_blank" href={ data.data.loginUserAddress }>{ data.data.loginUserAddress }</a></p>
+                                            <p><span>登录地址：</span> <a target="_blank" href={ data.data.loginUserAddress + '?tab=relogin' }>{ data.data.loginUserAddress }</a></p>
                                             <p><span>用户账号：</span>{ data.data.userName }</p>
                                             <p><span>默认密码：</span>{ data.data.password }</p>
                                         </div>

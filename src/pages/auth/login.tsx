@@ -26,8 +26,6 @@ class Login extends Component<UserFormProps, State> {
     formRef = React.createRef<FormInstance>();
 
     componentDidMount() {
-        sessionStorage.clear();
-        userLoginOutAction();
         let _data ={
 
         }
@@ -39,7 +37,10 @@ class Login extends Component<UserFormProps, State> {
     }
 
 
+
+
     handleSubmit = (values :any) => {
+        this.props.history.replace('/login')
         const { userLoginRequestAction } = this.props;
         const { publicKey,code } = this.state
 
@@ -63,10 +64,16 @@ class Login extends Component<UserFormProps, State> {
     };
 
     render() {
-        console.log(this.props.menuList)
-        if(this.props.userToken && this.props.userInfo.currentAuthority && this.props.menuList.length){
-            let path = this.props.menuList[0].children && this.props.menuList[0].children.length > 0 ? this.props.menuList[0].children[0].path :  this.props.menuList[0].path
-            this.props.history.push(path)
+        let _query = this.props.history.location.search.match(/tab=([a-z]+)/)
+        console.log(_query)
+
+        if(_query && _query.length && _query[1] === 'relogin'){
+            userLoginOutAction();
+        }else{
+            if(this.props.userToken && this.props.userInfo.currentAuthority && this.props.menuList.length){
+                let path = this.props.menuList[0].children && this.props.menuList[0].children.length > 0 ? this.props.menuList[0].children[0].path :  this.props.menuList[0].path
+                this.props.history.push(path)
+            }
         }
         return (
             <div className="login-container">

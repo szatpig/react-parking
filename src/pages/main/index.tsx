@@ -13,7 +13,6 @@ const MenuLayout  = lazy(() => import('./layout/menu'));
 const ErrorBoundary  = lazy(() => import('@/components/ErrorBoundary'));
 
 class Home extends Component<Props, State>{
-
     render() {
         return (
             <Layout className="main-container">
