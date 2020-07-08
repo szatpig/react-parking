@@ -18,14 +18,14 @@ const Debounce = function (fn:any, wait:number) {
     }
 }
 
-const Throttle = function(fn:any, delay:number) {
-    let prev = Date.now();
-    return function() {
-        let now = Date.now();
-        if (now - prev >= delay) {
-            fn.apply(arguments);
-            prev = Date.now();
-        }
+const Throttle = function(fn:any, wait:number) {
+    let timer:any
+    return (...args:any) => {
+        if (timer) { return }
+        timer = setTimeout(() => {
+            fn(...args)
+            timer = null
+        }, wait)
     }
 }
 

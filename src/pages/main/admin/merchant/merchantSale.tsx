@@ -54,7 +54,6 @@ function MerchantSale() {
             dataIndex: 'operation',
             render: (val:string, row:object) =>(
                 <span>
-                    <Button type="link" onClick={ ()=> handleView(row) }>详情</Button>
                     <Button type="link" onClick={ ()=> handleEdit(row) }>编辑</Button>
                     <Popconfirm title="确定要删除吗？" onConfirm={ () => handleDelete(row) }>
                         <Button type="link">删除</Button>

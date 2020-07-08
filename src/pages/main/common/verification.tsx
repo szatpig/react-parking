@@ -23,12 +23,14 @@ const VerificationForm = (props:any) =>{
     const [amount, setAmount] = useState(0);
     const [pay, setPay] = useState(0);
 
+    const [ amountForm ] = Form.useForm();
+
     const { type, couponNo, onSearch } = props
 
     const onFinish = (values:any) => {
         console.log('Success:', values);
-        if(values.parkingAmount == 0) {
-            message.error('停车总额不能为0');
+        if( !!!values.parkingAmount) {
+            message.error('停车总额不能为0或空');
             return;
         }
         let _data ={
@@ -42,14 +44,19 @@ const VerificationForm = (props:any) =>{
     };
 
     const _amountFetch = (parkingAmount:any) => {
-        if(parkingAmount == 0) {
+        // let reg = new RegExp(/^\\d+(.\\d+)?$/);
+        // if(reg.test(parkingAmount) === false){
+        //     return false;
+        // }
+        // console.log(1)
+        if(!!!parkingAmount) {
             setAmount(0)
             setPay(0)
             return;
         }
         let _data ={
             couponId:couponNo,
-            parkingAmount
+            parkingAmount:parseInt(parkingAmount)
         }
         getHumanVerifyInfo(_data).then((data:any) => {
             setAmount(data.data.verifyAmount)
@@ -58,13 +65,16 @@ const VerificationForm = (props:any) =>{
     }
 
     const handleInputNumber = (parkingAmount:any) => {
-        Debounce(_amountFetch(parkingAmount),5500);
+        amountForm.validateFields().then((data:any) => {
+            Throttle(_amountFetch(parkingAmount),5500);
+        })
     };
 
     return(
         <Form
             {...layout}
             name="verificationForm"
+            form ={ amountForm }
             initialValues={{
                 parkingAmount:0,
                 couponNo:couponNo
@@ -81,7 +91,15 @@ const VerificationForm = (props:any) =>{
                                         { required: true,whitespace: true, type:'number', message: '请输入数字' }
                                     ]}
                             >
-                                <InputNumber onChange={ handleInputNumber } min={0} max={ 99999999 } step={ 5.00 } formatter={ (value:any) => value.toString().replace(/^(\-)*(\d+)\.(\d\d).*$/, '$1$2.$3') }  maxLength={ 8 } placeholder="请输入金额" style={{ width: 160 }}/>
+                                <InputNumber
+                                     onChange={ handleInputNumber }
+                                     min={0}
+                                     max={ 99999999 }
+                                     step={ 5.00 }
+                                     maxLength={ 8 }
+                                     formatter={ (value:any) => value.toString().replace(/^(\-)*(\d+)\.(\d\d).*$/, '$1$2.$3') }
+                                     placeholder="请输入金额"
+                                     style={{ width: 160 }}/>
                             </Form.Item> &nbsp;&nbsp;元
                         </Form.Item>
                         <Form.Item label="核销金额">
@@ -108,7 +126,6 @@ const Verification = forwardRef((props:any,ref:any) => { //react hooks 通过 fo
             showDrawer() // 这里给父组件方法不一定是用dom的方法，可以使用自己const的方法
         }
     }));
-    const [searchValue, setSearchValue] = useState('');
     const [visible, setVisible] = useState(false);
     const [tableData,setTableData] = useState<object[]>([]);
     const [index,setIndex] = useState<number>(-1);

@@ -292,7 +292,7 @@ function SaleManage() {
                                 </Select>
                             </Form.Item>
                             <Form.Item label="上限金额" name="amount">
-                                <Input placeholder="请输入上限金额" maxLength={ 18 } />
+                                <InputNumber style={{ width:174 }}  formatter={ (value:any) => value.toString().replace(/^(\-)*(\d+)\.(\d\d).*$/, '$1$2.$3') } placeholder="请输入上限金额" maxLength={ 18 } />
                             </Form.Item>
                             <Form.Item  label="发放时间" name="equityGrantTime">
                                 <RangePicker ranges={{}} showTime format="YYYY-MM-DD HH:mm:ss" />
