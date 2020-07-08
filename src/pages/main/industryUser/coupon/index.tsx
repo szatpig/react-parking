@@ -93,6 +93,9 @@ const columns = [
 function Coupon(props:Props) {
     const [loading, setLoading] = useState(false);
     const [selectedRow, setSelectedRow] = useState([]);
+    const [rowPages, setRowPages] = useState<object>({
+        0:[]
+    });
     const [tableData,setTableData] = useState<object[]>([])
     const [page,setPage] = useState({
         current:1,
@@ -115,8 +118,11 @@ function Coupon(props:Props) {
     };
 
     const onSelectChange = (selectedRowKeys:any) => {
-        console.log('selectedRowKeys changed: ', selectedRowKeys);
-        setSelectedRow(selectedRowKeys);
+        // console.log('selectedRowKeys changed: ', selectedRowKeys);
+        setRowPages({
+            ...rowPages,
+            [page.current]:selectedRowKeys
+        })
     };
 
     const handleBatch = ()=>{
@@ -135,6 +141,9 @@ function Coupon(props:Props) {
     const rowSelection = {
         selectedRowKeys:selectedRow,
         onChange: onSelectChange,
+        getCheckboxProps:(row:any) => ({
+            disabled: row.couponStatus > 1
+        })
     };
 
     const checkboxChange = (e:any) => {
@@ -161,6 +170,7 @@ function Coupon(props:Props) {
                 message.success('批量处理成功');
                 setShow(false);
                 setConfirmLoading(false);
+                setSelectedRow([]);
                 form.submit();
             })
         }).catch(info => {
@@ -201,6 +211,7 @@ function Coupon(props:Props) {
             current,
             pageSize
         });
+        setSelectedRow(Object.values(rowPages).reduce((current,sum) => sum.concat(current)));
         form.submit();
     };
 
@@ -241,6 +252,11 @@ function Coupon(props:Props) {
         //do something
         list();
     },[1]);
+
+    useEffect(() => {
+        let temp = Object.values(rowPages).reduce((current,sum) => sum.concat(current))
+        setSelectedRow(temp);
+    },[rowPages]);
 
 
     return (

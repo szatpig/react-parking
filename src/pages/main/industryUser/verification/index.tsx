@@ -17,7 +17,10 @@ const columns = [
         title: '商户名称',
         dataIndex: 'commercialUserName',
         width: 160,
-        ellipsis:true
+        ellipsis:true,
+        render: (cell:any,row:any) => (
+                cell === null ? '' : cell
+        )
     },
     {
         title: '停车场名称',

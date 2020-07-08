@@ -121,6 +121,9 @@ function WhiteList() {
     const [equityList, setEquityList] = useState([]);
     const [effectiveWhileListCount, setEffectiveWhileListCount] = useState([]);
     const [selectedRow, setSelectedRow] = useState([]);
+    const [rowPages, setRowPages] = useState<object>({
+        0:[]
+    });
     const [tableData,setTableData] = useState<object[]>([])
     const [page,setPage] = useState({
         current:1,
@@ -144,8 +147,10 @@ function WhiteList() {
     };
 
     const onSelectChange = (selectedRowKeys:any,selectedRow:any) => {
-        console.log('selectedRowKeys changed: ', selectedRowKeys,selectedRow);
-        setSelectedRow(selectedRowKeys);
+        setRowPages({
+            ...rowPages,
+            [page.current]:selectedRowKeys
+        })
     };
 
     const handleBatch = ()=>{
@@ -156,6 +161,7 @@ function WhiteList() {
             confirmRevokeEquity(_data).then((data:any) => {
                 setRevokeEquity(data.data);
                 setShow(true);
+                setSelectedRow([]);
                 modalForm.resetFields();
             })
         })
@@ -222,6 +228,7 @@ function WhiteList() {
             current,
             pageSize
         });
+        setSelectedRow(Object.values(rowPages).reduce((current,sum) => sum.concat(current)));
         form.submit();
     };
     const pageSizeChange= (current:number,pageSize:any) => {
@@ -286,6 +293,11 @@ function WhiteList() {
         list();
         getEquityList();
     },[]);
+
+    useEffect(() => {
+        let temp = Object.values(rowPages).reduce((current,sum) => sum.concat(current))
+        setSelectedRow(temp);
+    },[rowPages]);
 
     return (
         <div className="white-container">

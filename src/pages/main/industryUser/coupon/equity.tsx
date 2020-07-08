@@ -27,7 +27,6 @@ import site from '@/utils/config'
 import { getParkingDetailByBusinessId } from '@/api/common-api'
 import { getProvideConfirmData, provideCouponOne, importDataConfirm, importCouponBatch } from '@/api/industryUser/coupon-api'
 import region from '@/json/region'
-import {object} from "prop-types";
 
 const { Option } = Select;
 const options = region;

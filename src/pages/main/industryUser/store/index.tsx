@@ -56,12 +56,12 @@ function Store() {
         },
         {
             title: '联系人',
-            dataIndex: 'phone',
+            dataIndex: 'contact',
             ellipsis:true
         },
         {
             title: '联系方式',
-            dataIndex: 'contact',
+            dataIndex: 'phone',
             ellipsis:true
         },
         {
