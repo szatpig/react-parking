@@ -164,7 +164,7 @@ function SaleManage() {
         modalForm.resetFields();
         setAmount(0)
         setShow(true);
-        setDiscount(0.2)
+        setDiscount(0)
     };
     const handleCancel = () => {
         console.log('Clicked cancel button');
@@ -178,7 +178,7 @@ function SaleManage() {
         setSaleArr(options.title.map((item:any) => item.maxSales))
     };
 
-    const findIndex = (val:number, arr:number[]):number => (arr.findIndex((el) => el >= val))
+    const findIndex = (val:number, arr:number[]):number => (arr.findIndex((el) => el - val >= 0))
 
     const getMerchantList = () => {
         let _data ={
@@ -248,7 +248,6 @@ function SaleManage() {
 
     useEffect(() => {
         //do something
-        console.log(discountArr);
         if(discountArr.length > 0){
             let _index= findIndex(amount,saleArr);
             if(_index > -1){
@@ -352,7 +351,7 @@ function SaleManage() {
                             &nbsp;&nbsp;张
                         </Form.Item>
                         <Form.Item label="总金额">
-                            { amount ||  merchantInfo.amount  } 元
+                            { amount ||  0  } 元
                         </Form.Item>
                         <Form.Item label="销售折扣">
                             { discount || 1 }
