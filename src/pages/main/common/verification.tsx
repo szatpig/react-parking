@@ -29,8 +29,8 @@ const VerificationForm = (props:any) =>{
 
     const onFinish = (values:any) => {
         console.log('Success:', values);
-        if( !!!values.parkingAmount) {
-            message.error('停车总额不能为0或空');
+        if(values.parkingAmount === 0) {
+            message.error('停车总额不能为0');
             return;
         }
         let _data ={
