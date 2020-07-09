@@ -295,6 +295,13 @@
         line-height: 42px;
         padding-bottom:14px;
         font-size: 13px;
+        .ant-form-item-label{
+            label{
+                &:after{
+                    content: '';
+                }
+            }
+        }
         .input-cells{
             display: flex;
             flex-flow: row wrap;

@@ -261,8 +261,8 @@ function MerchantManage() {
                             <Form.Item label="省市区" name="region">
                                 <Cascader options={ options } placeholder="请选择省市区" />
                             </Form.Item>
-                            <Form.Item  label="商家地址" name="address">
-                                <Input placeholder="请输入商家地址" maxLength={ 18 } />
+                            <Form.Item  label="详细地址" name="address">
+                                <Input placeholder="请输入详细地址" maxLength={ 18 } />
                             </Form.Item>
                             <Form.Item label="联系人" name="contact">
                                 <Input placeholder="请输入联系人" maxLength={ 18 } />

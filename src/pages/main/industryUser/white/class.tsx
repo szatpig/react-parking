@@ -170,7 +170,7 @@ function EquityClass() {
                 <div className="breadcrumb-container line sticky">
                     <div className="breadcrumb-cell">
                         <div onClick={ () => history.go(-1) }><LeftOutlined />返回</div>
-                        <div>权益金管理</div>
+                        <div>权益等级管理</div>
                     </div>
                     <div className="breadcrumb-cell">
                         <Button type="primary" onClick={ handleAdd }>添加</Button>
