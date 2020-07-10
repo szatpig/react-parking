@@ -161,7 +161,6 @@ function WhiteList() {
             confirmRevokeEquity(_data).then((data:any) => {
                 setRevokeEquity(data.data);
                 setShow(true);
-                setSelectedRow([]);
                 modalForm.resetFields();
             })
         })
@@ -183,9 +182,10 @@ function WhiteList() {
             }
             revokeEquitySubmit(_data).then((data:any) => {
                 message.success('批量处理成功');
-                form.submit();
                 setShow(false);
                 setConfirmLoading(false);
+                setSelectedRow([]);
+                form.submit();
             })
         }).catch(info => {
             setConfirmLoading(false);

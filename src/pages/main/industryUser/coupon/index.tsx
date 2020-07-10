@@ -1,48 +1,54 @@
 // Created by szatpig at 2020/4/30.
 import React, {useState, useEffect} from 'react';
-import { useHistory } from "react-router-dom";
-import { connect } from "react-redux";
+import {useHistory} from "react-router-dom";
+import {connect} from "react-redux";
 
 import {Form, Input, Button, Modal, DatePicker, Select, Table, Tag, Popover, message} from 'antd';
-import { couponList, confirmRevokeCoupon, verifyRevokeAvailable, revokeCouponBatch, grantValid } from '@/api/industryUser/coupon-api'
+import {
+    couponList,
+    confirmRevokeCoupon,
+    verifyRevokeAvailable,
+    revokeCouponBatch,
+    grantValid
+} from '@/api/industryUser/coupon-api'
 
 import Dayjs from 'dayjs';
 
-const { RangePicker } = DatePicker;
-const { Option } = Select;
+const {RangePicker} = DatePicker;
+const {Option} = Select;
 
-const equityStatusList:any = {
-    0:{
-        label:'未领取',
-        color:'blue',
+const equityStatusList: any = {
+    0: {
+        label: '未领取',
+        color: 'blue',
     },
-    1:{
-        label:'已领取',
-        color:'green',
+    1: {
+        label: '已领取',
+        color: 'green',
     },
-    2:{
-        label:'已核销',
-        color:'default',
+    2: {
+        label: '已核销',
+        color: 'default',
     },
-    3:{
-        label:'已过期',
-        color:'default',
+    3: {
+        label: '已过期',
+        color: 'default',
     },
-    4:{
-        label:'已撤销',
-        color:'default',
+    4: {
+        label: '已撤销',
+        color: 'default',
     }
 }
 
-const colorList:any = ['蓝色','黄色','黑色','白色','渐变绿色','黄绿双拼色','蓝白渐变色']
+const colorList: any = ['蓝色', '黄色', '黑色', '白色', '渐变绿色', '黄绿双拼色', '蓝白渐变色']
 
 const columns = [
     {
         title: '券码',
         dataIndex: 'couponNo',
         width: 160,
-        ellipsis:true,
-        fixed:true
+        ellipsis: true,
+        fixed: true
     },
     {
         title: '车牌号',
@@ -52,8 +58,8 @@ const columns = [
         title: '车牌颜色',
         dataIndex: 'plateColor',
         width: 120,
-        render:(cell:number) => (
-                <span>{ colorList[cell] }</span>
+        render: (cell: number) => (
+                <span>{colorList[cell]}</span>
         )
     },
     {
@@ -63,7 +69,7 @@ const columns = [
     {
         title: '停车场',
         dataIndex: 'parkingNames',
-        ellipsis:true
+        ellipsis: true
     },
     {
         title: '发放时间',
@@ -80,57 +86,60 @@ const columns = [
     {
         title: '状态',
         dataIndex: 'couponStatus',
-        render: (cell:number,row:any) => (
+        render: (cell: number, row: any) => (
                 cell == 4 ?
-                        <Popover overlayClassName="table-popover-container" content={ row.revokeReason } title={ <div className="flex between"><span>提示</span><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span>{ row.updateTime }</span></div> } trigger="hover">
-                            <Tag color={ equityStatusList[cell].color }>{ equityStatusList[cell].label }</Tag>
-                        </Popover>:
-                        <Tag color={ equityStatusList[cell].color }>{ equityStatusList[cell].label }</Tag>
+                        <Popover overlayClassName="table-popover-container" content={row.revokeReason}
+                                 title={<div className="flex between">
+                                     <span>提示</span><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span>{row.updateTime}</span>
+                                 </div>} trigger="hover">
+                            <Tag color={equityStatusList[cell].color}>{equityStatusList[cell].label}</Tag>
+                        </Popover> :
+                        <Tag color={equityStatusList[cell].color}>{equityStatusList[cell].label}</Tag>
         )
     },
 ];
 
-function Coupon(props:Props) {
+function Coupon(props: Props) {
     const [loading, setLoading] = useState(false);
     const [selectedRow, setSelectedRow] = useState([]);
     const [rowPages, setRowPages] = useState<object>({
-        0:[]
+        0: []
     });
-    const [tableData,setTableData] = useState<object[]>([])
-    const [page,setPage] = useState({
-        current:1,
-        pageSize:20,
-        total:0
+    const [tableData, setTableData] = useState<object[]>([])
+    const [page, setPage] = useState({
+        current: 1,
+        pageSize: 20,
+        total: 0
     });
     const [show, setShow] = useState(false);
     const [revokeEquity, setRevokeEquity] = useState({
-        selectLine:0,
-        totalBalance:0
+        selectLine: 0,
+        totalBalance: 0
     });
     const [confirmLoading, setConfirmLoading] = useState(false);
 
     const history = useHistory();
-    const [ form ] = Form.useForm();
-    const [ modalForm ] = Form.useForm();
+    const [form] = Form.useForm();
+    const [modalForm] = Form.useForm();
 
-    const onFormLayoutChange = ({  }) => {
+    const onFormLayoutChange = ({}) => {
         // setFormLayout(layout);
     };
 
-    const onSelectChange = (selectedRowKeys:any) => {
+    const onSelectChange = (selectedRowKeys: any) => {
         // console.log('selectedRowKeys changed: ', selectedRowKeys);
         setRowPages({
             ...rowPages,
-            [page.current]:selectedRowKeys
+            [page.current]: selectedRowKeys
         })
     };
 
-    const handleBatch = ()=>{
+    const handleBatch = () => {
         let _data = {
-            ids:selectedRow
+            ids: selectedRow
         }
         verifyRevokeAvailable(_data).then(data => {
-            confirmRevokeCoupon(_data).then((data:any) => {
+            confirmRevokeCoupon(_data).then((data: any) => {
                 setRevokeEquity(data.data);
                 setShow(true);
                 modalForm.resetFields();
@@ -139,20 +148,20 @@ function Coupon(props:Props) {
     }
 
     const rowSelection = {
-        selectedRowKeys:selectedRow,
+        selectedRowKeys: selectedRow,
         onChange: onSelectChange,
-        getCheckboxProps:(row:any) => ({
+        getCheckboxProps: (row: any) => ({
             disabled: row.couponStatus > 1
         })
     };
 
-    const checkboxChange = (e:any) => {
+    const checkboxChange = (e: any) => {
         console.log(`checked = ${e.target.checked}`);
     }
 
-    const getGrantValid = (path:string) => {
-        let _data ={}
-        grantValid(_data).then((data:any) => {
+    const getGrantValid = (path: string) => {
+        let _data = {}
+        grantValid(_data).then((data: any) => {
             history.push(path)
         }).catch(err => {
         })
@@ -161,12 +170,12 @@ function Coupon(props:Props) {
     //modal
     const handleSubmit = () => {
         setConfirmLoading(true);
-        modalForm.validateFields().then((values:any) => {
-            let _data ={
-                ids:selectedRow,
+        modalForm.validateFields().then((values: any) => {
+            let _data = {
+                ids: selectedRow,
                 ...values
             }
-            revokeCouponBatch(_data).then((data:any) => {
+            revokeCouponBatch(_data).then((data: any) => {
                 message.success('批量处理成功');
                 setShow(false);
                 setConfirmLoading(false);
@@ -184,63 +193,63 @@ function Coupon(props:Props) {
         setShow(false)
     };
 
-    const handleSearch = (values:any) => {
+    const handleSearch = (values: any) => {
         console.log(values)
-        let { couponNo,plateNo,couponStatus,equityGrantTime } = values,
-                [startTime,endTime] = equityGrantTime || [];
+        let {couponNo, plateNo, couponStatus, equityGrantTime} = values,
+                [startTime, endTime] = equityGrantTime || [];
 
         list({
-            couponNo,plateNo,couponStatus,
-            startTime:startTime && Dayjs(startTime).format('YYYY-MM-DD HH:mm:ss'),
-            endTime:endTime && Dayjs(endTime).format('YYYY-MM-DD HH:mm:ss')
+            couponNo, plateNo, couponStatus,
+            startTime: startTime && Dayjs(startTime).format('YYYY-MM-DD HH:mm:ss'),
+            endTime: endTime && Dayjs(endTime).format('YYYY-MM-DD HH:mm:ss')
         })
     }
 
     const handleQuery = () => {
         setPage({
             ...page,
-            current:1
+            current: 1
         });
         setSelectedRow([]);
         form.submit();
     };
 
-    const pagesChange = (current:number,pageSize:any) => {
+    const pagesChange = (current: number, pageSize: any) => {
         setPage({
             ...page,
             current,
             pageSize
         });
-        setSelectedRow(Object.values(rowPages).reduce((current,sum) => sum.concat(current)));
+        setSelectedRow(Object.values(rowPages).reduce((current, sum) => sum.concat(current)));
         form.submit();
     };
 
-    const pageSizeChange= (current:number,pageSize:any) => {
+    const pageSizeChange = (current: number, pageSize: any) => {
         setPage({
             ...page,
-            current:1,
+            current: 1,
             pageSize
         });
         form.submit();
     };
 
-    const showTotal = (total:number) => {
+    const showTotal = (total: number) => {
         return `总共 ${total} 条`
     }
 
-    const list = (args?:object) => {
-        let { current,pageSize } = page
-        let _data={
-            pageNum:current,
+    const list = (args?: object) => {
+        let {current, pageSize} = page
+        let _data = {
+            pageNum: current,
             pageSize,
             ...args
         };
         setLoading(true)
-        couponList(_data).then((data:any) => {
+        couponList(_data).then((data: any) => {
             setTableData(data.data.list);
             setPage({
                 ...page,
-                total:data.data.total
+                total: data.data.total
             })
             setLoading(false)
         }).catch(err => {
@@ -251,107 +260,113 @@ function Coupon(props:Props) {
     useEffect(() => {
         //do something
         list();
-    },[1]);
+    }, [1]);
 
     useEffect(() => {
-        let temp = Object.values(rowPages).reduce((current,sum) => sum.concat(current))
+        let temp = Object.values(rowPages).reduce((current, sum) => sum.concat(current))
         setSelectedRow(temp);
-    },[rowPages]);
+    }, [rowPages]);
 
 
     return (
-        <div className="coupon-container">
-            <div className="breadcrumb-container left-border line">
-                停车券管理
-                <span>
-                    <Button type="primary" onClick={ () => getGrantValid('give/single')}>发放停车券</Button>
-                    <Button type="primary" onClick={ () => getGrantValid('give/batch')}>批量导入停车券</Button>
+            <div className="coupon-container">
+                <div className="breadcrumb-container left-border line">
+                    停车券管理
+                    <span>
+                    <Button type="primary" onClick={() => getGrantValid('give/single')}>发放停车券</Button>
+                    <Button type="primary" onClick={() => getGrantValid('give/batch')}>批量导入停车券</Button>
                 </span>
-            </div>
-            <div className="search-container">
-                <div className="input-cells">
+                </div>
+                <div className="search-container">
+                    <div className="input-cells">
+                        <Form
+                                layout="inline"
+                                onValuesChange={onFormLayoutChange}
+                                form={form}
+                                onFinish={handleSearch}>
+                            <Form.Item label="券码" name="couponNo">
+                                <Input placeholder="请输入券码" maxLength={18}/>
+                            </Form.Item>
+                            <Form.Item label="车牌号" name="plateNo">
+                                <Input placeholder="请输入车牌号" maxLength={8}/>
+                            </Form.Item>
+                            <Form.Item label="发放时间" name="equityGrantTime">
+                                <RangePicker ranges={{}} showTime format="YYYY-MM-DD HH:mm:ss"/>
+                            </Form.Item>
+                            <Form.Item label="状态" name="couponStatus">
+                                <Select
+                                        placeholder="请选择"
+                                        allowClear>
+                                    <Option value="0">未领取</Option>
+                                    <Option value="1">已领取</Option>
+                                    <Option value="2">已核销</Option>
+                                    <Option value="3">已过期</Option>
+                                    <Option value="4">已撤销</Option>
+                                </Select>
+                            </Form.Item>
+                            <Form.Item>
+                                <Button type="primary" htmlType="button" onClick={handleQuery}>查询</Button>
+                            </Form.Item>
+                        </Form>
+                    </div>
+                </div>
+                <div className="search-container export">
+                    <div className="input-cells">
+                        {/*<Checkbox onChange={ checkboxChange }>全选</Checkbox> */}
+                        已选中 {selectedRow.length} 条
+                        {
+                            !!!props.revokable &&
+                            <Button type="primary" onClick={handleBatch} disabled={selectedRow.length == 0}>
+                                撤销停车券
+                            </Button>
+                        }
+                    </div>
+                </div>
+                <div className="table-container">
+                    <Table
+                            rowKey="id"
+                            bordered
+                            rowSelection={rowSelection}
+                            columns={columns}
+                            loading={loading}
+                            dataSource={tableData}
+                            scroll={{x: 1500}}
+                            pagination={{
+                                onChange: pagesChange,
+                                onShowSizeChange: pageSizeChange,
+                                showSizeChanger: true, ...page,
+                                showTotal: showTotal
+                            }}/>
+                </div>
+                <Modal
+                        title="撤销原因"
+                        visible={show}
+                        className="common-dialog"
+                        onOk={handleSubmit}
+                        okText={"保存"}
+                        confirmLoading={confirmLoading}
+                        onCancel={handleCancel}>
                     <Form
-                            layout="inline"
-                            onValuesChange={ onFormLayoutChange }
-                            form = { form }
-                            onFinish={ handleSearch }>
-                        <Form.Item label="券码" name="couponNo">
-                            <Input placeholder="请输入券码" maxLength={ 18 } />
-                        </Form.Item>
-                        <Form.Item label="车牌号" name="plateNo">
-                            <Input placeholder="请输入车牌号" maxLength={ 8 }/>
-                        </Form.Item>
-                        <Form.Item  label="发放时间" name="equityGrantTime">
-                            <RangePicker ranges={{}} showTime format="YYYY-MM-DD HH:mm:ss" />
-                        </Form.Item>
-                        <Form.Item label="状态" name="couponStatus">
-                            <Select
-                                    placeholder="请选择"
-                                    allowClear>
-                                <Option value="0">未领取</Option>
-                                <Option value="1">已领取</Option>
-                                <Option value="2">已核销</Option>
-                                <Option value="3">已过期</Option>
-                                <Option value="4">已撤销</Option>
-                            </Select>
-                        </Form.Item>
-                        <Form.Item>
-                            <Button type="primary" htmlType="button" onClick={ handleQuery }>查询</Button>
+                            form={modalForm}
+                            onFinish={handleSubmit}>
+                        <Form.Item name="revokeReason" label="撤销原因" rules={[
+                            {required: true, whitespace: true, message: '请输入内容'}
+                        ]}>
+                            <Input.TextArea rows={4} maxLength={200}/>
                         </Form.Item>
                     </Form>
-                </div>
+                    <p className="common-dialog-tips">当前选择{revokeEquity.selectLine || 0}笔，余额共计{revokeEquity.totalBalance || 0}元，撤销后会将未使用金额返回行业用户余额，撤销后不可恢复!</p>
+                </Modal>
             </div>
-            <div className="search-container export">
-                <div className="input-cells">
-                    {/*<Checkbox onChange={ checkboxChange }>全选</Checkbox> */}
-                    已选中 { selectedRow.length } 条
-                    {
-                        !!!props.revokable &&
-                        <Button type="primary" onClick={ handleBatch } disabled={ selectedRow.length == 0 }>
-                            撤销停车券
-                        </Button>
-                    }
-                </div>
-            </div>
-            <div className="table-container">
-                <Table
-                        rowKey="id"
-                        bordered
-                        rowSelection={ rowSelection }
-                        columns={ columns }
-                        loading={ loading }
-                        dataSource={ tableData }
-                        scroll={{ x: 1500 }}
-                        pagination={{ onChange:pagesChange,onShowSizeChange:pageSizeChange,showSizeChanger:true,...page, showTotal: showTotal }}/>
-            </div>
-            <Modal
-                    title="撤销原因"
-                    visible={ show }
-                    className="common-dialog"
-                    onOk={ handleSubmit }
-                    okText={"保存"}
-                    confirmLoading={ confirmLoading }
-                    onCancel={ handleCancel }>
-                <Form
-                        form = { modalForm }
-                        onFinish={ handleSubmit }>
-                    <Form.Item name="revokeReason" label="撤销原因" rules={ [
-                        { required: true, whitespace: true, message: '请输入内容' }
-                    ] }>
-                        <Input.TextArea rows={4} maxLength={ 200 } />
-                    </Form.Item>
-                </Form>
-                <p className="common-dialog-tips">当前选择{ revokeEquity.selectLine || 0 }笔，余额共计{ revokeEquity.totalBalance || 0 }元，撤销后会将未使用金额返回行业用户余额，撤销后不可恢复!</p>
-            </Modal>
-        </div>
     );
 }
-interface Props  {
-    revokable:number
+
+interface Props {
+    revokable: number
 }
 
-const mapStateToProps = (state:any) => ({
-    revokable:state.user.info.revokable
+const mapStateToProps = (state: any) => ({
+    revokable: state.user.info.revokable
 })
 
-export default connect(mapStateToProps,{})(Coupon)
+export default connect(mapStateToProps, {})(Coupon)
