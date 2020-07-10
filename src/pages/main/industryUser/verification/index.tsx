@@ -127,6 +127,7 @@ function Verification() {
             pageSize,
             ...args
         };
+        getStatistics(_data);
         equityVerifyRecordList(_data).then((data:any) => {
             setTableData(data.data.list);
             setPage({
@@ -162,8 +163,7 @@ function Verification() {
         form.submit();
     };
 
-    const getStatistics = () => {
-        let _data ={}
+    const getStatistics = (_data:any) => {
         equityVerifyRecordStatistics(_data).then((data:any) => {
             setSummaryData(data.data)
         })
@@ -172,8 +172,7 @@ function Verification() {
     useEffect(() => {
         //do something
         list();
-        getStatistics();
-    },[1]);
+    },[]);
 
     return (
         <div className="verification-container">
