@@ -208,7 +208,7 @@ function Verification() {
                         <Form.Item label="车牌号" name="plateNo">
                             <Input placeholder="请输入车牌号" maxLength={ 8 }/>
                         </Form.Item>
-                        <Form.Item  label="发放时间" name="time">
+                        <Form.Item  label="核销时间" name="time">
                             <RangePicker ranges={{}} showTime format="YYYY-MM-DD HH:mm:ss" />
                         </Form.Item>
                         <Form.Item>
