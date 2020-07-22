@@ -199,8 +199,8 @@ function SaleRecord() {
                                 onValuesChange={ onFormLayoutChange }
                                 form = { form }
                                 onFinish={ handleSearch }>
-                            <Form.Item label="商户家称" name="merchantUserName">
-                                <Input placeholder="请输入商家名称" maxLength={ 18 } />
+                            <Form.Item label="商户名称" name="merchantUserName">
+                                <Input placeholder="请输入商户名称" maxLength={ 18 } />
                             </Form.Item>
                             <Form.Item label="停车券类型" name="couponType">
                             <Select
