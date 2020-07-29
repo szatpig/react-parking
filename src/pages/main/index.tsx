@@ -1,36 +1,31 @@
 // Created by szatpig at 2019/8/20.
 import React, {Component, lazy } from 'react'
-import { Redirect } from 'react-router';
 import { connect } from 'react-redux'
 
-import { Layout, Menu, Icon } from 'antd';
+import { Layout } from 'antd';
 
-const { Header, Sider, Content } = Layout;
+const { Sider } = Layout;
 
 const ContentLayout  = lazy(() => import('./layout/content'));
 const HeaderLayout  = lazy(() => import('./layout/header'));
 const MenuLayout  = lazy(() => import('./layout/menu'));
 
-const ErrorBoundary  = lazy(() => import('./../../components/ErrorBoundary'));
+const ErrorBoundary  = lazy(() => import('@/components/ErrorBoundary'));
 
 class Home extends Component<Props, State>{
-
     render() {
-        if(!!!this.props.userToken){
-            return <Redirect to='/login'/>
-        }
         return (
             <Layout className="main-container">
-                <Sider
-                    trigger={ null }
-                    collapsible
-                    collapsed={ this.props.collapsed }
-                    className="menu-container"
-                    width={ 180 }>
-                    <MenuLayout />
-                </Sider>
+                <HeaderLayout { ...this.props.match } />
                 <Layout className="wrapper-container">
-                    <HeaderLayout { ...this.props.match } />
+                    <Sider
+                            trigger={ null }
+                            collapsible
+                            collapsed={ this.props.collapsed }
+                            className="menu-container"
+                            width={ 180 }>
+                        <MenuLayout />
+                    </Sider>
                     <ErrorBoundary>
                         <ContentLayout { ...this.props.match } />
                     </ErrorBoundary>
@@ -43,6 +38,7 @@ class Home extends Component<Props, State>{
 interface Props {
     // url:string
     match:any,
+    history:any,
     userToken:string,
     collapsed:boolean
 }

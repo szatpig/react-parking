@@ -9,8 +9,8 @@ const Home = lazy(() => import('./main'));
 class Pages extends Component {
     render() {
         return (
-            <Router>
-                <Suspense fallback={<div>Loading...</div>}>
+            <Router basename="/etc-verification">
+                <Suspense fallback={ null }>
                     <Switch>
                         <Route exact path="/" component={ Login }/>
                         <Route exact strict path="/login" component={ Login }/>

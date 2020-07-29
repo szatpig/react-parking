@@ -1,9 +1,8 @@
 // Created by szatpig at 2019/5/21.
-import axios,{ AxiosRequestConfig } from 'axios'
+import axios from 'axios'
 import { createBrowserHistory } from 'history';
 import { stringify } from 'qs'
-import store from './../store'
-
+import store from '@/store'
 
 import { message } from 'antd';
 
@@ -35,10 +34,11 @@ axios.interceptors.response.use(
     error => {
         message.destroy();
         if (error.response) {
-            switch (error.response.data.status) {
+            console.log(error.response)
+            switch (error.response.status) {
                 case 401:
                     // 401 清除token信息并跳转到登录页面
-                    message.error(error.response.data.data.msg);
+                    message.error(error.response.statusText);
                     break;
                 case 403:
                     break;
@@ -54,6 +54,14 @@ axios.interceptors.response.use(
                 default:
                     message.error('程序员罢工了,哄哄她去');
             }
+        }else{
+            message.error('请求服务拒绝，请稍候重试');
+            return Promise.reject({
+                data:{
+                    status:5001,
+                    msg:'请求服务拒绝'
+                }
+            })
         }
         return Promise.reject(error.response)
     });
@@ -71,18 +79,6 @@ interface Options {
 // 封装请求
 export default function fetch (url:string, options:Options) {
     let opt = options || {};
-    let config = {
-        method: opt.type || 'post',
-        url: url,
-        params: opt.params || {},
-        // 判断是否有自定义头部，以对参数进行序列化。不定义头部，默认对参数序列化为查询字符串。
-        data: (opt.headers && opt.headers['Content-Type'].indexOf('x-www-form-urlencoded') > 0 ? stringify(opt.data) : opt.data) || {},
-        responseType: opt.dataType || 'json',
-        // 设置默认请求头
-        headers: opt.headers || {'Content-Type': 'application/json; charset=UTF-8'},
-        //设置超时时间
-        timeout: opt.timeout || 30000
-    }
     // console.log(store.getState())
     return new Promise((resolve, reject) => {
         axios({
@@ -102,17 +98,14 @@ export default function fetch (url:string, options:Options) {
             } else {
                 switch (response.data.status) {
                     case 1001:
-                        history.push('/login');
-                        reject(response.data);
-                        break;
                     case 8001:
-                        if(Number(sessionStorage.getItem('code_2001'))){
-                            reject(response.data);
-                        }else{
-                            sessionStorage.setItem('code_2001','1');
-                            message.error('账号已在其他设备登录').then(()=>{
-                                sessionStorage.setItem('code_2001','0');
-                            },()=>{})
+                        if(document.getElementsByClassName('global-message').length === 0){
+                            store.dispatch({type:'LOGIN_OUT_REQUEST'});
+                            // history.push('/etc-verification/login');
+                            message.error({
+                                content:response.data.msg || '账号已在其他设备登录',
+                                className:'global-message'
+                            })
                         }
                         reject(response.data);
                         break;

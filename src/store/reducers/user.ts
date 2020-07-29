@@ -10,23 +10,29 @@ import {
 const initState:State = {
     token:sessionStorage.getItem('USER_TOKEN') || null,
     menuList: sessionStorage.getItem('USER_MENU_LIST') && JSON.parse(sessionStorage.getItem('USER_MENU_LIST') || '') || [],
-    info:sessionStorage.getItem('USER_INFO') || null,
+    info: sessionStorage.getItem('USER_INFO') && JSON.parse(sessionStorage.getItem('USER_INFO') || '') || {},
 };
 
 let userReducer = (state:State = initState,action:any):any => {
     switch (action.type) {
         case USER_LOGIN_OUT:
+            sessionStorage.setItem('USER_TOKEN', '');
+            sessionStorage.setItem('USER_INFO', JSON.stringify(''));
             return {
                 token:null,
                 menuList:[],
-                info:null
+                info:{}
             };
+            break;
         case USER_TOKEN:
             return Object.assign({},state,action.payload);
+            break;
         case USER_INFO:
-            return Object.assign({},state,action.payload);
+            return Object.assign({},state,{ info:action.payload });
+            break;
         case USER_MENU_LIST:
             return Object.assign({},state,{ menuList:action.payload });
+            break;
         default:
             return state
     }

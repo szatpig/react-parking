@@ -3,6 +3,7 @@
 
 
 const LOGIN_REQUEST = 'LOGIN_REQUEST';
+const LOGIN_OUT_REQUEST = 'LOGIN_OUT_REQUEST';
 const USER_LOGIN = 'USER_LOGIN';
 const USER_TOKEN = 'USER_TOKEN';
 const USER_INFO = 'USER_INFO';
@@ -22,6 +23,7 @@ export {
     FETCH_ERROR,
     //request 请求
     LOGIN_REQUEST,
+    LOGIN_OUT_REQUEST,
     USER_LOGIN,
     USER_MENU_LIST,
     USER_INFO,

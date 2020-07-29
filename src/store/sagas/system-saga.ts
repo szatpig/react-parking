@@ -1,6 +1,6 @@
 // Created by szatpig at 2019/12/16.
 import { take, call, put  } from 'redux-saga/effects';
-import { userInfoList } from './../../api/system-api'
+import { userInfoList } from '@/api/industryUser/system-api'
 
 function* systemUserAsync(payload:any) {
     try{

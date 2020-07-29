@@ -1,6 +1,6 @@
 // Created by szatpig at 2019/10/21.
-import fetch from './../utils/fetch'
-import site from './../utils/config'
+import fetch from '../../utils/fetch'
+import site from '../../utils/config'
 
 export const getAllDepart= (params:any) => fetch(site.base + '/depart/getAllDepart' ,{
     type: 'get',

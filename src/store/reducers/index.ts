@@ -5,11 +5,13 @@ import { combineReducers } from 'redux'
 import user from './user'
 import header from './header'
 import system from  './system'
+import common from  './common'
 
 export default combineReducers({
     user,
     header,
-    system
+    system,
+    common
 })
 
 

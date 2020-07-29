@@ -3,22 +3,12 @@ import React, { Component } from 'react'
 import { Route, Switch } from "react-router-dom";
 
 import routes from '../router'
+import AuthorizedRoute from '../router/authorized/AuthorizedRoute'
 
 import { Layout } from 'antd';
 const { Content } = Layout;
 
 class ContentLayout extends Component<Props, State> {
-    static defaultProps = {}
-
-    componentDidMount() {
-    }
-
-    componentDidUpdate() {
-    }
-
-    componentWillUnmount() {
-    }
-
     render() {
         const  { url } =this.props;
         return (
@@ -27,7 +17,7 @@ class ContentLayout extends Component<Props, State> {
                     {
                         routes.map((item:any,i) =>
                             item.path ?
-                                <Route key={ i } { ...item.meta } path={ url + item.path } component={ item.component } exact strict /> :
+                                <AuthorizedRoute key={ i } path={ url + item.path } authority={ item.authority } meta={ item.meta } component={ item.component } exact strict /> :
                                 <Route key={ i } component={ item.component } />
                         )
                     }
