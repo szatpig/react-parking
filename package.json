@@ -44,6 +44,7 @@
     "qs": "^6.9.3",
     "react-app-rewired": "^2.1.5",
     "react-scripts": "3.4.1",
+    "redux-devtools": "^3.5.0",
     "redux-logger": "^3.0.6",
     "typescript": "^3.7.5",
     "webpack-bundle-analyzer": "^3.7.0"
@@ -60,7 +61,10 @@
     }
   },
   "lint-staged": {
-    "*.{js,json,ts.tsx}": ["prettier --write", "git add"]
+    "*.{js,json,ts.tsx}": [
+      "prettier --write",
+      "git add"
+    ]
   },
   "eslintConfig": {
     "extends": "react-app"
